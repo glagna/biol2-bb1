@@ -231,9 +231,9 @@
   .supp-card.unlocked { border-color: var(--red); background: rgba(231, 76, 60, 0.08); }
 
   .supp-image {
-    height: 48px;
+    height: 110px;
     background: var(--panel-light);
-    border: 1px dashed var(--muted);
+    border: 1px solid var(--navy-mid);
     margin-bottom: 10px;
     display: flex;
     align-items: center;
@@ -242,6 +242,13 @@
     font-size: 10px;
     font-family: 'JetBrains Mono', monospace;
     letter-spacing: 0.1em;
+    overflow: hidden;
+  }
+  .supp-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
   }
   .supp-name {
     font-weight: 600;
@@ -304,9 +311,9 @@
     margin-bottom: 20px;
   }
   .modal-image {
-    height: 140px;
+    height: 280px;
     background: var(--panel-light);
-    border: 1px dashed var(--muted);
+    border: 1px solid var(--navy-mid);
     margin-bottom: 20px;
     display: flex;
     align-items: center;
@@ -315,6 +322,13 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
     letter-spacing: 0.1em;
+    overflow: hidden;
+  }
+  .modal-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
   }
   .modal-section {
     margin-bottom: 18px;
@@ -485,6 +499,15 @@
     <div class="vitals-footer">
       Normal ranges shown below each value. Phase 2 and Phase 3 unlock when your instructor triggers each complication.
     </div>
+
+    <div id="labs-printout-block" style="display: none; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--navy-mid);">
+      <button type="button" onclick="openLabsModal()" style="width: 100%; padding: 10px 14px; background: var(--navy-deep); border: 1px solid var(--gold); color: var(--gold); font-family: inherit; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;">
+        View Full Lab Printout &#x2192;
+      </button>
+      <p style="font-size: 10px; color: var(--muted); margin-top: 6px; font-style: italic; text-align: center;">
+        BMP + ABG sheet from the attending, 03:14
+      </p>
+    </div>
   </section>
 
   <!-- ========== MIDDLE: SUPPLEMENT DOSSIER ========== -->
@@ -572,6 +595,21 @@
       <div class="modal-label">Regulatory Status</div>
       <div class="modal-body" id="m-regulatory"></div>
     </div>
+  </div>
+</div>
+
+<!-- ===== LABS MODAL ===== -->
+<div class="modal-backdrop" id="labs-modal" onclick="if(event.target.id==='labs-modal') closeLabsModal()">
+  <div class="modal" style="max-width: 780px;">
+    <button class="modal-close" onclick="closeLabsModal()">&times;</button>
+    <div class="modal-title">Lab Results &mdash; 03:14</div>
+    <div class="modal-tagline">Basic Metabolic Panel + Arterial Blood Gas, reviewed by Dr. Chen</div>
+    <div style="background: #f5f1e8; padding: 6px; border: 1px solid var(--navy-mid); margin-top: 12px;">
+      <img src="assets/bb1_images/labs_complication1.png" alt="Marcus M. lab results, BMP and ABG" style="display: block; width: 100%; height: auto;">
+    </div>
+    <p style="margin-top: 12px; font-size: 12px; color: var(--muted); font-style: italic;">
+      Click outside this window or press the &times; to close. The numerical values are also shown in the Patient Vitals panel.
+    </p>
   </div>
 </div>
 
@@ -763,28 +801,42 @@ const SUPPLEMENTS = [
     name: "Unlabeled Bottle",
     teaser: "No label. Friend supplied.",
     tagline: "NO LABEL. NO CLAIMS. NO OVERSIGHT.",
-    claims: "[NO FRONT LABEL. White plastic bottle, no branding, no manufacturer, no lot number.]",
+    claims: "[NO PRINTED LABEL. Small amber glass bottle with a strip of masking tape. Handwritten in ballpoint pen: \"2 scoops pre-workout. Trust me. - K.\" No manufacturer, no lot number, no ingredient panel.]",
     ingredients: `<ul>
       <li><strong>Unknown.</strong></li>
-      <li>Patient reports a bitter taste and white-to-yellow capsules.</li>
+      <li>Off-white crystalline powder, visible through the amber glass. Plastic scoop threaded under a rubber band around the neck.</li>
+      <li>Patient reports a bitter taste.</li>
       <li>Friend described it as \"like pre-workout but stronger.\"</li>
       <li><strong>No ingredient list exists on this bottle.</strong></li>
     </ul>
     <p style="margin-top: 8px; color: var(--gold); font-size: 12px;"><em>DSHEA allows DSHEA-exempt and unlabeled products to circulate without FDA pre-market review. This IS the regulatory gap you studied in Week 1.</em></p>`,
-    dose: "Patient reports: 2 capsules ~20 min before training, as instructed by friend.",
+    dose: "Patient reports: 2 scoops ~20 min before training, as instructed by friend (handwritten note on bottle reads: \"2 scoops pre-workout. Trust me. - K.\").",
     regulatory: "Unregulated. Possibly contains a banned substance.",
     locked: true
   }
 ];
+
+// Maps supplement id -> bottle image filename in assets/bb1_images/
+const BOTTLE_IMAGES = {
+  "pre-workout":   "assets/bb1_images/bottle_powerstrike.png",
+  "fat-furnace":   "assets/bb1_images/bottle_fatfurnace.png",
+  "stack-attack":  "assets/bb1_images/bottle_stackattack.png",
+  "atp-maximizer": "assets/bb1_images/bottle_atpmax.png",
+  "unlabeled":     "assets/bb1_images/bottle_unlabeled.png"
+};
 
 function renderSupplements() {
   const grid = document.getElementById('supplement-grid');
   grid.innerHTML = SUPPLEMENTS.map(s => {
     const lockedClass = s.locked ? "locked" : "";
     const unlockedClass = (!s.locked && s.id === "unlabeled") ? "unlocked" : "";
+    const imgSrc = BOTTLE_IMAGES[s.id] || "";
+    const imgMarkup = imgSrc
+      ? `<img src="${imgSrc}" alt="${s.name}" loading="lazy">`
+      : `[BOTTLE IMG: ${s.id}]`;
     return `
       <div class="supp-card ${lockedClass} ${unlockedClass}" data-id="${s.id}" onclick="openSupplement('${s.id}')">
-        <div class="supp-image">[BOTTLE IMG: ${s.id}]</div>
+        <div class="supp-image">${imgMarkup}</div>
         <div>
           <div class="supp-name">${s.name}</div>
           <div class="supp-teaser">${s.teaser}</div>
@@ -797,7 +849,13 @@ function renderSupplements() {
 function openSupplement(id) {
   const s = SUPPLEMENTS.find(x => x.id === id);
   if (!s || s.locked) return;
-  document.getElementById('m-image').textContent = `[BOTTLE IMAGE: ${s.name.toUpperCase()}]`;
+  const imgSrc = BOTTLE_IMAGES[id];
+  const mImage = document.getElementById('m-image');
+  if (imgSrc) {
+    mImage.innerHTML = `<img src="${imgSrc}" alt="${s.name}">`;
+  } else {
+    mImage.textContent = `[BOTTLE IMAGE: ${s.name.toUpperCase()}]`;
+  }
   document.getElementById('m-title').textContent = s.name;
   document.getElementById('m-tagline').textContent = s.tagline;
   document.getElementById('m-claims').innerHTML = s.claims;
@@ -807,6 +865,9 @@ function openSupplement(id) {
   document.getElementById('modal').classList.add('active');
 }
 function closeModal() { document.getElementById('modal').classList.remove('active'); }
+
+function openLabsModal() { document.getElementById('labs-modal').classList.add('active'); }
+function closeLabsModal() { document.getElementById('labs-modal').classList.remove('active'); }
 
 function unlockUnlabeled() {
   const s = SUPPLEMENTS.find(x => x.id === "unlabeled");
@@ -853,6 +914,12 @@ function applyState(state) {
   if (banner) {
     if (state.attending) banner.classList.add('active');
     else banner.classList.remove('active');
+  }
+
+  // Lab printout button (Phase 2+ only)
+  const labsBlock = document.getElementById('labs-printout-block');
+  if (labsBlock) {
+    labsBlock.style.display = (state.phase === "P2" || state.phase === "P3") ? "block" : "none";
   }
 }
 
@@ -994,6 +1061,8 @@ document.addEventListener('keydown', e => {
 window.showPhase = showPhase;
 window.openSupplement = openSupplement;
 window.closeModal = closeModal;
+window.openLabsModal = openLabsModal;
+window.closeLabsModal = closeLabsModal;
 window.primeAudio = primeAudio;
 
 // ============================================================
