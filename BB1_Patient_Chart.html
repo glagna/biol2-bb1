@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patient Chart — Marcus M. — ER Bay 7</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --navy-deep: #0A1628;
+    --navy: #0F2440;
+    --navy-mid: #1A3A5C;
+    --panel: #152A45;
+    --panel-light: #1D3555;
+    --gold: #D4A853;
+    --gold-dim: #A8843F;
+    --ice: #CADCFC;
+    --white: #FFFFFF;
+    --green: #2ECC71;
+    --yellow: #F1C40F;
+    --red: #E74C3C;
+    --red-dark: #C0392B;
+    --muted: #6B7D99;
+  }
+
+  body {
+    background: var(--navy-deep);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  /* ===== HEADER ===== */
+  .patient-header {
+    background: var(--navy);
+    border-top: 3px solid var(--red);
+    border-bottom: 1px solid var(--navy-mid);
+    padding: 20px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    max-width: 1400px;
+    margin: 0 auto 20px;
+  }
+  .patient-id { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .patient-id .badge-er {
+    background: var(--red);
+    color: var(--white);
+    padding: 6px 14px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    font-size: 11px;
+    text-transform: uppercase;
+  }
+  .patient-name {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 22px;
+    color: var(--gold);
+    letter-spacing: 0.05em;
+  }
+  .patient-meta { color: var(--ice); font-size: 13px; font-family: 'JetBrains Mono', monospace; }
+  .team-selector {
+    background: var(--panel);
+    border: 1px solid var(--gold-dim);
+    color: var(--gold);
+    padding: 8px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .team-selector:focus { outline: 1px solid var(--gold); }
+
+  /* ===== LAYOUT ===== */
+  .chart-grid {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 340px 1fr 320px;
+    gap: 20px;
+  }
+  @media (max-width: 1200px) {
+    .chart-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ===== PANEL BASE ===== */
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--navy-mid);
+    padding: 20px;
+  }
+  .panel-title {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    color: var(--gold);
+    font-size: 14px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--gold-dim);
+  }
+
+  /* ===== VITALS ===== */
+  .phase-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .phase-tab {
+    flex: 1;
+    padding: 10px 6px;
+    background: var(--navy-deep);
+    border: 1px solid var(--navy-mid);
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    text-align: center;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .phase-tab.active {
+    background: var(--navy-mid);
+    color: var(--white);
+    border-color: var(--gold);
+  }
+  .phase-tab[data-phase="P1"].active { border-color: var(--green); color: var(--green); }
+  .phase-tab[data-phase="P2"].active { border-color: var(--yellow); color: var(--yellow); }
+  .phase-tab[data-phase="P3"].active { border-color: var(--red); color: var(--red); }
+  .phase-tab.locked {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  .vital-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 0;
+    border-bottom: 1px dashed rgba(107,125,153,0.3);
+  }
+  .vital-row:last-child { border-bottom: none; }
+  .vital-label {
+    color: var(--ice);
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .vital-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--white);
+  }
+  .vital-value.abnormal { color: var(--yellow); }
+  .vital-value.critical { color: var(--red); animation: pulse-critical 1.2s infinite; }
+  @keyframes pulse-critical {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
+  }
+  .vital-range {
+    display: block;
+    font-size: 10px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+  .vitals-footer {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--navy-mid);
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* ===== SUPPLEMENT DOSSIER ===== */
+  .supplement-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 14px;
+  }
+  .supp-card {
+    background: var(--navy-deep);
+    border: 1px solid var(--navy-mid);
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+    min-height: 130px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .supp-card:hover {
+    border-color: var(--gold);
+    background: var(--panel-light);
+    transform: translateY(-2px);
+  }
+  .supp-card.locked {
+    opacity: 0.55;
+    cursor: not-allowed;
+    border-style: dashed;
+    border-color: var(--red-dark);
+  }
+  .supp-card.locked::after {
+    content: "LOCKED";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--red);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    font-size: 14px;
+    background: var(--navy-deep);
+    padding: 4px 10px;
+    border: 1px solid var(--red);
+  }
+  .supp-card.unlocked { border-color: var(--red); background: rgba(231, 76, 60, 0.08); }
+
+  .supp-image {
+    height: 48px;
+    background: var(--panel-light);
+    border: 1px dashed var(--muted);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.1em;
+  }
+  .supp-name {
+    font-weight: 600;
+    color: var(--gold);
+    font-size: 14px;
+    line-height: 1.3;
+    margin-bottom: 6px;
+  }
+  .supp-teaser {
+    color: var(--ice);
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  /* ===== SUPPLEMENT MODAL ===== */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 22, 40, 0.92);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+  }
+  .modal-backdrop.active { display: flex; }
+  .modal {
+    background: var(--navy);
+    border: 2px solid var(--gold);
+    max-width: 620px;
+    width: 100%;
+    max-height: 88vh;
+    overflow-y: auto;
+    padding: 30px 36px;
+    position: relative;
+  }
+  .modal-close {
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    background: transparent;
+    border: none;
+    color: var(--gold);
+    font-size: 28px;
+    cursor: pointer;
+    font-weight: 300;
+  }
+  .modal-title {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    color: var(--gold);
+    font-size: 22px;
+    margin-bottom: 8px;
+    padding-right: 30px;
+  }
+  .modal-tagline {
+    color: var(--ice);
+    font-style: italic;
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+  .modal-image {
+    height: 140px;
+    background: var(--panel-light);
+    border: 1px dashed var(--muted);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+  }
+  .modal-section {
+    margin-bottom: 18px;
+  }
+  .modal-label {
+    color: var(--gold);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .modal-body {
+    color: var(--white);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .modal-body ul { margin: 6px 0 0 20px; }
+  .modal-body li { margin-bottom: 4px; }
+  .claim-quote {
+    background: var(--panel);
+    border-left: 3px solid var(--gold);
+    padding: 10px 14px;
+    font-style: italic;
+    color: var(--ice);
+    font-size: 13px;
+    margin-top: 6px;
+  }
+
+  /* ===== ACTIONS ===== */
+  .action-block {
+    background: var(--navy-deep);
+    border: 1px solid var(--navy-mid);
+    padding: 14px;
+    margin-bottom: 14px;
+  }
+  .action-block:last-child { margin-bottom: 0; }
+  .action-block h4 {
+    color: var(--gold);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .action-block p, .action-block li {
+    color: var(--ice);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .action-block ol { margin-left: 18px; }
+  .action-btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: var(--gold);
+    color: var(--navy-deep);
+    text-align: center;
+    text-decoration: none;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 13px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+  .action-btn:hover { background: #E8C275; }
+  .action-btn.primary {
+    background: var(--red);
+    color: var(--white);
+    font-size: 15px;
+    padding: 18px;
+  }
+  .action-btn.primary:hover { background: var(--red-dark); }
+  .action-btn.secondary {
+    background: var(--navy-mid);
+    color: var(--gold);
+    border: 1px solid var(--gold-dim);
+  }
+
+  /* ===== ATTENDING CALL OVERLAY ===== */
+  .attending-banner {
+    background: var(--red);
+    color: var(--white);
+    padding: 14px 20px;
+    margin-bottom: 14px;
+    display: none;
+    animation: slide-in 0.6s ease;
+  }
+  .attending-banner.active { display: block; }
+  @keyframes slide-in {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .attending-banner strong {
+    display: block;
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .attending-banner p {
+    font-style: italic;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  /* ===== FOOTER ===== */
+  .footer-note {
+    max-width: 1400px;
+    margin: 20px auto 0;
+    padding: 12px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="patient-header">
+  <div class="patient-id">
+    <span class="badge-er">ER BAY 7</span>
+    <div>
+      <div class="patient-name">MARCUS M., 22M</div>
+      <div class="patient-meta">ADMIT 02:47 | SCU ATHLETE | COLLAPSED DURING LATE TRAINING</div>
+    </div>
+  </div>
+  <select class="team-selector" id="teamSelect" onchange="localStorage.setItem('bb1_team', this.value); primeAudio();">
+    <option value="">-- select your team --</option>
+    <optgroup label="Alpha">
+      <option>Alpha 1</option><option>Alpha 2</option><option>Alpha 3</option><option>Alpha 4</option>
+    </optgroup>
+    <optgroup label="Bravo">
+      <option>Bravo 1</option><option>Bravo 2</option><option>Bravo 3</option><option>Bravo 4</option>
+    </optgroup>
+    <optgroup label="Charlie">
+      <option>Charlie 1</option><option>Charlie 2</option><option>Charlie 3</option><option>Charlie 4</option>
+    </optgroup>
+    <optgroup label="Delta">
+      <option>Delta 1</option><option>Delta 2</option><option>Delta 3</option><option>Delta 4</option>
+    </optgroup>
+  </select>
+</header>
+
+<!-- ===== GRID ===== -->
+<div class="chart-grid">
+
+  <!-- ========== LEFT: VITALS ========== -->
+  <section class="panel">
+    <div class="panel-title">Patient Vitals</div>
+
+    <div class="phase-tabs">
+      <button class="phase-tab active" data-phase="P1" onclick="showPhase('P1')">Phase 1</button>
+      <button class="phase-tab locked" data-phase="P2" onclick="showPhase('P2')">Phase 2</button>
+      <button class="phase-tab locked" data-phase="P3" onclick="showPhase('P3')">Phase 3</button>
+    </div>
+
+    <div id="vitals-body"></div>
+
+    <div class="vitals-footer">
+      Normal ranges shown below each value. Phase 2 and Phase 3 unlock when your instructor triggers each complication.
+    </div>
+  </section>
+
+  <!-- ========== MIDDLE: SUPPLEMENT DOSSIER ========== -->
+  <section class="panel">
+    <div class="panel-title">Supplement Dossier</div>
+    <div id="attending-call" class="attending-banner">
+      <strong>Attending on the line</strong>
+      <p>&ldquo;Marcus's blood sugar is 52. I'm about to push IV sugar. Do you agree with that call? I need your recommendation and the biochemical reasoning behind it. Four minutes.&rdquo;</p>
+    </div>
+    <div class="supplement-grid" id="supplement-grid"></div>
+    <div style="margin-top: 14px; font-size: 12px; color: var(--muted); font-style: italic;">
+      Click any bottle to read the label, claims, and ingredients. The unlabeled bottle unlocks when the instructor triggers Complication 2.
+    </div>
+  </section>
+
+  <!-- ========== RIGHT: ACTIONS ========== -->
+  <aside class="panel">
+    <div class="panel-title">Your Tools</div>
+
+    <div class="action-block">
+      <h4>1. Query Medi-Bot</h4>
+      <p>Open Medi-Bot in a new tab. Switch to <strong>Pro</strong> before you begin.</p>
+      <div style="height: 10px;"></div>
+      <a class="action-btn secondary" id="medibot-link" href="#" target="_blank" rel="noopener">Open Medi-Bot &#x2192;</a>
+    </div>
+
+    <div class="action-block">
+      <h4>2. The 4-Question Toolkit</h4>
+      <ol>
+        <li>What is the claim?</li>
+        <li>What is the mechanism?</li>
+        <li>What is the evidence?</li>
+        <li>What logical fallacies are present?</li>
+      </ol>
+    </div>
+
+    <div class="action-block">
+      <h4>3. Submit Battle Card</h4>
+      <p>Submit by <strong>0:45</strong>. One card per team. Scribe submits.</p>
+      <div style="height: 10px;"></div>
+      <a class="action-btn primary" id="battlecard-link" href="#" target="_blank" rel="noopener">Submit Battle Card &#x2192;</a>
+    </div>
+
+    <!-- Instructor Controls intentionally removed from the student-facing page.
+         Phase/attending/unlabeled reveals are driven by the Instructor Console
+         (BB1_Instructor_Console.html) via Firebase Realtime Database.
+         Students cannot advance state from their own laptops. -->
+    <div class="action-block" style="border-color: var(--navy-mid);">
+      <h4 style="color: var(--muted);">Synced with Instructor</h4>
+      <p style="font-size: 11px; color: var(--muted);">This chart updates live when the instructor advances the case. No action required from your team to stay in sync.</p>
+      <p id="sync-status" style="font-size: 10px; color: var(--muted); margin-top: 6px; font-family: 'JetBrains Mono', monospace;">Connecting...</p>
+    </div>
+  </aside>
+
+</div>
+
+<div class="footer-note">
+  BIOL 2 &middot; Boss Battle 1 &middot; ER Toxicology Crisis &middot; Friday 17 April 2026
+</div>
+
+<!-- ===== SUPPLEMENT MODAL ===== -->
+<div class="modal-backdrop" id="modal" onclick="if(event.target.id==='modal') closeModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <div class="modal-image" id="m-image">[IMAGE PLACEHOLDER]</div>
+    <div class="modal-title" id="m-title"></div>
+    <div class="modal-tagline" id="m-tagline"></div>
+
+    <div class="modal-section">
+      <div class="modal-label">Front-Label Claims</div>
+      <div class="claim-quote" id="m-claims"></div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-label">Back-Label Ingredients</div>
+      <div class="modal-body" id="m-ingredients"></div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-label">Reported Dose</div>
+      <div class="modal-body" id="m-dose"></div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-label">Regulatory Status</div>
+      <div class="modal-body" id="m-regulatory"></div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+// ============================================================
+// FIREBASE — shared state store for instructor-controlled reveals
+// ============================================================
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA0Xe_dnQ9-BpSWep5mRJr5WHvPQBRqo4E",
+  authDomain: "biol2-bb1.firebaseapp.com",
+  databaseURL: "https://biol2-bb1-default-rtdb.firebaseio.com",
+  projectId: "biol2-bb1",
+  storageBucket: "biol2-bb1.firebasestorage.app",
+  messagingSenderId: "987841003700",
+  appId: "1:987841003700:web:4637fc8b32e55b066957e1"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const db = getDatabase(fbApp);
+const stateRef = ref(db, 'bb1/state');
+
+// ============================================================
+// CONFIG — Medi-Bot Gem + Battle Card form URLs
+// ============================================================
+const MEDIBOT_GEM_URL = "https://gemini.google.com/gem/b5b2a7406d9e";
+const BATTLE_CARD_FORM_URL = "https://forms.gle/oENAD5Q1iC9BrZDQ7";
+
+document.getElementById('medibot-link').href = MEDIBOT_GEM_URL;
+document.getElementById('battlecard-link').href = BATTLE_CARD_FORM_URL;
+
+// ============================================================
+// VITALS DATA — three snapshots, one per phase
+// ============================================================
+const VITALS = {
+  P1: {
+    label: "Phase 1 - Initial Assessment (02:47)",
+    values: [
+      {name: "Heart Rate",      value: "142",      unit: "bpm",   range: "60-100",     level: "critical"},
+      {name: "Blood Pressure",  value: "148/94",   unit: "mmHg",  range: "<120/80",    level: "abnormal"},
+      {name: "Respiration",     value: "24",       unit: "br/min",range: "12-20",      level: "abnormal"},
+      {name: "Temperature",     value: "101.3",    unit: "F",     range: "97.0-99.5",  level: "abnormal"},
+      {name: "SpO2",            value: "96",       unit: "%",     range: ">=95",       level: "normal"},
+      {name: "Glucose",         value: "--",       unit: "mg/dL", range: "70-100",     level: "pending"},
+      {name: "Lactate",         value: "--",       unit: "mmol/L",range: "0.5-2.2",    level: "pending"},
+      {name: "Arterial pH",     value: "--",       unit: "",      range: "7.35-7.45",  level: "pending"}
+    ]
+  },
+  P2: {
+    label: "Phase 2 - Labs Back (03:02)",
+    values: [
+      {name: "Heart Rate",      value: "155",      unit: "bpm",   range: "60-100",     level: "critical"},
+      {name: "Blood Pressure",  value: "152/96",   unit: "mmHg",  range: "<120/80",    level: "abnormal"},
+      {name: "Respiration",     value: "26",       unit: "br/min",range: "12-20",      level: "abnormal"},
+      {name: "Temperature",     value: "101.5",    unit: "F",     range: "97.0-99.5",  level: "abnormal"},
+      {name: "SpO2",            value: "95",       unit: "%",     range: ">=95",       level: "normal"},
+      {name: "Glucose",         value: "52",       unit: "mg/dL", range: "70-100",     level: "critical"},
+      {name: "Lactate",         value: "8.2",      unit: "mmol/L",range: "0.5-2.2",    level: "critical"},
+      {name: "Arterial pH",     value: "7.28",     unit: "",      range: "7.35-7.45",  level: "critical"}
+    ]
+  },
+  P3: {
+    label: "Phase 3 - Worsening (03:16)",
+    values: [
+      {name: "Heart Rate",      value: "168",      unit: "bpm",   range: "60-100",     level: "critical"},
+      {name: "Blood Pressure",  value: "158/102",  unit: "mmHg",  range: "<120/80",    level: "critical"},
+      {name: "Respiration",     value: "30",       unit: "br/min",range: "12-20",      level: "critical"},
+      {name: "Temperature",     value: "101.8",    unit: "F",     range: "97.0-99.5",  level: "abnormal"},
+      {name: "SpO2",            value: "93",       unit: "%",     range: ">=95",       level: "critical"},
+      {name: "Glucose",         value: "48",       unit: "mg/dL", range: "70-100",     level: "critical"},
+      {name: "Lactate",         value: "9.6",      unit: "mmol/L",range: "0.5-2.2",    level: "critical"},
+      {name: "Arterial pH",     value: "7.26",     unit: "",      range: "7.35-7.45",  level: "critical"}
+    ]
+  }
+};
+
+function renderVitals(phase) {
+  const data = VITALS[phase];
+  const body = document.getElementById('vitals-body');
+  let html = "";
+  data.values.forEach(v => {
+    const levelClass = v.level === "normal" ? "" : v.level;
+    html += `
+      <div class="vital-row">
+        <div>
+          <div class="vital-label">${v.name}</div>
+          <span class="vital-range">normal: ${v.range} ${v.unit}</span>
+        </div>
+        <div class="vital-value ${levelClass}">${v.value}${v.value !== "--" ? " " + v.unit : ""}</div>
+      </div>
+    `;
+  });
+  body.innerHTML = html;
+}
+
+let unlockedPhases = ["P1"];
+function showPhase(phase) {
+  if (!unlockedPhases.includes(phase)) return;
+  document.querySelectorAll('.phase-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.phase === phase);
+  });
+  renderVitals(phase);
+}
+function unlockPhase(phase) {
+  if (!unlockedPhases.includes(phase)) unlockedPhases.push(phase);
+  document.querySelectorAll('.phase-tab').forEach(t => {
+    if (t.dataset.phase === phase) t.classList.remove('locked');
+  });
+  showPhase(phase);
+}
+
+// ============================================================
+// SUPPLEMENTS DATA
+// ============================================================
+const SUPPLEMENTS = [
+  {
+    id: "pre-workout",
+    name: "PowerStrike Pre-Workout",
+    teaser: "300 mg caffeine + beta-alanine",
+    tagline: "EXPLOSIVE ENERGY. LIMITLESS PUMP.",
+    claims: "\"Scientifically engineered to unleash peak performance. Powered by 300 mg pharmaceutical-grade caffeine, clinically dosed beta-alanine for muscle endurance, and citrulline malate for skin-tearing pumps.\"",
+    ingredients: `<ul>
+      <li><strong>Caffeine Anhydrous:</strong> 300 mg</li>
+      <li>Beta-Alanine: 2 g</li>
+      <li>Citrulline Malate: 3 g</li>
+      <li>Niacin (B3): 30 mg</li>
+      <li>Proprietary Focus Blend: 500 mg</li>
+    </ul>`,
+    dose: "Patient reports: 1 scoop pre-training (~22:00). Standard label dose.",
+    regulatory: "DSHEA-covered dietary supplement. No FDA pre-market review.",
+    locked: false
+  },
+  {
+    id: "fat-furnace",
+    name: "Fat Furnace Thermogenic",
+    teaser: "200 mg caffeine + capsaicin",
+    tagline: "BURN FAT. TORCH CALORIES. SHRED FAST.",
+    claims: "\"Clinically proven thermogenic formula. Accelerates metabolism, targets stubborn fat, and enhances energy expenditure up to 12%.\"",
+    ingredients: `<ul>
+      <li><strong>Caffeine Anhydrous:</strong> 200 mg</li>
+      <li>Capsaicin Extract (Capsimax): 100 mg</li>
+      <li>Green Tea Extract (EGCG): 150 mg</li>
+      <li>L-Carnitine: 500 mg</li>
+      <li>Bitter Orange Extract: 100 mg</li>
+    </ul>`,
+    dose: "Patient reports: 2 capsules around 23:00 'to cut down before the meet.'",
+    regulatory: "DSHEA-covered dietary supplement. Stimulant stack warning on label.",
+    locked: false
+  },
+  {
+    id: "stack-attack",
+    name: "Stack Attack Recovery Shake",
+    teaser: "Whey + creatine + taurine",
+    tagline: "REBUILD. RECOVER. REPEAT.",
+    claims: "\"Advanced recovery matrix. 25g premium whey isolate for lean muscle. Clinically dosed creatine for strength gains. Taurine for nitrogen retention.\"",
+    ingredients: `<ul>
+      <li>Whey Protein Isolate: 25 g</li>
+      <li><strong>Creatine Monohydrate: 3 g</strong></li>
+      <li>Taurine: 2 g</li>
+      <li>Lactose: &lt;1 g</li>
+      <li>Artificial Flavoring</li>
+    </ul>`,
+    dose: "Patient reports: 1 scoop post-training, daily for ~3 months.",
+    regulatory: "DSHEA-covered dietary supplement. Creatine is among the most-studied supplements.",
+    locked: false
+  },
+  {
+    id: "atp-maximizer",
+    name: "ATP Maximizer 3000",
+    teaser: "CoQ10 + mega-dose B-vitamins",
+    tagline: "MAXIMIZE CELLULAR ENERGY AT THE MITOCHONDRIAL LEVEL.",
+    claims: "\"Unlock your body's true energy potential. Supercharges the electron transport chain with pharmaceutical-grade CoQ10 and a proprietary B-vitamin complex. Cells produce dramatically more ATP. Feel the difference in 7 days.\"",
+    ingredients: `<ul>
+      <li><strong>CoQ10 (ubiquinone): 100 mg</strong></li>
+      <li>B1 (thiamine): 50 mg (~4,500% RDA)</li>
+      <li>B2, B3, B5, B6: 50 mg each (mega-dose)</li>
+      <li>B12 (cyanocobalamin): 50 mg (~83,000% RDA)</li>
+      <li>D-Pantothenic Acid: 25 mg</li>
+      <li>"Proprietary Mitochondrial Energy Matrix": 250 mg</li>
+    </ul>`,
+    dose: "Patient reports: 2 capsules twice daily for ~2 weeks.",
+    regulatory: "DSHEA-covered dietary supplement. No FDA review. Marketing claims are not verified.",
+    locked: false
+  },
+  {
+    id: "unlabeled",
+    name: "Unlabeled Bottle",
+    teaser: "No label. Friend supplied.",
+    tagline: "NO LABEL. NO CLAIMS. NO OVERSIGHT.",
+    claims: "[NO FRONT LABEL. White plastic bottle, no branding, no manufacturer, no lot number.]",
+    ingredients: `<ul>
+      <li><strong>Unknown.</strong></li>
+      <li>Patient reports a bitter taste and white-to-yellow capsules.</li>
+      <li>Friend described it as \"like pre-workout but stronger.\"</li>
+      <li><strong>No ingredient list exists on this bottle.</strong></li>
+    </ul>
+    <p style="margin-top: 8px; color: var(--gold); font-size: 12px;"><em>DSHEA allows DSHEA-exempt and unlabeled products to circulate without FDA pre-market review. This IS the regulatory gap you studied in Week 1.</em></p>`,
+    dose: "Patient reports: 2 capsules ~20 min before training, as instructed by friend.",
+    regulatory: "Unregulated. Possibly contains a banned substance.",
+    locked: true
+  }
+];
+
+function renderSupplements() {
+  const grid = document.getElementById('supplement-grid');
+  grid.innerHTML = SUPPLEMENTS.map(s => {
+    const lockedClass = s.locked ? "locked" : "";
+    const unlockedClass = (!s.locked && s.id === "unlabeled") ? "unlocked" : "";
+    return `
+      <div class="supp-card ${lockedClass} ${unlockedClass}" data-id="${s.id}" onclick="openSupplement('${s.id}')">
+        <div class="supp-image">[BOTTLE IMG: ${s.id}]</div>
+        <div>
+          <div class="supp-name">${s.name}</div>
+          <div class="supp-teaser">${s.teaser}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openSupplement(id) {
+  const s = SUPPLEMENTS.find(x => x.id === id);
+  if (!s || s.locked) return;
+  document.getElementById('m-image').textContent = `[BOTTLE IMAGE: ${s.name.toUpperCase()}]`;
+  document.getElementById('m-title').textContent = s.name;
+  document.getElementById('m-tagline').textContent = s.tagline;
+  document.getElementById('m-claims').innerHTML = s.claims;
+  document.getElementById('m-ingredients').innerHTML = s.ingredients;
+  document.getElementById('m-dose').textContent = s.dose;
+  document.getElementById('m-regulatory').textContent = s.regulatory;
+  document.getElementById('modal').classList.add('active');
+}
+function closeModal() { document.getElementById('modal').classList.remove('active'); }
+
+function unlockUnlabeled() {
+  const s = SUPPLEMENTS.find(x => x.id === "unlabeled");
+  if (s) s.locked = false;
+  renderSupplements();
+}
+
+function triggerAttendingCall() {
+  document.getElementById('attending-call').classList.add('active');
+}
+
+// ============================================================
+// STATE APPLICATION — idempotent UI update from Firebase state
+// ============================================================
+// Accepts a state object { phase, unlabeled, attending } and sets the UI
+// to match. Safe to call repeatedly, including on RESET back to Phase 1.
+function applyState(state) {
+  if (!state) state = { phase: "P1", unlabeled: false, attending: false };
+
+  // Reset the unlockedPhases array and re-lock phase tabs
+  unlockedPhases = ["P1"];
+  document.querySelectorAll('.phase-tab').forEach(t => {
+    if (t.dataset.phase === "P1") {
+      t.classList.remove('locked');
+    } else {
+      t.classList.add('locked');
+    }
+  });
+
+  // Unlock phases up to and including state.phase
+  if (state.phase === "P2" || state.phase === "P3") unlockPhase("P2");
+  if (state.phase === "P3") unlockPhase("P3");
+  showPhase(state.phase || "P1");
+
+  // Unlabeled bottle
+  const unlabeledSupp = SUPPLEMENTS.find(x => x.id === "unlabeled");
+  if (unlabeledSupp) {
+    unlabeledSupp.locked = !state.unlabeled;
+    renderSupplements();
+  }
+
+  // Attending banner
+  const banner = document.getElementById('attending-call');
+  if (banner) {
+    if (state.attending) banner.classList.add('active');
+    else banner.classList.remove('active');
+  }
+}
+
+// ============================================================
+// AUDIO — Web Audio API tones for state-change cues
+// ============================================================
+// Browsers block audio until the user interacts with the page. The team
+// selector's onchange handler calls primeAudio() which creates (and if
+// needed, resumes) the AudioContext. After that, every forward state
+// change plays a short beep sequence.
+let audioCtx = null;
+let audioReady = false;
+
+function primeAudio() {
+  try {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const wasReady = audioReady;
+    audioReady = true;
+    // Play a tiny two-tone confirmation the first time audio is primed, so
+    // the student knows their speakers are live. Also doubles as a pre-flight
+    // check during the instructor's sound test.
+    if (!wasReady) {
+      beep(660, 80, 0.14, 0);
+      beep(990, 100, 0.14, 90);
+    }
+  } catch (e) {
+    console.warn("Audio init failed:", e);
+  }
+}
+
+// Plays one tone at freq Hz, lasting durationMs, with a short attack/decay
+// envelope so it doesn't click. volume 0-1.
+function beep(freq, durationMs, volume = 0.2, startOffsetMs = 0, waveform = 'sine') {
+  if (!audioReady || !audioCtx) return;
+  const now = audioCtx.currentTime + (startOffsetMs / 1000);
+  const dur = durationMs / 1000;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = waveform;
+  osc.frequency.value = freq;
+  // Attack/decay envelope (5ms attack, linear decay to near-zero)
+  gain.gain.setValueAtTime(0, now);
+  gain.gain.linearRampToValueAtTime(volume, now + 0.005);
+  gain.gain.linearRampToValueAtTime(0.0001, now + dur);
+  osc.connect(gain).connect(audioCtx.destination);
+  osc.start(now);
+  osc.stop(now + dur + 0.02);
+}
+
+function soundPhase2() {
+  // Single medium beep: "new lab results in"
+  beep(880, 180, 0.22, 0);
+}
+
+function soundPhase3() {
+  // Triple rising beep: "code escalation"
+  beep(880, 140, 0.22, 0);
+  beep(1100, 140, 0.22, 160);
+  beep(1320, 220, 0.26, 320);
+}
+
+function soundUnlabeled() {
+  // Two-tone discovery chime
+  beep(1200, 150, 0.18, 0, 'sine');
+  beep(1800, 220, 0.14, 80, 'sine');
+}
+
+function soundAttending() {
+  // Overhead-page three-tone "bing bong bing"
+  beep(660, 260, 0.24, 0, 'triangle');
+  beep(440, 260, 0.24, 280, 'triangle');
+  beep(660, 320, 0.26, 560, 'triangle');
+}
+
+// ============================================================
+// FIREBASE LISTENER — auto-update UI when instructor pushes state
+// ============================================================
+// previousState + isFirstSnapshot let us play sounds ONLY on forward
+// transitions (P1→P2, P2→P3, unlabeled false→true, attending false→true).
+// The very first onValue fire on page load does NOT play sound, and any
+// transition backward (Reset) also does NOT play sound.
+let previousState = null;
+let isFirstSnapshot = true;
+
+const syncStatus = document.getElementById('sync-status');
+onValue(stateRef, snapshot => {
+  const state = snapshot.val() || { phase: "P1", unlabeled: false, attending: false };
+  applyState(state);
+
+  // Sound logic: only on forward transitions, only after first snapshot
+  if (!isFirstSnapshot && audioReady) {
+    const prev = previousState || { phase: "P1", unlabeled: false, attending: false };
+    // Phase forward transitions
+    if (prev.phase === "P1" && state.phase === "P2") soundPhase2();
+    else if (prev.phase === "P1" && state.phase === "P3") { soundPhase2(); setTimeout(soundPhase3, 500); }
+    else if (prev.phase === "P2" && state.phase === "P3") soundPhase3();
+    // Flag forward transitions
+    if (!prev.unlabeled && state.unlabeled) soundUnlabeled();
+    if (!prev.attending && state.attending) soundAttending();
+  }
+
+  previousState = state;
+  isFirstSnapshot = false;
+
+  if (syncStatus) {
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    const ss = String(now.getSeconds()).padStart(2, '0');
+    syncStatus.textContent = `Live. Last update ${hh}:${mm}:${ss}.`;
+    syncStatus.style.color = "var(--green)";
+  }
+}, error => {
+  if (syncStatus) {
+    syncStatus.textContent = "Connection error. Ask instructor.";
+    syncStatus.style.color = "var(--red)";
+  }
+  console.error("Firebase listen failed:", error);
+});
+
+// ============================================================
+// KEYBOARD — only Escape for modal close. No game-state keys on
+// the student version; reveals come from Firebase only.
+// ============================================================
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.key === 'Escape') closeModal();
+});
+
+// ============================================================
+// EXPOSE FUNCTIONS TO GLOBAL SCOPE
+// Inline onclick handlers (showPhase, openSupplement, closeModal) need
+// these to be accessible from window. Module scripts are scoped, so we
+// explicitly attach them.
+// ============================================================
+window.showPhase = showPhase;
+window.openSupplement = openSupplement;
+window.closeModal = closeModal;
+window.primeAudio = primeAudio;
+
+// ============================================================
+// RESTORE TEAM FROM LOCALSTORAGE
+// ============================================================
+const savedTeam = localStorage.getItem('bb1_team');
+if (savedTeam) document.getElementById('teamSelect').value = savedTeam;
+
+// ============================================================
+// INIT
+// ============================================================
+renderVitals('P1');
+renderSupplements();
+</script>
+
+</body>
+</html>
