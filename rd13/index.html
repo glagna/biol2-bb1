@@ -658,6 +658,7 @@
         currentQ = state.currentQ || 1;
         answerKey = state.answerKey || {};
         updatePhaseDisplay();
+        updateScoreDisplay();   // recompute total when answer key changes
       });
 
       const teamRef = ref(db, `rd13/teams/${selectedTeam}`);
@@ -761,7 +762,7 @@
       });
     }
 
-    function buildRevealPhase() {
+    async function buildRevealPhase() {
       const correct = answerKey[`q${currentQ}`] || '?';
       const q = questions.find(x => x.q === currentQ);
       if (!q) return;
@@ -769,31 +770,28 @@
       document.getElementById('revealCorrect').textContent = `CORRECT: ${correct}`;
       document.getElementById('correctLetter').textContent = correct;
 
-      get(ref(db, `rd13/teams/${selectedTeam}/answers/q${currentQ}`)).then(snap => {
-        const yourAnswer = snap.val() || '-';
-        document.getElementById('yourLetter').textContent = yourAnswer;
+      const ansSnap = await get(ref(db, `rd13/teams/${selectedTeam}/answers/q${currentQ}`));
+      const yourAnswer = ansSnap.val() || '-';
+      document.getElementById('yourLetter').textContent = yourAnswer;
 
-        const isCorrect = yourAnswer === correct;
-        const yourBox = document.getElementById('yourBox');
-        yourBox.classList.remove('correct', 'wrong');
-        yourBox.classList.add(isCorrect ? 'correct' : 'wrong');
+      const isCorrect = yourAnswer === correct;
+      const yourBox = document.getElementById('yourBox');
+      yourBox.classList.remove('correct', 'wrong');
+      yourBox.classList.add(isCorrect ? 'correct' : 'wrong');
 
-        const pts = computePoints(yourAnswer, correct, currentQ);
-        const banner = document.getElementById('pointsBanner');
-        banner.classList.remove('correct', 'wrong');
-        banner.classList.add(isCorrect ? 'correct' : 'wrong');
-        banner.textContent = isCorrect ? `+${pts} POINTS` : `${pts > 0 ? '+' : '-'}${Math.abs(pts)} POINTS`;
-      });
+      const pts = await computePoints(yourAnswer, correct, currentQ);
+      const banner = document.getElementById('pointsBanner');
+      banner.classList.remove('correct', 'wrong');
+      banner.classList.add(isCorrect ? 'correct' : 'wrong');
+      banner.textContent = isCorrect ? `+${pts} POINTS` : `${pts > 0 ? '+' : '-'}${Math.abs(pts)} POINTS`;
     }
 
-    function computePoints(answer, correct, qNum) {
-      get(ref(db, `rd13/teams/${selectedTeam}/bets/q${qNum}`)).then(snap => {
-        const bet = snap.val() || 0;
-        let pts = (answer === correct ? bet : -bet);
-        if (qNum === 8) pts *= 2;
-        return pts;
-      });
-      return 0;
+    async function computePoints(answer, correct, qNum) {
+      const snap = await get(ref(db, `rd13/teams/${selectedTeam}/bets/q${qNum}`));
+      const bet = snap.val() || 0;
+      let pts = (answer === correct ? bet : -bet);
+      if (qNum === 8) pts *= 2;
+      return pts;
     }
 
     function updateScoreDisplay() {

@@ -240,9 +240,9 @@
                 const correct = answerKey[`q${q}`];
 
                 if (bet && answer && correct) {
-                    const isCorrect = answer === correct ? 1 : 0;
+                    const sign = answer === correct ? 1 : -1;
                     const multiplier = q === 8 ? 2 : 1;
-                    const points = bet * isCorrect * multiplier;
+                    const points = bet * sign * multiplier;
                     total += points;
                 }
             }
