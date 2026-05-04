@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RD13 - The Wager Arena</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Cormorant+Garamond:ital@0;1&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --navy-deep: #0f2440;
+      --navy-2: #1a3a5c;
+      --gold: #d4af37;
+      --gold-dark: #b8860b;
+      --cream: #fdf6ec;
+      --cream-2: #f5ebd6;
+      --green: #5fa67e;
+      --red: #c0392b;
+      --white: #ffffff;
+      --muted: #8b9db0;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--navy-deep) 0%, var(--navy-2) 100%);
+      color: var(--cream);
+      font-family: 'IBM Plex Sans', sans-serif;
+      min-height: 100vh;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      text-align: center;
+      margin-bottom: 28px;
+      border-bottom: 2px solid var(--gold);
+      padding-bottom: 16px;
+    }
+
+    .title {
+      font-family: 'Cinzel', serif;
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .subtitle {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-style: italic;
+      color: var(--cream-2);
+      letter-spacing: 0.04em;
+    }
+
+    /* ===== STARTUP SCREEN ===== */
+    .startup-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      gap: 28px;
+      text-align: center;
+    }
+
+    .startup-screen.hidden { display: none; }
+
+    .compass-icon {
+      width: 80px;
+      height: 80px;
+      border: 3px solid var(--gold);
+      border-radius: 50%;
+      position: relative;
+      animation: spin 3s linear infinite;
+    }
+
+    .compass-icon::before {
+      content: '';
+      position: absolute;
+      width: 4px;
+      height: 20px;
+      background: var(--gold);
+      top: 8px;
+      left: 50%;
+      transform: translateX(-2px);
+    }
+
+    .compass-icon::after {
+      content: '';
+      position: absolute;
+      width: 4px;
+      height: 14px;
+      background: var(--cream);
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-2px);
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .startup-text {
+      font-size: 18px;
+      color: var(--cream-2);
+      font-weight: 500;
+      line-height: 1.6;
+    }
+
+    .team-picker {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      width: 100%;
+    }
+
+    .team-btn {
+      padding: 12px 8px;
+      background: var(--navy-2);
+      border: 2px solid var(--gold-dark);
+      color: var(--cream);
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+      border-radius: 4px;
+    }
+
+    .team-btn:hover {
+      background: var(--gold-dark);
+      color: var(--navy-deep);
+      border-color: var(--gold);
+      transform: scale(1.05);
+    }
+
+    .enter-btn {
+      padding: 16px 32px;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+      border: none;
+      color: var(--navy-deep);
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      font-size: 18px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      border-radius: 6px;
+      transition: transform 0.2s;
+    }
+
+    .enter-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .enter-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* ===== GAME SCREEN ===== */
+    .game-screen { display: none; flex: 1; flex-direction: column; }
+    .game-screen.active { display: flex; }
+
+    .team-header {
+      background: rgba(26, 58, 92, 0.7);
+      border: 1px solid var(--gold-dark);
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .team-header .team-id {
+      font-family: 'Cinzel', serif;
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--gold);
+    }
+
+    .team-header .score {
+      text-align: right;
+      font-size: 14px;
+      color: var(--cream-2);
+    }
+
+    .team-header .score .label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* ===== PHASE: LOBBY ===== */
+    .phase-lobby {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      text-align: center;
+    }
+
+    .phase-lobby.hidden { display: none; }
+
+    .lobby-message {
+      font-size: 22px;
+      color: var(--cream);
+      font-weight: 500;
+    }
+
+    .lobby-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid var(--gold-dark);
+      border-top: 4px solid var(--gold);
+      border-radius: 50%;
+      animation: spin 1.5s linear infinite;
+    }
+
+    /* ===== PHASE: WAGER ===== */
+    .phase-wager {
+      display: none;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .phase-wager.active { display: flex; }
+
+    .question-number {
+      font-family: 'Cinzel', serif;
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--gold);
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .wager-prompt {
+      font-size: 18px;
+      color: var(--cream);
+      text-align: center;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .double-payout-banner {
+      background: linear-gradient(135deg, var(--red) 0%, #8b0000 100%);
+      color: var(--white);
+      padding: 12px;
+      text-align: center;
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: 0.1em;
+      border-radius: 4px;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+    }
+
+    .wager-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .wager-chip {
+      padding: 20px 12px;
+      background: var(--navy-2);
+      border: 3px solid var(--gold-dark);
+      color: var(--cream);
+      font-family: 'Cinzel', serif;
+      font-weight: 900;
+      font-size: 28px;
+      cursor: pointer;
+      transition: all 0.3s;
+      border-radius: 8px;
+      text-align: center;
+      position: relative;
+    }
+
+    .wager-chip:hover:not(:disabled) {
+      background: var(--gold-dark);
+      color: var(--navy-deep);
+      border-color: var(--gold);
+      transform: scale(1.08);
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+    }
+
+    .wager-chip:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* ===== PHASE: ANSWER ===== */
+    .phase-answer {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .phase-answer.active { display: flex; }
+
+    .answer-prompt {
+      font-size: 18px;
+      color: var(--cream);
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .question-stem {
+      background: rgba(26, 58, 92, 0.5);
+      border: 1px solid var(--gold-dark);
+      padding: 16px;
+      border-radius: 4px;
+      font-size: 16px;
+      color: var(--cream);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .answer-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .answer-btn {
+      padding: 16px 12px;
+      background: var(--navy-2);
+      border: 2px solid var(--gold-dark);
+      color: var(--cream);
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+      border-radius: 4px;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .answer-btn:hover:not(:disabled) {
+      background: var(--gold-dark);
+      color: var(--navy-deep);
+      border-color: var(--gold);
+      transform: scale(1.05);
+    }
+
+    .answer-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .answer-letter {
+      display: block;
+      font-size: 24px;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+
+    .answer-text {
+      display: block;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    /* ===== PHASE: REVEAL ===== */
+    .phase-reveal {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+    }
+
+    .phase-reveal.active { display: flex; }
+
+    .reveal-correct {
+      font-family: 'Cinzel', serif;
+      font-size: 20px;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+    }
+
+    .reveal-letters {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .letter-box {
+      padding: 20px;
+      border: 2px solid var(--gold-dark);
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .letter-box.correct {
+      background: rgba(95, 166, 126, 0.3);
+      border-color: var(--green);
+    }
+
+    .letter-box.wrong {
+      background: rgba(192, 57, 43, 0.3);
+      border-color: var(--red);
+    }
+
+    .letter-box .label {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 6px;
+    }
+
+    .letter-box .letter {
+      font-family: 'Cinzel', serif;
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--cream);
+    }
+
+    .points-banner {
+      font-family: 'Cinzel', serif;
+      font-size: 24px;
+      font-weight: 900;
+      text-align: center;
+      padding: 16px;
+      border-radius: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .points-banner.correct {
+      background: linear-gradient(135deg, var(--green) 0%, #3d8559 100%);
+      color: var(--white);
+    }
+
+    .points-banner.wrong {
+      background: linear-gradient(135deg, var(--red) 0%, #8b0000 100%);
+      color: var(--white);
+    }
+
+    /* ===== LOCKED STAMP ===== */
+    .locked-stamp {
+      display: none;
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-15deg);
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+      color: var(--navy-deep);
+      padding: 12px 24px;
+      font-family: 'Cinzel', serif;
+      font-weight: 900;
+      font-size: 18px;
+      letter-spacing: 0.15em;
+      border: 3px solid var(--gold);
+      border-radius: 8px;
+      animation: stampSlam 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 1000;
+    }
+
+    .locked-stamp.show { display: block; }
+
+    @keyframes stampSlam {
+      0% { transform: translateX(-50%) rotate(-30deg) scale(0.5); opacity: 0; }
+      50% { transform: translateX(-50%) rotate(-15deg) scale(1.1); }
+      100% { transform: translateX(-50%) rotate(-15deg) scale(1); opacity: 1; }
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: rgba(26, 58, 92, 0.7);
+      border-top: 1px solid var(--gold-dark);
+      padding: 12px 16px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--cream-2);
+      margin-top: auto;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    @media (max-width: 600px) {
+      .title { font-size: 24px; }
+      .subtitle { font-size: 16px; }
+      .wager-chip { font-size: 24px; padding: 16px 8px; }
+      .answer-buttons { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="title">RD13</div>
+      <div class="subtitle">The Wager Arena</div>
+    </header>
+
+    <!-- STARTUP SCREEN -->
+    <div class="startup-screen" id="startupScreen">
+      <div class="compass-icon"></div>
+      <div class="startup-text">Choose Your Team</div>
+      <div class="team-picker" id="teamPicker"></div>
+      <button class="enter-btn" id="enterBtn" disabled>Enter the Arena</button>
+    </div>
+
+    <!-- GAME SCREEN -->
+    <div class="game-screen" id="gameScreen">
+      <div class="team-header">
+        <div class="team-id" id="teamDisplay">Team A1</div>
+        <div class="score">
+          <span class="label">Total</span>
+          <div id="totalScore">0</div>
+        </div>
+      </div>
+
+      <!-- LOBBY -->
+      <div class="phase-lobby" id="phaseLobby">
+        <div class="lobby-spinner"></div>
+        <div class="lobby-message">Waiting for instructor to open the round...</div>
+      </div>
+
+      <!-- WAGER -->
+      <div class="phase-wager" id="phaseWager">
+        <div class="question-number" id="qNum">Q1</div>
+        <div class="wager-prompt">PLACE YOUR BET</div>
+        <div class="double-payout-banner" id="doubleBanner" style="display:none;">Q8 PAYS DOUBLE</div>
+        <div class="wager-buttons" id="wagerButtons"></div>
+      </div>
+
+      <!-- ANSWER -->
+      <div class="phase-answer" id="phaseAnswer">
+        <div class="question-number" id="ansQNum">Q1</div>
+        <div class="answer-prompt">YOUR CALL</div>
+        <div class="question-stem" id="questionStem"></div>
+        <div class="answer-buttons" id="answerButtons"></div>
+      </div>
+
+      <!-- REVEAL -->
+      <div class="phase-reveal" id="phaseReveal">
+        <div class="reveal-correct" id="revealCorrect">CORRECT ANSWER</div>
+        <div class="reveal-letters">
+          <div class="letter-box" id="correctBox">
+            <div class="label">Correct</div>
+            <div class="letter" id="correctLetter">A</div>
+          </div>
+          <div class="letter-box" id="yourBox">
+            <div class="label">Your Answer</div>
+            <div class="letter" id="yourLetter">B</div>
+          </div>
+        </div>
+        <div class="points-banner" id="pointsBanner">+3 POINTS</div>
+      </div>
+    </div>
+  </div>
+
+  <footer id="footerText">Team A1 • Total 0 • Rank 1/16</footer>
+  <div class="locked-stamp" id="lockedStamp"></div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getDatabase, ref, set, get, onValue } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA0Xe_dnQ9-BpSWep5mRJr5WHvPQBRqo4E",
+      authDomain: "biol2-bb1.firebaseapp.com",
+      databaseURL: "https://biol2-bb1-default-rtdb.firebaseio.com",
+      projectId: "biol2-bb1",
+      storageBucket: "biol2-bb1.firebasestorage.app",
+      messagingSenderId: "987841003700",
+      appId: "1:987841003700:web:4637fc8b32e55b066957e1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let questions = [];
+    let selectedTeam = localStorage.getItem('rd13Team') || null;
+    let currentPhase = 'lobby';
+    let currentQ = 0;
+    let answerKey = {};
+    let debouncing = { bet: false, answer: false };
+
+    // Load questions
+    async function loadQuestions() {
+      try {
+        const resp = await fetch('rd13-questions.json');
+        questions = await resp.json();
+      } catch (e) {
+        console.error('Failed to load questions:', e);
+        questions = [];
+      }
+    }
+
+    // Team picker UI
+    function initTeamPicker() {
+      const picker = document.getElementById('teamPicker');
+      const teams = ['A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'B3', 'B4', 'C1', 'C2', 'C3', 'C4', 'D1', 'D2', 'D3', 'D4'];
+      teams.forEach(t => {
+        const btn = document.createElement('button');
+        btn.className = 'team-btn';
+        btn.textContent = t;
+        btn.onclick = () => selectTeam(t);
+        picker.appendChild(btn);
+      });
+    }
+
+    function selectTeam(team) {
+      selectedTeam = team;
+      localStorage.setItem('rd13Team', team);
+      document.getElementById('enterBtn').disabled = false;
+    }
+
+    document.getElementById('enterBtn').onclick = () => {
+      if (!selectedTeam) return;
+      document.getElementById('startupScreen').classList.add('hidden');
+      document.getElementById('gameScreen').classList.add('active');
+      updateTeamHeader();
+      startListening();
+    };
+
+    function updateTeamHeader() {
+      document.getElementById('teamDisplay').textContent = `Team ${selectedTeam}`;
+    }
+
+    // Listen to game state + compute scores
+    function startListening() {
+      const stateRef = ref(db, 'rd13/state');
+      onValue(stateRef, (snap) => {
+        const state = snap.val() || {};
+        currentPhase = state.phase || 'lobby';
+        currentQ = state.currentQ || 1;
+        answerKey = state.answerKey || {};
+        updatePhaseDisplay();
+      });
+
+      const teamRef = ref(db, `rd13/teams/${selectedTeam}`);
+      onValue(teamRef, () => {
+        updateScoreDisplay();
+      });
+    }
+
+    function updatePhaseDisplay() {
+      // Hide all phases
+      document.getElementById('phaseLobby').classList.remove('active');
+      document.getElementById('phaseWager').classList.remove('active');
+      document.getElementById('phaseAnswer').classList.remove('active');
+      document.getElementById('phaseReveal').classList.remove('active');
+
+      if (currentPhase === 'lobby') {
+        document.getElementById('phaseLobby').classList.add('active');
+      } else if (currentPhase === 'wager') {
+        buildWagerPhase();
+        document.getElementById('phaseWager').classList.add('active');
+      } else if (currentPhase === 'answer') {
+        buildAnswerPhase();
+        document.getElementById('phaseAnswer').classList.add('active');
+      } else if (currentPhase === 'reveal') {
+        buildRevealPhase();
+        document.getElementById('phaseReveal').classList.add('active');
+      }
+    }
+
+    function buildWagerPhase() {
+      document.getElementById('qNum').textContent = `Q${currentQ}`;
+      const q = questions.find(x => x.q === currentQ);
+      const dblBanner = document.getElementById('doubleBanner');
+      if (q && q.doublePayout) {
+        dblBanner.style.display = 'block';
+      } else {
+        dblBanner.style.display = 'none';
+      }
+
+      const btns = document.getElementById('wagerButtons');
+      btns.innerHTML = '';
+      [1, 2, 3].forEach(val => {
+        const btn = document.createElement('button');
+        btn.className = 'wager-chip';
+        btn.textContent = val;
+        btn.onclick = () => placeBet(val, btn);
+        btns.appendChild(btn);
+      });
+    }
+
+    function placeBet(val, btn) {
+      if (debouncing.bet) return;
+      debouncing.bet = true;
+      const betRef = ref(db, `rd13/teams/${selectedTeam}/bets/q${currentQ}`);
+      get(betRef).then(snap => {
+        if (snap.exists()) {
+          showStamp(`WAGER LOCKED: ${val}`);
+          debouncing.bet = false;
+          return;
+        }
+        set(betRef, val).then(() => {
+          showStamp(`WAGER LOCKED: ${val}`);
+          document.querySelectorAll('.wager-chip').forEach(b => b.disabled = true);
+          debouncing.bet = false;
+        }).catch(() => { debouncing.bet = false; });
+      });
+    }
+
+    function buildAnswerPhase() {
+      document.getElementById('ansQNum').textContent = `Q${currentQ}`;
+      const q = questions.find(x => x.q === currentQ);
+      if (!q) return;
+
+      document.getElementById('questionStem').textContent = q.stem;
+      const btns = document.getElementById('answerButtons');
+      btns.innerHTML = '';
+      ['A', 'B', 'C', 'D'].forEach(letter => {
+        const btn = document.createElement('button');
+        btn.className = 'answer-btn';
+        btn.innerHTML = `<span class="answer-letter">${letter}</span><span class="answer-text">${q.options[letter]}</span>`;
+        btn.onclick = () => placeAnswer(letter, btn);
+        btns.appendChild(btn);
+      });
+    }
+
+    function placeAnswer(letter, btn) {
+      if (debouncing.answer) return;
+      debouncing.answer = true;
+      const ansRef = ref(db, `rd13/teams/${selectedTeam}/answers/q${currentQ}`);
+      get(ansRef).then(snap => {
+        if (snap.exists()) {
+          showStamp(`ANSWER LOCKED: ${snap.val()}`);
+          debouncing.answer = false;
+          return;
+        }
+        set(ansRef, letter).then(() => {
+          showStamp(`ANSWER LOCKED: ${letter}`);
+          document.querySelectorAll('.answer-btn').forEach(b => b.disabled = true);
+          debouncing.answer = false;
+        }).catch(() => { debouncing.answer = false; });
+      });
+    }
+
+    function buildRevealPhase() {
+      const correct = answerKey[`q${currentQ}`] || '?';
+      const q = questions.find(x => x.q === currentQ);
+      if (!q) return;
+
+      document.getElementById('revealCorrect').textContent = `CORRECT: ${correct}`;
+      document.getElementById('correctLetter').textContent = correct;
+
+      get(ref(db, `rd13/teams/${selectedTeam}/answers/q${currentQ}`)).then(snap => {
+        const yourAnswer = snap.val() || '-';
+        document.getElementById('yourLetter').textContent = yourAnswer;
+
+        const isCorrect = yourAnswer === correct;
+        const yourBox = document.getElementById('yourBox');
+        yourBox.classList.remove('correct', 'wrong');
+        yourBox.classList.add(isCorrect ? 'correct' : 'wrong');
+
+        const pts = computePoints(yourAnswer, correct, currentQ);
+        const banner = document.getElementById('pointsBanner');
+        banner.classList.remove('correct', 'wrong');
+        banner.classList.add(isCorrect ? 'correct' : 'wrong');
+        banner.textContent = isCorrect ? `+${pts} POINTS` : `${pts > 0 ? '+' : '-'}${Math.abs(pts)} POINTS`;
+      });
+    }
+
+    function computePoints(answer, correct, qNum) {
+      get(ref(db, `rd13/teams/${selectedTeam}/bets/q${qNum}`)).then(snap => {
+        const bet = snap.val() || 0;
+        let pts = (answer === correct ? bet : -bet);
+        if (qNum === 8) pts *= 2;
+        return pts;
+      });
+      return 0;
+    }
+
+    function updateScoreDisplay() {
+      computeTeamScore(selectedTeam).then(score => {
+        document.getElementById('totalScore').textContent = score;
+      });
+    }
+
+    async function computeTeamScore(team) {
+      const betSnap = await get(ref(db, `rd13/teams/${team}/bets`));
+      const ansSnap = await get(ref(db, `rd13/teams/${team}/answers`));
+      const bets = betSnap.val() || {};
+      const answers = ansSnap.val() || {};
+
+      let total = 0;
+      for (let i = 1; i <= 8; i++) {
+        const q = `q${i}`;
+        const bet = bets[q] || 0;
+        const ans = answers[q];
+        const correct = answerKey[q];
+        if (ans && correct) {
+          const isCorrect = ans === correct;
+          let pts = isCorrect ? bet : -bet;
+          if (i === 8) pts *= 2;
+          total += pts;
+        }
+      }
+      return total;
+    }
+
+    function showStamp(text) {
+      const stamp = document.getElementById('lockedStamp');
+      stamp.textContent = text;
+      stamp.classList.add('show');
+      setTimeout(() => stamp.classList.remove('show'), 2000);
+    }
+
+    // Init
+    loadQuestions().then(() => {
+      if (selectedTeam) {
+        document.getElementById('startupScreen').classList.add('hidden');
+        document.getElementById('gameScreen').classList.add('active');
+        updateTeamHeader();
+        startListening();
+      } else {
+        initTeamPicker();
+      }
+    });
+  </script>
+</body>
+</html>

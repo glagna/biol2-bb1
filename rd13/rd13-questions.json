@@ -1,0 +1,99 @@
+[
+  {
+    "q": 1,
+    "category": "DNA structure",
+    "stem": "What two molecules form the backbone of a DNA strand?",
+    "options": {
+      "A": "Sugar (deoxyribose) and phosphate",
+      "B": "Adenine and thymine",
+      "C": "Ribose and uracil",
+      "D": "Hydrogen and nitrogen"
+    },
+    "correct": "A"
+  },
+  {
+    "q": 2,
+    "category": "DNA structure",
+    "stem": "True or False — In DNA, adenine pairs with uracil.",
+    "options": {
+      "A": "True. A pairs with U in DNA and RNA.",
+      "B": "False. A pairs with T in DNA; uracil replaces thymine in RNA only.",
+      "C": "True, but only at high temperatures.",
+      "D": "False. A pairs with G in DNA."
+    },
+    "correct": "B"
+  },
+  {
+    "q": 3,
+    "category": "Central dogma",
+    "stem": "What is the direction of information flow in the central dogma?",
+    "options": {
+      "A": "RNA → DNA → Protein",
+      "B": "DNA → Protein → RNA",
+      "C": "DNA → RNA → Protein",
+      "D": "Protein → DNA → RNA"
+    },
+    "correct": "C"
+  },
+  {
+    "q": 4,
+    "category": "Central dogma",
+    "stem": "Where in the eukaryotic cell does translation occur?",
+    "options": {
+      "A": "Inside the nucleus",
+      "B": "On the nuclear envelope",
+      "C": "Inside the mitochondria",
+      "D": "In the cytoplasm, at ribosomes"
+    },
+    "correct": "D"
+  },
+  {
+    "q": 5,
+    "category": "Central dogma",
+    "stem": "What is a codon, and how many nucleotides does it contain?",
+    "options": {
+      "A": "A 3-nucleotide unit on mRNA that specifies one amino acid",
+      "B": "A 2-nucleotide unit on tRNA that pairs with mRNA",
+      "C": "A single base on DNA that codes for one amino acid",
+      "D": "The full mRNA sequence that codes for an entire protein"
+    },
+    "correct": "A"
+  },
+  {
+    "q": 6,
+    "category": "Mutations",
+    "stem": "A drug binds the bacterial ribosome and blocks translation. mRNA is made normally. What outcome do you predict?",
+    "options": {
+      "A": "Both mRNA and protein are produced normally",
+      "B": "mRNA is present, but the protein it codes for is not made",
+      "C": "mRNA is destroyed by the drug, protein is not made",
+      "D": "Protein is made but cannot fold correctly"
+    },
+    "correct": "B"
+  },
+  {
+    "q": 7,
+    "category": "Mutations",
+    "stem": "A point mutation deletes the START codon (ATG) of a gene. RNA polymerase still transcribes it. What happens to the protein?",
+    "options": {
+      "A": "The protein is made normally because RNA polymerase transcribed the gene",
+      "B": "The protein is made but truncated at the second amino acid",
+      "C": "No functional protein is made; the ribosome has no signal to begin translation",
+      "D": "The protein is made but with a different first amino acid"
+    },
+    "correct": "C"
+  },
+  {
+    "q": 8,
+    "category": "L1 callback (2x payout)",
+    "stem": "Where does the electron transport chain occur?",
+    "options": {
+      "A": "Cytoplasm",
+      "B": "Mitochondrial matrix",
+      "C": "Outer mitochondrial membrane",
+      "D": "Inner mitochondrial membrane"
+    },
+    "correct": "D",
+    "doublePayout": true
+  }
+]
