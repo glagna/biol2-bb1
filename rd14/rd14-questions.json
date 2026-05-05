@@ -1,0 +1,75 @@
+[
+  {
+    "q": 1,
+    "category": "Mutations",
+    "stem": "A mutation converts the start codon ATG to ATC. The most likely consequence is:",
+    "options": {
+      "A": "Translation begins at a different codon",
+      "B": "The first amino acid is valine instead of methionine",
+      "C": "Translation does not initiate; no protein is made",
+      "D": "The mRNA is degraded before translation"
+    },
+    "correct": "C"
+  },
+  {
+    "q": 2,
+    "category": "Sickle cell genetics",
+    "stem": "In heterozygote advantage, the heterozygote HbAS shows a survival benefit under malaria-endemic conditions because:",
+    "options": {
+      "A": "The heterozygote is homozygous normal and immune to malaria",
+      "B": "The heterozygote produces two types of hemoglobin, both beneficial",
+      "C": "One sickle allele provides malaria resistance without severe disease",
+      "D": "Heterozygotes have higher oxygen-binding capacity than homozygotes"
+    },
+    "correct": "C"
+  },
+  {
+    "q": 3,
+    "category": "CRISPR + Mendelian inheritance",
+    "stem": "A CRISPR edit corrects the sickle cell mutation (HBB GAG to GTG) in a diploid embryo. The phenotype of the edited embryo will be:",
+    "options": {
+      "A": "Sickle cell disease (if the other allele is also sickle)",
+      "B": "Normal or carrier phenotype (depends on the other HBB allele)",
+      "C": "Enhanced EPO expression and improved oxygen delivery",
+      "D": "Identical to the parents because germline edits revert by adulthood"
+    },
+    "correct": "B"
+  },
+  {
+    "q": 4,
+    "category": "L1 callback",
+    "stem": "In cellular respiration, the final electron acceptor in aerobic respiration is:",
+    "options": {
+      "A": "NAD+",
+      "B": "Cytochrome c",
+      "C": "Molecular oxygen (O2)",
+      "D": "Water (H2O)"
+    },
+    "correct": "C"
+  },
+  {
+    "q": 5,
+    "category": "PGT vs CRISPR + polygenic",
+    "stem": "A team uses PGT to select an embryo with the highest predicted EPO expression. This approach works because:",
+    "options": {
+      "A": "The EPO gene is easily edited in embryos",
+      "B": "Embryos with different allelic variants at the EPO locus show different phenotypes",
+      "C": "PGT can predict future environmental effects on EPO",
+      "D": "All embryos have identical EPO expression regardless of genotype"
+    },
+    "correct": "B"
+  },
+  {
+    "q": 6,
+    "category": "L1 callback (2x payout)",
+    "stem": "A cell with impaired hemoglobin function will show reduced ATP production because:",
+    "options": {
+      "A": "ATP is made only in the nucleus",
+      "B": "Hemoglobin delivers oxygen to mitochondria, enabling aerobic respiration",
+      "C": "Hemoglobin is required for glycolysis to occur",
+      "D": "ATP production is independent of oxygen availability"
+    },
+    "correct": "B",
+    "doublePayout": true
+  }
+]
