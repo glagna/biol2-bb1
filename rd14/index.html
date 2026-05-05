@@ -550,7 +550,7 @@
       <div class="phase-wager" id="phaseWager">
         <div class="question-number" id="qNum">Q1</div>
         <div class="wager-prompt">PLACE YOUR BET</div>
-        <div class="double-payout-banner" id="doubleBanner" style="display:none;">Q8 PAYS DOUBLE</div>
+        <div class="double-payout-banner" id="doubleBanner" style="display:none;">Q6 PAYS DOUBLE</div>
         <div class="wager-buttons" id="wagerButtons"></div>
       </div>
 
@@ -807,7 +807,7 @@
       const answers = ansSnap.val() || {};
 
       let total = 0;
-      for (let i = 1; i <= 8; i++) {
+      for (let i = 1; i <= 6; i++) {
         const q = `q${i}`;
         const bet = bets[q] || 0;
         const ans = answers[q];
@@ -815,7 +815,7 @@
         if (ans && correct) {
           const isCorrect = ans === correct;
           let pts = isCorrect ? bet : -bet;
-          if (i === 8) pts *= 2;
+          if (i === 6) pts *= 2;
           total += pts;
         }
       }

@@ -234,14 +234,14 @@
 
         function calculateScore(team) {
             let total = 0;
-            for (let q = 1; q <= 8; q++) {
+            for (let q = 1; q <= 6; q++) {
                 const bet = team.bets ? team.bets[`q${q}`] : 0;
                 const answer = team.answers ? team.answers[`q${q}`] : null;
                 const correct = answerKey[`q${q}`];
 
                 if (bet && answer && correct) {
                     const sign = answer === correct ? 1 : -1;
-                    const multiplier = q === 8 ? 2 : 1;
+                    const multiplier = q === 6 ? 2 : 1;
                     const points = bet * sign * multiplier;
                     total += points;
                 }
@@ -268,7 +268,7 @@
                         <div class="place-badge">${badgeNum}</div>
                         <div class="team-name">${team.name}</div>
                         <div class="team-score">${team.score} XP</div>
-                        <div class="team-progress">Answered: ${questionsAnswered}/8 questions</div>
+                        <div class="team-progress">Answered: ${questionsAnswered}/6 questions</div>
                     </div>
                 `;
             }).join('');

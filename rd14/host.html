@@ -308,7 +308,7 @@
         </div>
         <div class="state-cell">
           <div class="state-label">Question</div>
-          <div class="state-value" id="questionDisplay">1/8</div>
+          <div class="state-value" id="questionDisplay">1/6</div>
         </div>
         <div class="state-cell">
           <div class="state-label">Synced</div>
@@ -399,7 +399,7 @@
       answerKey = state.answerKey || {};
 
       document.getElementById('phaseDisplay').textContent = (currentPhase || 'LOBBY').toUpperCase();
-      document.getElementById('questionDisplay').textContent = `${currentQ}/8`;
+      document.getElementById('questionDisplay').textContent = `${currentQ}/6`;
       updateQuestionDisplay();
     }
 
