@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BB2 Prep | Designer Baby Tribunal | BIOL 2: The Crucible</title>
+<style>
+  :root {
+    --navy: #1a3a5c;
+    --navy2: #2c5f8a;
+    --gold: #b8860b;
+    --gold-bg: #fdf6ec;
+    --warn: #8b1a1a;
+    --warn-bg: #fce4e4;
+    --green: #2d6a2e;
+    --green-bg: #f0f7ee;
+    --slate: #f7f9fb;
+    --border: #e2e8f0;
+    --text: #333;
+    --muted: #555;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f4f6f9;
+    color: var(--text);
+    line-height: 1.65;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 24px 18px 80px 18px; }
+  .alert {
+    background: var(--warn-bg);
+    border-left: 6px solid var(--warn);
+    padding: 14px 18px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 0.95em;
+  }
+  .alert strong { color: var(--warn); }
+  .hero {
+    background: linear-gradient(135deg, #8b1a1a 0%, #5c0f0f 100%);
+    color: #fff;
+    padding: 28px 26px;
+    border-radius: 12px;
+    text-align: center;
+    margin-bottom: 22px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  }
+  .hero .label {
+    font-size: 0.82em;
+    text-transform: uppercase;
+    letter-spacing: 1.6px;
+    opacity: 0.9;
+    margin: 0 0 6px 0;
+  }
+  .hero h1 {
+    font-size: 1.9em;
+    margin: 0 0 8px 0;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+  .hero .when {
+    font-size: 0.95em;
+    font-style: italic;
+    opacity: 0.95;
+    margin: 0;
+  }
+  h2 {
+    color: var(--navy);
+    font-size: 1.35em;
+    margin: 36px 0 14px 0;
+    border-bottom: 2px solid var(--navy);
+    padding-bottom: 6px;
+  }
+  h3 { color: var(--navy); font-size: 1.05em; margin: 18px 0 8px 0; }
+  p { margin: 0 0 12px 0; }
+  ul, ol { margin: 0 0 14px 0; padding-left: 22px; }
+  li { margin-bottom: 6px; }
+  code {
+    background: #eef2f7;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.92em;
+  }
+  table { width: 100%; border-collapse: collapse; margin: 0 0 18px 0; font-size: 0.95em; }
+  th { background: var(--navy); color: #fff; padding: 10px 12px; text-align: left; font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.6px; }
+  td { padding: 10px 12px; border: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: var(--slate); }
+
+  .toc {
+    background: var(--slate);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 22px;
+  }
+  .toc h3 { margin-top: 0; font-size: 0.95em; text-transform: uppercase; letter-spacing: 1px; color: var(--navy); }
+  .toc ul { list-style: none; padding-left: 0; columns: 2; column-gap: 22px; }
+  .toc li { margin-bottom: 6px; }
+  .toc a { color: var(--navy2); text-decoration: none; font-weight: 500; }
+  .toc a:hover { text-decoration: underline; }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+  }
+  .card.gold { background: var(--gold-bg); border-left: 5px solid var(--gold); }
+  .card.navy { background: #f0f5fa; border-left: 5px solid var(--navy2); }
+  .card.green { background: var(--green-bg); border-left: 5px solid var(--green); }
+  .card.warn { background: var(--warn-bg); border-left: 5px solid var(--warn); }
+  .card .tag {
+    display: inline-block;
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+
+  .links { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 22px; }
+  @media (min-width: 640px) { .links { grid-template-columns: 1fr 1fr; } }
+  .link-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    text-decoration: none;
+    color: var(--text);
+    display: block;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+  .link-card:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,0,0,0.06); }
+  .link-card .kind {
+    font-size: 0.72em;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+  .link-card .name { font-weight: 700; color: var(--navy); font-size: 1.05em; margin-bottom: 4px; }
+  .link-card .desc { color: var(--muted); font-size: 0.9em; line-height: 1.5; }
+  .link-card .url { color: #94a3b8; font-size: 0.78em; margin-top: 6px; font-family: ui-monospace, monospace; word-break: break-all; }
+
+  .trace {
+    background: var(--gold-bg);
+    border-left: 5px solid var(--gold);
+    border-radius: 8px;
+    padding: 18px 20px;
+    margin-bottom: 18px;
+    font-size: 0.97em;
+    line-height: 1.85;
+  }
+  .trace strong { color: #5c4308; }
+
+  .schedule td:first-child { color: var(--navy2); font-weight: 700; font-size: 0.88em; width: 100px; white-space: nowrap; }
+  .schedule td.green { color: var(--green); }
+  .schedule td.gold { color: var(--gold); }
+  .schedule td.red { color: var(--warn); }
+
+  .footer {
+    margin-top: 40px;
+    text-align: center;
+    color: #888;
+    font-size: 0.82em;
+    border-top: 1px solid var(--border);
+    padding-top: 18px;
+  }
+  .pill {
+    display: inline-block;
+    background: var(--navy);
+    color: #fff;
+    border-radius: 999px;
+    padding: 2px 10px;
+    font-size: 0.78em;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="alert">
+    <strong>Camino is down.</strong> This page is the temporary backup for everything you need to prep for Boss Battle 2. Bookmark this URL. Same content as the Camino pages, refreshed today.
+  </div>
+
+  <div class="hero">
+    <p class="label">Boss Battle 2 &bull; Level 2 &bull; Week 6 &bull; Day 18</p>
+    <h1>The Designer Baby Tribunal</h1>
+    <p class="when">Fri May 8 &bull; 8:00 to 9:05 AM &bull; Arena</p>
+  </div>
+
+  <div class="toc">
+    <h3>What's on this page</h3>
+    <ul>
+      <li><a href="#links">Live tools and links</a></li>
+      <li><a href="#before">Before class checklist</a></li>
+      <li><a href="#scenario">The scenario</a></li>
+      <li><a href="#flow">Battle flow (65 min)</a></li>
+      <li><a href="#scoring">How you are scored</a></li>
+      <li><a href="#trace">The sickle cell trace</a></li>
+      <li><a href="#stakeholders">Stakeholder analysis</a></li>
+      <li><a href="#distinctions">Therapeutic vs enhancement, somatic vs germline</a></li>
+      <li><a href="#tools">PGT vs CRISPR vs somatic gene therapy</a></li>
+      <li><a href="#crispr">CRISPR-Cas9 refresher</a></li>
+      <li><a href="#pedigree">Pedigrees and the Punnett</a></li>
+      <li><a href="#polygenic">Mendelian vs polygenic (the trap)</a></li>
+      <li><a href="#dtc">Direct-to-consumer testing</a></li>
+    </ul>
+  </div>
+
+  <!-- LINKS -->
+  <h2 id="links">Live tools and links</h2>
+  <p>These are the four pieces you'll need this week. Open them now and keep the tabs open.</p>
+
+  <div class="links">
+    <a class="link-card" href="https://gemini.google.com/gem/dcce93f757b6" target="_blank" rel="noopener">
+      <div class="kind">Gemini Gem &bull; BB2 only</div>
+      <div class="name">Genome-Bot (the AI advisor in BB2)</div>
+      <div class="desc">Live during the Boss Battle. <strong>Calibrated to mislead you</strong> on the polygenic-vs-monogenic question. Catching its error is one of the Pass criteria. Treat as a tool to verify, not an oracle to trust.</div>
+      <div class="url">gemini.google.com/gem/dcce93f757b6</div>
+    </a>
+    <a class="link-card" href="https://gemini.google.com/gem/df8372544cef" target="_blank" rel="noopener">
+      <div class="kind">Gemini Gem &bull; Tutor</div>
+      <div class="name">Tollbooth Level 2 (study buddy)</div>
+      <div class="desc">Open Socratic study Gem. Walks you through Unit 2 concepts. Tell it the date you're prepping for and it will route to the right material.</div>
+      <div class="url">gemini.google.com/gem/df8372544cef</div>
+    </a>
+    <a class="link-card" href="https://notebooklm.google.com/notebook/77f8673f-6b97-4097-9ef2-a90dc32d2dbb" target="_blank" rel="noopener">
+      <div class="kind">NotebookLM &bull; Study Notebook</div>
+      <div class="name">L2: The Blueprint and the Edit</div>
+      <div class="desc">All Unit 2 sources, plus an audio overview, video overview, and study guide. Listen on your commute. Ask the chat for targeted help.</div>
+      <div class="url">notebooklm.google.com/notebook/77f8673f-6b97-4097-9ef2-a90dc32d2dbb</div>
+    </a>
+    <a class="link-card" href="#cert2" target="_self">
+      <div class="kind">Certification 2</div>
+      <div class="name">AI Examiner Gem (Cert 2)</div>
+      <div class="desc">Open all week. Access code <code>CRUCIBLE-L2</code>. <strong>Switch Gemini to Pro mode</strong> before starting (Thinking mode generates invalid codes). Email me if you need the Gem URL.</div>
+      <div class="url">Set Gemini to Pro mode &bull; code: CRUCIBLE-L2</div>
+    </a>
+  </div>
+
+  <!-- BEFORE CLASS -->
+  <h2 id="before">Before class on Friday</h2>
+  <div class="card navy">
+    <ul>
+      <li>Practice the <strong>sickle cell molecular-to-organismal trace</strong> out loud. The IRA opens with this prompt.</li>
+      <li>Review your team's <strong>stakeholder map</strong> from Wednesday's S17 session.</li>
+      <li>Confirm <strong>roles</strong>: Ethicist, Geneticist, Clinician, Recorder.</li>
+      <li><strong>Bring a pen and a laptop.</strong> IRA is on paper. Battle Card is on the Google Form.</li>
+    </ul>
+  </div>
+
+  <!-- SCENARIO -->
+  <h2 id="scenario">Today's scenario</h2>
+  <div class="card gold">
+    <div class="tag">The brief</div>
+    <p>A wealthy couple seeks two CRISPR edits for their future child: <strong>(1) correction of a sickle cell mutation</strong> (therapeutic), and <strong>(2) enhanced EPO gene expression for athletic performance</strong> (enhancement). Your team is the bioethics tribunal.</p>
+    <p>You will analyze the science, apply the therapeutic-vs-enhancement and somatic-vs-germline distinctions, map the stakeholders, identify errors in the advice given, and document the trade-offs.</p>
+    <p><strong>You are not scored on a final approve/deny verdict. You are scored on the quality of your analysis.</strong></p>
+  </div>
+
+  <!-- FLOW -->
+  <h2 id="flow">Battle flow (65 minutes)</h2>
+  <table class="schedule">
+    <tbody>
+      <tr><td>0:00 to 0:05</td><td><strong>Jackpot Bell #18.</strong> One short retrieval question (warm-up).</td></tr>
+      <tr><td class="red">0:05 to 0:10</td><td><strong style="color:#8b1a1a">IRA: Individual Readiness Assurance (5 pt).</strong> Closed-note. No AI. No team. Write the sickle cell trace from molecular to cellular to organismal. Submit on paper.</td></tr>
+      <tr><td>0:10 to 0:13</td><td><strong>Scenario launch.</strong> Genome-Bot Gem URL goes live. Color timer starts.</td></tr>
+      <tr><td class="green">0:13 to 0:28</td><td><strong style="color:#2d6a2e">Phase 1 GREEN: Therapeutic sickle cell edit (8 pt).</strong> Battle Card 1a-1e. Therapeutic-vs-enhancement label, CRISPR mechanism, off-target risk concept, stakeholder analysis, PGT vs CRISPR distinction.</td></tr>
+      <tr><td class="gold">0:28 to 0:34</td><td><strong style="color:#8b6914">Complication 1 YELLOW: Heterozygous embryo (6 pt).</strong> 2a (Punnett square), 2b (carrier vs disease reasoning), 2c (recommendation supported by 2b).</td></tr>
+      <tr><td class="gold">0:34 to 0:46</td><td><strong style="color:#8b6914">Phase 2 YELLOW: EPO enhancement edit (4 pt).</strong> 3a (mechanism trace, no signaling-pathway detail) and 3b (stakeholder + therapeutic/enhancement + somatic/germline labels).</td></tr>
+      <tr><td class="red">0:46 to 0:54</td><td><strong style="color:#8b1a1a">Complication 2 RED: Competing clinic + Genome-Bot error (8 pt).</strong> 4a (catch the polygenic-for-monogenic conflation), 4b (stakeholder gap), 4c (one more error in the competing clinic's pitch).</td></tr>
+      <tr><td>0:54 to 1:00</td><td><strong>Phase 3: Tribunal analysis (6 pt).</strong> Stakeholder-mapped analysis with Level 1 callback (EPO &rarr; RBC &rarr; cellular respiration). Verdict NOT scored.</td></tr>
+      <tr><td>1:00 to 1:04</td><td><strong>Team defense (3 pt).</strong> Each team picks one phase to defend in 30 seconds.</td></tr>
+      <tr><td>1:04 to 1:05</td><td><strong>Submit.</strong> Battle Card via the Google Form. IRA papers collected.</td></tr>
+    </tbody>
+  </table>
+
+  <!-- SCORING -->
+  <h2 id="scoring">How you are scored</h2>
+  <div class="card navy">
+    <p><strong>40 points total</strong> across the Battle Card. Three-tier rubric: Distinguished 100, Pass 85, Not Yet 60.</p>
+    <p>The team's verdict (approve or deny the edits) is <strong>NOT scored</strong>. The QUALITY of your analysis is. Catch the Genome-Bot error, address the Level 1 callback (EPO to RBC to cellular respiration), and produce a stakeholder-mapped ruling.</p>
+  </div>
+
+  <!-- TRACE -->
+  <h2 id="trace">The sickle cell trace (the IRA opener)</h2>
+  <p>This trace is the single most important thing in Unit 2. You will be asked to write it on the BB2 IRA. Practice it out loud.</p>
+  <div class="trace">
+    <strong>GAG &rarr; GTG (point mutation)</strong> in the HBB gene, position 6.<br>
+    &rarr; mRNA codon changes from GAG to GUG.<br>
+    &rarr; Amino acid at position 6 changes from <strong>glutamic acid (Glu, hydrophilic, charged)</strong> to <strong>valine (Val, hydrophobic, uncharged)</strong>.<br>
+    &rarr; Hemoglobin proteins now have a sticky hydrophobic patch where they used to be soluble.<br>
+    &rarr; Under low oxygen, hemoglobin molecules <strong>polymerize</strong> (stick together in long chains).<br>
+    &rarr; Red blood cells deform from disc-shaped to <strong>sickle-shaped</strong>.<br>
+    &rarr; Sickled cells <strong>block small blood vessels</strong> (vaso-occlusion) and break apart faster than the body replaces them (anemia).<br>
+    &rarr; The patient experiences pain crises, organ damage, and chronic anemia.
+  </div>
+
+  <table>
+    <thead><tr><th>Level</th><th>What's happening</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Molecular</strong></td><td>One base changes. One amino acid changes. One protein gains a hydrophobic patch.</td></tr>
+      <tr><td><strong>Cellular</strong></td><td>Hemoglobin polymerizes. Red cells deform. Cells lyse early.</td></tr>
+      <tr><td><strong>Organismal</strong></td><td>Vaso-occlusion. Pain crises. Organ damage. Chronic anemia.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="card gold">
+    <div class="tag">Heterozygote variant</div>
+    <p>What if the patient has only ONE copy of the sickle allele (HbAS, "sickle cell trait")? They have BOTH normal AND sickle hemoglobin. Under everyday oxygen levels, enough normal hemoglobin keeps cells disc-shaped. Under extreme low oxygen (high altitude, intense exercise) some sickling can happen, but most carriers live without symptoms.</p>
+    <p><strong>The trick:</strong> HbAS carriers in malaria-endemic regions have reduced severity of malaria. The <em>Plasmodium</em> parasite cannot grow well inside AS red cells. This is <strong>heterozygote advantage</strong>, and it explains why the sickle allele is maintained at high frequency in populations from sub-Saharan Africa, the Mediterranean, and parts of South Asia. One allele = protection. Two alleles = disease. <strong>Balancing selection</strong> is the term for this trade-off.</p>
+  </div>
+
+  <!-- STAKEHOLDERS -->
+  <h2 id="stakeholders">Stakeholder analysis (the centerpiece)</h2>
+  <p>When a gene-editing decision is on the table, the question is not "is this right?" The question is <strong>"who is affected, what do they want, what do they risk, and what power do they have?"</strong></p>
+
+  <table>
+    <thead><tr><th>Stakeholder</th><th>Quick frame</th></tr></thead>
+    <tbody>
+      <tr><td><strong>1. The Couple</strong></td><td>Wants healthy child + (in BB2) athletic enhancement. Decision-makers.</td></tr>
+      <tr><td><strong>2. The Embryo / Future Child</strong></td><td>Cannot consent. Will live with the edit. Stakes are permanent.</td></tr>
+      <tr><td><strong>3. The Clinical Geneticist</strong></td><td>Bound by professional ethics. Has veto power on what happens in their clinic.</td></tr>
+      <tr><td><strong>4. The Sickle Cell Community</strong></td><td>Wants therapeutic edits pursued responsibly. Political and funding influence.</td></tr>
+      <tr><td><strong>5. Regulatory Body (FDA)</strong></td><td>Controls whether edits can be legally performed.</td></tr>
+      <tr><td><strong>6. Athletic Commission</strong></td><td>Defines treatment vs enhancement. Can ban enhanced athletes.</td></tr>
+      <tr><td><strong>7. Genome-Bot (AI advisor)</strong></td><td>Gives advice without accountability. Can be confidently wrong.</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>The three-column mapping:</strong> for each stakeholder, fill in <strong>WANT</strong> (what outcome they prefer), <strong>RISK</strong> (what they lose if the wrong call is made), and <strong>POWER</strong> (high / medium / low ability to shape the outcome).</p>
+
+  <div class="card warn">
+    <p><strong>This is Analyze, not Evaluate.</strong> Boss Battle 2 does NOT score your verdict. It scores the QUALITY of your stakeholder analysis. There is no "right answer." There is only a well-mapped or poorly-mapped tribunal. If you catch yourself writing "good outcome" or "bad outcome" in WANT, redo the row. Ask: good for WHOM, specifically?</p>
+  </div>
+
+  <!-- DISTINCTIONS -->
+  <h2 id="distinctions">The two distinctions</h2>
+  <p>These distinctions are the entire frame for the Designer Baby Tribunal.</p>
+
+  <table>
+    <thead><tr><th>Edit type</th><th>What's edited</th><th>Inheritance</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Somatic</strong></td><td>Body cells (e.g., bone marrow stem cells in Casgevy)</td><td>Edit does NOT pass to children</td></tr>
+      <tr><td><strong>Germline</strong></td><td>Sperm, egg, or embryo cells</td><td>Edit passes to all future generations</td></tr>
+    </tbody>
+  </table>
+
+  <table>
+    <thead><tr><th>Goal</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Therapeutic</strong></td><td>Correct a known disease-causing mutation. Edit HBB to remove sickle cell.</td></tr>
+      <tr><td><strong>Enhancement</strong></td><td>Augment a trait beyond typical range. Edit EPO for above-baseline athletic performance.</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>These distinctions stack.</strong> A single proposed edit gets BOTH labels. The four combinations:</p>
+  <ul>
+    <li><em>Somatic + therapeutic</em> &mdash; least controversial (Casgevy-style sickle cell treatment).</li>
+    <li><em>Somatic + enhancement</em> &mdash; controversial (cosmetic muscle augmentation in adults; rarely done).</li>
+    <li><em>Germline + therapeutic</em> &mdash; highly controversial (would prevent disease in descendants but raises consent issues).</li>
+    <li><em>Germline + enhancement</em> &mdash; what He Jiankui (&#36154;&#24314;&#22863;) did in 2018 with the CCR5 edit. International scientific community condemned it. He was sentenced to three years in prison in 2020.</li>
+  </ul>
+
+  <!-- TOOLS -->
+  <h2 id="tools">PGT vs CRISPR vs somatic gene therapy</h2>
+  <p>Three tools, three different things. The single most-confused trio in Unit 2.</p>
+
+  <table>
+    <thead><tr><th>Tool</th><th>What it does</th><th>Modifies DNA?</th></tr></thead>
+    <tbody>
+      <tr><td><strong>PGT</strong> (preimplantation genetic testing)</td><td>IVF embryos genotyped, embryos with desired genotype SELECTED for transfer.</td><td><span style="color:#8b1a1a;font-weight:700">NO</span></td></tr>
+      <tr><td><strong>Germline CRISPR</strong></td><td>Embryo's DNA modified before implantation. Affects future child + descendants.</td><td><span style="color:#2d6a2e;font-weight:700">YES</span></td></tr>
+      <tr><td><strong>Somatic gene therapy</strong></td><td>Patient's body cells modified after birth. Just the patient.</td><td><span style="color:#2d6a2e;font-weight:700">YES (somatic only)</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="card navy">
+    <p><strong>The key sentence:</strong> "PGT selects among existing embryos. CRISPR changes the DNA of an embryo or person. Somatic gene therapy changes the DNA of a patient's body cells, but the change does not pass to their children."</p>
+  </div>
+
+  <!-- CRISPR -->
+  <h2 id="crispr">CRISPR-Cas9 refresher</h2>
+  <p><strong>CRISPR-Cas9 has two pieces:</strong></p>
+  <ol>
+    <li><strong>A guide RNA (gRNA)</strong> &mdash; a 20-letter RNA strand that matches the DNA sequence you want to cut. This is the "GPS."</li>
+    <li><strong>The Cas9 protein</strong> &mdash; a pair of molecular scissors. It binds to the gRNA, finds the matching DNA, and cuts both strands.</li>
+  </ol>
+
+  <p><strong>After Cas9 cuts, the cell has to repair the break.</strong> Two repair pathways:</p>
+  <ul>
+    <li><strong>NHEJ (non-homologous end joining)</strong> &mdash; the cell stitches the ends back together messily. Often introduces small insertions or deletions. Result: gene is <em>broken</em> (knockout). Fast, common, sloppy.</li>
+    <li><strong>HDR (homology-directed repair)</strong> &mdash; if a template DNA is provided, the cell copies the template to repair the break. Result: gene is <em>changed to a specific new sequence</em>. Precise but rare; only works in dividing cells.</li>
+  </ul>
+
+  <div class="card gold">
+    <div class="tag">Real clinical example</div>
+    <p><strong>Casgevy</strong> (FDA approved December 2023). Treats sickle cell disease by editing a different gene (BCL11A) to reactivate fetal hemoglobin in adult patients. Fetal hemoglobin doesn't sickle. NHEJ-based knockout. Patients have a one-time ex vivo edit and (in most reported cases so far) stop having pain crises.</p>
+  </div>
+
+  <p style="font-size:0.92em;color:var(--muted)"><strong>Scope fence.</strong> You will not be asked about PAM sequences, seed-region mismatches, or specific off-target mechanisms. "Off-target risk" appears as a concept (BB2 Phase 1 1c), not a mechanism.</p>
+
+  <!-- PEDIGREE -->
+  <h2 id="pedigree">Pedigrees and the Punnett</h2>
+  <p>A pedigree is a family tree with a job: figure out the inheritance pattern.</p>
+  <p><strong>The two questions you ask, in order:</strong></p>
+  <ol>
+    <li><strong>Autosomal or X-linked?</strong> If males and females are affected at roughly the same rate, autosomal. If almost only males are affected and the trait skips generations through unaffected mothers, X-linked recessive.</li>
+    <li><strong>Dominant or recessive?</strong> If every affected person has at least one affected parent (no skipping generations), dominant. If the trait skips generations through unaffected carriers, recessive.</li>
+  </ol>
+
+  <p><strong>The Punnett square you need to know cold (HbAS &times; HbAS):</strong></p>
+
+  <table style="max-width:380px;margin:0 auto 16px auto;text-align:center;">
+    <thead><tr><th></th><th style="text-align:center">A (mom)</th><th style="text-align:center">S (mom)</th></tr></thead>
+    <tbody>
+      <tr><td style="text-align:center;font-weight:700;color:var(--navy2)">A (dad)</td><td style="text-align:center">AA</td><td style="text-align:center">AS</td></tr>
+      <tr><td style="text-align:center;font-weight:700;color:var(--navy2)">S (dad)</td><td style="text-align:center">AS</td><td style="text-align:center">SS</td></tr>
+    </tbody>
+  </table>
+
+  <p>&rarr; 25% AA (unaffected). 50% AS (carrier, no disease in most environments). 25% SS (sickle cell disease).</p>
+  <p><strong>Carrier vs affected:</strong> AS = carrier. SS = affected. Carriers don't have disease in everyday conditions.</p>
+
+  <p style="font-size:0.92em;color:var(--muted)"><strong>Scope fence.</strong> You will not be asked Punnett questions beyond two alleles, one gene. No dihybrid crosses. No incomplete dominance. The 2 &times; 2 square is all you need.</p>
+
+  <!-- POLYGENIC -->
+  <h2 id="polygenic">Mendelian vs polygenic (the trap)</h2>
+  <p><strong>Single-gene (Mendelian)</strong> traits are caused by one gene. Sickle cell, cystic fibrosis, Huntington's. The math is clean. Punnett squares work. CRISPR can target one gene.</p>
+  <p><strong>Polygenic</strong> traits are caused by <em>thousands</em> of genes, each with a small effect. Height. Skin tone. Cardiovascular disease risk. Educational attainment. Athletic performance. Depression risk.</p>
+  <p><strong>Polygenic risk scores (PRS)</strong> sum the small effects across all those gene variants to produce a distribution-based risk estimate. <strong>PRS is a population-level statistical tool, not a personal blueprint.</strong> It can shift your risk by a small amount up or down. Useful for screening at-risk groups for cardiovascular disease. Less useful as a basis for life decisions.</p>
+
+  <div class="card warn">
+    <div class="tag" style="color:#8b1a1a">The error pattern Genome-Bot will use</div>
+    <p>Genome-Bot will claim that polygenic traits are "just as editable" as monogenic ones. That you can edit one gene to produce an athletic enhancement. <strong>This is wrong.</strong> Polygenic traits don't reduce to a single gene. Editing one EPO gene won't produce a peak athlete; it will produce a person with one altered EPO gene and unpredictable downstream effects.</p>
+    <p><strong>Catching this conflation is one of the BB2 Pass criteria.</strong></p>
+  </div>
+
+  <!-- DTC -->
+  <h2 id="dtc">Direct-to-consumer genetic testing (background)</h2>
+  <p>23andMe-style reports tell you about your DNA, but they tell you specific things in specific ways. Read them with three filters:</p>
+  <ol>
+    <li><strong>Relative risk vs absolute risk.</strong> "Your risk is 3x higher than average" sounds scary. If the average risk is 1 in 1,000, then 3x = 3 in 1,000 = 0.3%. Still low. <strong>Always ask: 3x WHAT baseline?</strong></li>
+    <li><strong>Variant of Uncertain Significance (VUS).</strong> Many genetic tests report variants that scientists <em>don't yet know</em> whether they affect health. A VUS is not "you have a disease" and it's not "you're fine." It's "we don't have enough data to say."</li>
+    <li><strong>Actionable vs non-actionable.</strong> A BRCA1 mutation result is actionable. There are screening and prevention options. An APOE4 result for Alzheimer's risk is much less actionable. There's no proven preventive intervention.</li>
+  </ol>
+  <p><strong>Privacy filter.</strong> Once you submit your DNA to a company, that company has it. Some companies share with insurers, law enforcement, or research partners. Read the privacy policy. <strong>Once your DNA is out, it's out.</strong></p>
+
+  <!-- CERT2 -->
+  <h2 id="cert2">Certification 2 (open all week)</h2>
+  <div class="card navy">
+    <p><strong>Cert 2 is open through Friday May 8.</strong> Two gates:</p>
+    <ol>
+      <li><strong>AI Examiner Gem</strong> (async, unlimited retakes). Access code <code>CRUCIBLE-L2</code>. Set Gemini to <strong>Pro mode</strong> before starting (Thinking mode generates invalid codes). Tests Q1 DNA + sickle cell trace, Q2 pedigree, Q3 CRISPR + somatic/germline, Q4 stakeholder analysis + polygenic vs Mendelian.</li>
+      <li><strong>Team Oral</strong>: Forge Lab 5 final 24 minutes, Friday May 8. Same LOs, defended live with your team.</li>
+    </ol>
+    <p>Email me if Camino is still down and you don't have the Examiner Gem URL bookmarked. I will share it directly.</p>
+  </div>
+
+  <div class="footer">
+    BIOL 2: The Crucible &bull; Spring 2026 &bull; Boss Battle 2 backup page<br>
+    Built <span id="builddate">May 7, 2026</span> by Giorgio Lagna &bull; <a href="https://glagna.github.io/biol2-bb1/" style="color:var(--navy2)">biol2-bb1 home</a>
+  </div>
+
+</div>
+</body>
+</html>
