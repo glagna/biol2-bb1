@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FL5 | Spotlight + Cert 2 Oral + Level-Up | BIOL 2: The Crucible</title>
+<style>
+  :root {
+    --navy: #1a3a5c;
+    --navy2: #2c5f8a;
+    --gold: #b8860b;
+    --gold-bg: #fdf6ec;
+    --warn: #8b1a1a;
+    --warn-bg: #fce4e4;
+    --green: #2d6a2e;
+    --green-bg: #f0f7ee;
+    --slate: #f7f9fb;
+    --border: #e2e8f0;
+    --text: #333;
+    --muted: #555;
+    --paste: #ffe27a;
+    --paste-bd: #b88500;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f4f6f9;
+    color: var(--text);
+    line-height: 1.65;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 24px 18px 80px 18px; }
+  .alert {
+    background: var(--warn-bg);
+    border-left: 6px solid var(--warn);
+    padding: 14px 18px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 0.95em;
+  }
+  .alert strong { color: var(--warn); }
+  .hub-back {
+    display: inline-block;
+    text-decoration: none;
+    color: var(--navy2);
+    font-size: 0.88em;
+    margin-bottom: 10px;
+  }
+  .hub-back:hover { text-decoration: underline; }
+
+  .hero {
+    background: linear-gradient(135deg, #2d6a2e 0%, #1d4a1f 100%);
+    color: #fff;
+    padding: 28px 26px;
+    border-radius: 12px;
+    text-align: center;
+    margin-bottom: 22px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  }
+  .hero .label {
+    font-size: 0.82em;
+    text-transform: uppercase;
+    letter-spacing: 1.6px;
+    opacity: 0.9;
+    margin: 0 0 6px 0;
+  }
+  .hero h1 {
+    font-size: 1.9em;
+    margin: 0 0 8px 0;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+  .hero .when {
+    font-size: 0.95em;
+    font-style: italic;
+    opacity: 0.95;
+    margin: 0;
+  }
+
+  h2 {
+    color: var(--navy);
+    font-size: 1.35em;
+    margin: 36px 0 14px 0;
+    border-bottom: 2px solid var(--navy);
+    padding-bottom: 6px;
+  }
+  h3 { color: var(--navy); font-size: 1.05em; margin: 18px 0 8px 0; }
+  p { margin: 0 0 12px 0; }
+  ul, ol { margin: 0 0 14px 0; padding-left: 22px; }
+  li { margin-bottom: 6px; }
+  code {
+    background: #eef2f7;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.92em;
+  }
+  table { width: 100%; border-collapse: collapse; margin: 0 0 18px 0; font-size: 0.95em; }
+  th { background: var(--navy); color: #fff; padding: 10px 12px; text-align: left; font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.6px; }
+  td { padding: 10px 12px; border: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: var(--slate); }
+
+  .toc {
+    background: var(--slate);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 22px;
+  }
+  .toc h3 { margin-top: 0; font-size: 0.95em; text-transform: uppercase; letter-spacing: 1px; color: var(--navy); }
+  .toc ul { list-style: none; padding-left: 0; columns: 2; column-gap: 22px; }
+  .toc li { margin-bottom: 6px; }
+  .toc a { color: var(--navy2); text-decoration: none; font-weight: 500; }
+  .toc a:hover { text-decoration: underline; }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+  }
+  .card.gold { background: var(--gold-bg); border-left: 5px solid var(--gold); }
+  .card.navy { background: #f0f5fa; border-left: 5px solid var(--navy2); }
+  .card.green { background: var(--green-bg); border-left: 5px solid var(--green); }
+  .card.warn { background: var(--warn-bg); border-left: 5px solid var(--warn); }
+  .card .tag {
+    display: inline-block;
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+
+  .links { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 22px; }
+  @media (min-width: 640px) { .links { grid-template-columns: 1fr 1fr; } }
+  .link-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    text-decoration: none;
+    color: var(--text);
+    display: block;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+  .link-card:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,0,0,0.06); }
+  .link-card .kind {
+    font-size: 0.72em;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+  .link-card .name { font-weight: 700; color: var(--navy); font-size: 1.05em; margin-bottom: 4px; }
+  .link-card .desc { color: var(--muted); font-size: 0.9em; line-height: 1.5; }
+  .link-card .url { color: #94a3b8; font-size: 0.78em; margin-top: 6px; font-family: ui-monospace, monospace; word-break: break-all; }
+
+  .paste {
+    background: var(--paste);
+    border: 2px dashed var(--paste-bd);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    font-size: 0.92em;
+    color: #5c4308;
+  }
+  .paste strong { color: var(--paste-bd); }
+  .paste .label {
+    display: inline-block;
+    background: var(--paste-bd);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.72em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    margin-right: 8px;
+  }
+
+  .schedule td:first-child { color: var(--navy2); font-weight: 700; font-size: 0.88em; width: 100px; white-space: nowrap; }
+  .schedule td.green { color: var(--green); }
+  .schedule td.gold { color: var(--gold); }
+  .schedule td.red { color: var(--warn); }
+
+  .footer {
+    margin-top: 40px;
+    text-align: center;
+    color: #888;
+    font-size: 0.82em;
+    border-top: 1px solid var(--border);
+    padding-top: 18px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="hub-back" href="https://glagna.github.io/biol2-bb1/friday/">&larr; Back to Friday Hub</a>
+
+  <div class="alert">
+    <strong>Camino is down.</strong> This page is the temporary backup for everything you need for Forge Lab 5. Bookmark this URL. Same content as the Camino S18L page.
+  </div>
+
+  <div class="hero">
+    <p class="label">Forge Lab 5 &bull; Level 2 &bull; Week 6 &bull; Day 18L</p>
+    <h1>Spotlight Briefs + Cert 2 Team Oral + Level-Up</h1>
+    <p class="when">Fri May 8 &bull; RM 3307 SCDI &bull; 80 minutes per section</p>
+  </div>
+
+  <h3 style="margin-top: 0;">Your section</h3>
+  <table>
+    <thead><tr><th>Section</th><th>Start time</th></tr></thead>
+    <tbody>
+      <tr><td><strong>A</strong></td><td>10:30 AM</td></tr>
+      <tr><td><strong>B</strong></td><td>11:55 AM</td></tr>
+      <tr><td><strong>C</strong></td><td>2:15 PM</td></tr>
+      <tr><td><strong>D</strong></td><td>3:40 PM</td></tr>
+    </tbody>
+  </table>
+
+  <div class="toc">
+    <h3>What's on this page</h3>
+    <ul>
+      <li><a href="#links">Live tools and links</a></li>
+      <li><a href="#before">Before lab checklist</a></li>
+      <li><a href="#flow">Lab flow (80 min)</a></li>
+      <li><a href="#angles">The four Spotlight angles</a></li>
+      <li><a href="#cert">Cert 2 Team Oral</a></li>
+      <li><a href="#levelup">Level-Up Celebration #2</a></li>
+      <li><a href="#after">After lab</a></li>
+    </ul>
+  </div>
+
+  <!-- LINKS -->
+  <h2 id="links">Live tools and links</h2>
+  <p>Open these in tabs and keep them open during the lab.</p>
+
+  <h3 style="margin-top: 16px; margin-bottom: 8px; color: var(--green);">FL5 Spotlight tools &mdash; find your section</h3>
+  <div class="links">
+    <a class="link-card" href="https://docs.google.com/presentation/d/1BZTDRJbsgaB36GTMZrt6fT9k3vaTGCf4GMSJqG_whHc/edit" target="_blank" rel="noopener">
+      <div class="kind">Google Slides &bull; Section A &bull; 10:30 AM</div>
+      <div class="name">FL5 Spotlight Briefs &mdash; Section A</div>
+      <div class="desc">Find your team's angle slide. Fill in evidence + reasoning + Q&amp;A prep during 0:05 to 0:25. Mirror to Apple TV when your turn comes.</div>
+      <div class="url">docs.google.com/presentation/d/1BZTDRJbsgaB36GTMZrt6fT9k3vaTGCf4GMSJqG_whHc/edit</div>
+    </a>
+    <a class="link-card" href="https://docs.google.com/presentation/d/1Zqie3tNe5lENp1vDK6PATSACGXsNFVjADBaW3_n4wuo/edit" target="_blank" rel="noopener">
+      <div class="kind">Google Slides &bull; Section B &bull; 11:55 AM</div>
+      <div class="name">FL5 Spotlight Briefs &mdash; Section B</div>
+      <div class="desc">Find your team's angle slide. Fill in evidence + reasoning + Q&amp;A prep during 0:05 to 0:25. Mirror to Apple TV when your turn comes.</div>
+      <div class="url">docs.google.com/presentation/d/1Zqie3tNe5lENp1vDK6PATSACGXsNFVjADBaW3_n4wuo/edit</div>
+    </a>
+    <a class="link-card" href="https://docs.google.com/presentation/d/171vru2QFa4EkOWRwN_SPA_XO44GKX80eyNkxSXYMpxk/edit" target="_blank" rel="noopener">
+      <div class="kind">Google Slides &bull; Section C &bull; 2:15 PM</div>
+      <div class="name">FL5 Spotlight Briefs &mdash; Section C</div>
+      <div class="desc">Find your team's angle slide. Fill in evidence + reasoning + Q&amp;A prep during 0:05 to 0:25. Mirror to Apple TV when your turn comes.</div>
+      <div class="url">docs.google.com/presentation/d/171vru2QFa4EkOWRwN_SPA_XO44GKX80eyNkxSXYMpxk/edit</div>
+    </a>
+    <a class="link-card" href="https://docs.google.com/presentation/d/1MJcuIrXoysp6xYkfWo4H4V1BH23kqYNbpzGWcJidyn8/edit" target="_blank" rel="noopener">
+      <div class="kind">Google Slides &bull; Section D &bull; 3:40 PM</div>
+      <div class="name">FL5 Spotlight Briefs &mdash; Section D</div>
+      <div class="desc">Find your team's angle slide. Fill in evidence + reasoning + Q&amp;A prep during 0:05 to 0:25. Mirror to Apple TV when your turn comes.</div>
+      <div class="url">docs.google.com/presentation/d/1MJcuIrXoysp6xYkfWo4H4V1BH23kqYNbpzGWcJidyn8/edit</div>
+    </a>
+    <a class="link-card" href="https://docs.google.com/document/d/120VDgJbjo0RHrzRvnU9iCkzDCpGy5DlbAiRQHtcWa4I/edit" target="_blank" rel="noopener">
+      <div class="kind">Google Doc &bull; All sections</div>
+      <div class="name">FL5 Team Prep Guide (1 page)</div>
+      <div class="desc">Read before lab. Goal, what to include, time budget, presentation format, what gets you peer-rated highly, and Not-Yet patterns to avoid.</div>
+      <div class="url">docs.google.com/document/d/120VDgJbjo0RHrzRvnU9iCkzDCpGy5DlbAiRQHtcWa4I/edit</div>
+    </a>
+    <a class="link-card" href="https://forms.gle/uHiJAWUj4a8527or8" target="_blank" rel="noopener">
+      <div class="kind">Google Form &bull; SCU login required</div>
+      <div class="name">Spotlight Peer-Rating Form</div>
+      <div class="desc">Submit ONCE PER presenting team (so 3 to 4 times during 0:25 to 0:55). Pick the team, score on 4 dimensions, optional comments.</div>
+      <div class="url">forms.gle/uHiJAWUj4a8527or8</div>
+    </a>
+  </div>
+
+  <h3 style="margin-top: 22px; margin-bottom: 8px; color: var(--gold);">Cert 2 study tools</h3>
+  <div class="links">
+    <a class="link-card" href="https://gemini.google.com/gem/5ed3d72bb03f" target="_blank" rel="noopener">
+      <div class="kind">Gemini Gem &bull; Certification 2</div>
+      <div class="name">Certification Examiner: Level 2</div>
+      <div class="desc">Open if you have NOT yet passed the AI Examiner. Access code <code>CRUCIBLE-L2</code>. <strong>Switch Gemini to Pro mode</strong> before starting; Thinking mode generates invalid codes.</div>
+      <div class="url">gemini.google.com/gem/5ed3d72bb03f</div>
+    </a>
+    <a class="link-card" href="https://gemini.google.com/gem/df8372544cef" target="_blank" rel="noopener">
+      <div class="kind">Gemini Gem &bull; Tutor</div>
+      <div class="name">Tollbooth Level 2 (study buddy)</div>
+      <div class="desc">Open Socratic study Gem for Cert 2 review while another team is in the oral. Walks you through Unit 2 concepts.</div>
+      <div class="url">gemini.google.com/gem/df8372544cef</div>
+    </a>
+    <a class="link-card" href="https://notebooklm.google.com/notebook/77f8673f-6b97-4097-9ef2-a90dc32d2dbb" target="_blank" rel="noopener">
+      <div class="kind">NotebookLM &bull; Study Notebook</div>
+      <div class="name">L2: The Blueprint and the Edit</div>
+      <div class="desc">Use the audio overview, video overview, and study guide to review Cert 2 Pass criteria.</div>
+      <div class="url">notebooklm.google.com/notebook/77f8673f-6b97-4097-9ef2-a90dc32d2dbb</div>
+    </a>
+    <a class="link-card" href="https://docs.google.com/document/d/1Xa3Xdo9mHzJXNYyXLuWprQN1yC1TxLQrWUi8RvhCZQM/copy" target="_blank" rel="noopener">
+      <div class="kind">Google Doc &bull; /copy &bull; Self-paced</div>
+      <div class="name">Cert 2 Study Pack (Genetics &amp; Disease)</div>
+      <div class="desc">Self-assessment guide aligned to Q1 to Q4 plus three worked examples (pedigree, DTC numbers, 4-quadrant CRISPR table). Click to make your own copy.</div>
+      <div class="url">docs.google.com/document/d/1Xa3Xdo9mHzJXNYyXLuWprQN1yC1TxLQrWUi8RvhCZQM/copy</div>
+    </a>
+  </div>
+
+  <!-- BEFORE LAB -->
+  <h2 id="before">Before lab</h2>
+  <div class="card navy">
+    <ul>
+      <li>Open the <strong>FL5 Spotlight shared GSlides</strong> deck. Find your team's slide.</li>
+      <li>Read the <strong>FL5 Team Prep Guide</strong> (1 page).</li>
+      <li>Bring your laptop. Slides will be presented via Apple TV mirroring at the table.</li>
+      <li>Bring your <strong>S16 BioBits CER tables</strong> and your <strong>FL4 lab notebook</strong>; you'll cite them in the brief.</li>
+      <li>If your team is up for the <strong>Cert 2 Team Oral</strong> today, decide who answers which question.</li>
+      <li>Bottom-25% XP students: a <strong>Comeback Challenge</strong> opens this afternoon (due Mon May 11, 11:59 PM).</li>
+    </ul>
+  </div>
+
+  <!-- FLOW -->
+  <h2 id="flow">Lab flow (80 minutes)</h2>
+  <table class="schedule">
+    <tbody>
+      <tr><td>0:00 to 0:05</td><td><strong>Section setup &amp; angle assignment.</strong> Open the shared GSlides deck on your laptop. Find your team's angle slide. Mirror to the Apple TV at your table.</td></tr>
+      <tr><td class="green">0:05 to 0:25</td><td><strong style="color:#2d6a2e">Spotlight Brief Prep (20 min).</strong> Use your S16 CER tables, FL4 notebook, and gene-element prediction table to fill in your team's slide. Format: ~3 bullets of evidence + 1 real-world tie + 2 anticipated questions. Recorder option: storyboard on the dry-erase tabletop.</td></tr>
+      <tr><td>0:25 to 0:55</td><td><strong>Spotlight Briefs (Q&amp;A format).</strong> Each team mirrors their slide and presents. 4 teams &times; 7 min including Q&amp;A. Audience uses the peer-rating Google Form on their phones.</td></tr>
+      <tr><td class="gold">0:55 to 1:19</td><td><strong style="color:#8b6914">Cert 2 Team Oral (final 24 min).</strong> 4 teams &times; 6 min. The team being examined is at the front; other teams (a) complete the BB2 reflection, (b) start the Comeback Challenge if eligible, (c) prep their Cert 2 retake if needed.</td></tr>
+      <tr><td class="red">1:19 to 1:25</td><td><strong style="color:#8b1a1a">Level-Up Celebration #2.</strong> Hall of Flame leaderboard reset, Sprint Leaderboard L2 winners announced, brief 1-on-1 check-ins for below-median XP students. Preview Level 3.</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ANGLES -->
+  <h2 id="angles">The four Spotlight angles</h2>
+  <p>Each team gets one angle. Fill the angle prompt + real-world tie into the slide; cite evidence from your CER tables and FL4 notebook.</p>
+
+  <table>
+    <thead><tr><th>Team</th><th>Angle</th><th>Real-world connection</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>1</strong></td>
+        <td><strong>Tube 3 &mdash; Kanamycin (translation inhibitor).</strong> Why did green fluorescence appear but red did not? What does this prove about kanamycin's mechanism?</td>
+        <td>Antibiotic resistance evolution; how translation-blocking antibiotics differ from cell-wall antibiotics, and why that distinction matters for clinical use.</td>
+      </tr>
+      <tr>
+        <td><strong>2</strong></td>
+        <td><strong>Tube 4 &mdash; DNA B (RFP coding deletion).</strong> Why did green appear but red did not, even without kanamycin? What does this prove about gene structure?</td>
+        <td>Sickle cell HBB mutation as the canonical "small change, big consequence" parallel.</td>
+      </tr>
+      <tr>
+        <td><strong>3</strong></td>
+        <td><strong>Gene-element extension predictions.</strong> What if you removed the promoter? The start codon? The terminator? Which element matters most for whether ANY product is made?</td>
+        <td>Drug discovery &mdash; designing molecules that target promoters vs. coding sequence.</td>
+      </tr>
+      <tr>
+        <td><strong>4</strong></td>
+        <td><strong>Cross-Level connection.</strong> Translation makes proteins. Proteins like enzymes power cellular respiration (Level 1 callback). What does the BioBits result tell you about why a poison that blocks translation is so dangerous?</td>
+        <td>Antibiotics, ribosomal disorders, sepsis pathophysiology.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="card gold">
+    <div class="tag">Format guidance</div>
+    <p>You will present in 5 to 7 minutes including audience Q&amp;A. The slide IS your visual aid &mdash; mirror it to the room's main display via Apple TV when your turn comes. No printed angle cards. No separate slides.</p>
+  </div>
+
+  <!-- CERT -->
+  <h2 id="cert">Cert 2 Team Oral</h2>
+  <p>The final 24 minutes of the Forge Lab. 4 teams, 6 minutes each. The team being examined sits at the front; one student answers each question while the rest of the team can clarify.</p>
+
+  <div class="card navy">
+    <h3 style="margin-top: 0;">Pass criteria (v9 Course Bible &sect;5.1, verbatim)</h3>
+    <p><strong>Pass &mdash; the student can:</strong></p>
+    <ul>
+      <li>Read a 3-generation pedigree chart and determine the inheritance pattern (autosomal dominant, autosomal recessive, X-linked).</li>
+      <li>Trace the path from a point mutation in DNA &rarr; altered mRNA &rarr; misfolded or absent protein &rarr; cellular dysfunction &rarr; systemic disease.</li>
+      <li>Explain the difference between genotype and phenotype, and why two people with the same mutation may have different disease severity (penetrance, environment, epigenetics).</li>
+      <li>Handle a variable injection: "What if this patient has one copy of the sickle cell allele instead of two? What would you expect at the molecular, cellular, and whole-body level?"</li>
+    </ul>
+  </div>
+
+  <div class="card warn">
+    <div class="tag">Common Not-Yet patterns</div>
+    <ul>
+      <li>Can state "DNA makes protein" but cannot trace the full pathway from mutation to disease.</li>
+      <li>Confuses dominant and recessive inheritance.</li>
+      <li>Cannot read a pedigree chart.</li>
+      <li>Treats genetics as deterministic ("if you have the gene, you get the disease").</li>
+    </ul>
+    <p><strong>Not Yet is not failing.</strong> A retry path is available; retry caps at Pass.</p>
+  </div>
+
+  <h3>How scoring works</h3>
+  <p>Per student, per question: <strong>Knowledge 8 / Communication 4 / Reasoning 4</strong>. Two questions per team. The instructor scores live on a GSheet during your 6-minute window.</p>
+
+  <h3>While another team is in the oral</h3>
+  <ul>
+    <li>Complete the BB2 post-battle reflection.</li>
+    <li>Start the Comeback Challenge (bottom-25% XP only).</li>
+    <li>Use Tollbooth L2 to walk a Cert 2 Pass criterion you feel shaky on.</li>
+  </ul>
+
+  <h3>If you have NOT yet passed the AI Examiner</h3>
+  <p>The Cert 2 Examiner Gem stays open through Fri May 8. Access code <code>CRUCIBLE-L2</code>. <strong>Pro mode required</strong> &mdash; Thinking mode will generate invalid codes and waste your attempt. The Gem URL is in the Live Tools section above.</p>
+
+  <!-- LEVELUP -->
+  <h2 id="levelup">Level-Up Celebration #2</h2>
+  <p>The closer of Level 2. ~6 minutes.</p>
+  <div class="card green">
+    <ul>
+      <li><strong>Where we were:</strong> end of Level 1, what the cohort knew at the start of Unit 2.</li>
+      <li><strong>Where we are:</strong> Hall of Flame leaderboard reset, Sprint Leaderboard L2 winners (top 3 teams earn the L2 perks).</li>
+      <li><strong>Where we go:</strong> a one-line preview of Level 3 ("Immunity &amp; Public Health &mdash; the most relatable level you'll do").</li>
+      <li>Brief 1-on-1 check-ins for below-median XP students (~2 min each).</li>
+    </ul>
+  </div>
+
+  <!-- AFTER -->
+  <h2 id="after">After lab</h2>
+  <div class="card navy">
+    <ul>
+      <li><strong>BB2 post-battle reflection</strong> due Sun May 10, 11:59 PM.</li>
+      <li><strong>Comeback Challenge</strong> (bottom-25% XP only) due Mon May 11, 11:59 PM.</li>
+      <li><strong>Cert 2 retake window</strong> open through Mon May 11; book a slot with the instructor.</li>
+      <li>Hall of Flame v2 dashboard updates Friday evening; check your standing.</li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    <p>BIOL 2: The Crucible &bull; Spring 2026 &bull; Santa Clara University</p>
+    <p>Instructor: Giorgio Lagna, PhD &bull; <code>glagna@scu.edu</code></p>
+    <p>Camino-outage backup. Same content as the S18L Camino page, refreshed today.</p>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Friday May 8 Hub | BIOL 2: The Crucible</title>
+<style>
+  :root {
+    --navy: #1a3a5c;
+    --navy2: #2c5f8a;
+    --gold: #b8860b;
+    --gold-bg: #fdf6ec;
+    --warn: #8b1a1a;
+    --warn-bg: #fce4e4;
+    --green: #2d6a2e;
+    --green-bg: #f0f7ee;
+    --slate: #f7f9fb;
+    --border: #e2e8f0;
+    --text: #333;
+    --muted: #555;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f4f6f9;
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 24px 18px 80px 18px; }
+  .alert {
+    background: var(--warn-bg);
+    border-left: 6px solid var(--warn);
+    padding: 14px 18px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 0.95em;
+  }
+  .alert strong { color: var(--warn); }
+
+  .hero {
+    background: linear-gradient(135deg, #1a3a5c 0%, #0f2540 100%);
+    color: #fff;
+    padding: 32px 26px;
+    border-radius: 12px;
+    text-align: center;
+    margin-bottom: 22px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  }
+  .hero .label {
+    font-size: 0.82em;
+    text-transform: uppercase;
+    letter-spacing: 1.6px;
+    opacity: 0.9;
+    margin: 0 0 6px 0;
+  }
+  .hero h1 {
+    font-size: 2em;
+    margin: 0 0 8px 0;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+  .hero .when {
+    font-size: 1em;
+    font-style: italic;
+    opacity: 0.95;
+    margin: 8px 0 0 0;
+  }
+
+  h2 {
+    color: var(--navy);
+    font-size: 1.35em;
+    margin: 36px 0 14px 0;
+    border-bottom: 2px solid var(--navy);
+    padding-bottom: 6px;
+  }
+
+  .session-cards { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 18px; }
+  @media (min-width: 720px) { .session-cards { grid-template-columns: 1fr 1fr; } }
+
+  .session-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 22px 20px 22px;
+    text-decoration: none;
+    color: var(--text);
+    display: block;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    transition: transform 0.1s ease, box-shadow 0.15s ease;
+  }
+  .session-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+  .session-card .kind {
+    display: inline-block;
+    font-size: 0.72em;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+  }
+  .session-card.morning { border-top: 6px solid var(--warn); }
+  .session-card.morning .kind { background: var(--warn-bg); color: var(--warn); }
+  .session-card.afternoon { border-top: 6px solid var(--green); }
+  .session-card.afternoon .kind { background: var(--green-bg); color: var(--green); }
+  .session-card .title { font-weight: 800; color: var(--navy); font-size: 1.18em; margin-bottom: 4px; line-height: 1.3; }
+  .session-card .when { color: var(--muted); font-size: 0.9em; margin-bottom: 10px; font-style: italic; }
+  .session-card .summary { font-size: 0.93em; color: var(--text); margin-bottom: 12px; }
+  .session-card .cta {
+    display: inline-block;
+    background: var(--navy);
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 0.88em;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+  .session-card .url { color: #94a3b8; font-size: 0.78em; margin-top: 8px; font-family: ui-monospace, monospace; word-break: break-all; }
+
+  .links { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 22px; }
+  @media (min-width: 640px) { .links { grid-template-columns: 1fr 1fr; } }
+  .link-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    text-decoration: none;
+    color: var(--text);
+    display: block;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+  .link-card:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,0,0,0.06); }
+  .link-card .kind {
+    font-size: 0.7em;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+  .link-card .name { font-weight: 700; color: var(--navy); font-size: 1em; margin-bottom: 4px; }
+  .link-card .desc { color: var(--muted); font-size: 0.86em; line-height: 1.45; }
+  .link-card .url { color: #94a3b8; font-size: 0.74em; margin-top: 6px; font-family: ui-monospace, monospace; word-break: break-all; }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+  }
+  .card.navy { background: #f0f5fa; border-left: 5px solid var(--navy2); }
+  .card.gold { background: var(--gold-bg); border-left: 5px solid var(--gold); }
+  .card p { margin: 0 0 8px 0; }
+  .card p:last-child { margin-bottom: 0; }
+
+  code {
+    background: #eef2f7;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.92em;
+  }
+
+  .footer {
+    margin-top: 40px;
+    text-align: center;
+    color: #888;
+    font-size: 0.82em;
+    border-top: 1px solid var(--border);
+    padding-top: 18px;
+  }
+  .footer p { margin: 4px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="alert">
+    <strong>Camino is down.</strong> Use this page as the substitute for everything you need on Friday May 8. Bookmark the URL. All Gem links, study resources, and submission forms work normally.
+  </div>
+
+  <div class="hero">
+    <p class="label">BIOL 2 &bull; The Crucible &bull; Week 6 &bull; Day 18</p>
+    <h1>Friday May 8 Hub</h1>
+    <p class="when">Two sessions today. Boss Battle 2 in the morning. Forge Lab 5 + Certification 2 oral + Level-Up in the afternoon.</p>
+  </div>
+
+  <h2>Today's two sessions</h2>
+
+  <div class="session-cards">
+    <a class="session-card morning" href="https://glagna.github.io/biol2-bb1/bb2/" target="_blank" rel="noopener">
+      <span class="kind">Morning &bull; Arena</span>
+      <div class="title">S18 &mdash; Boss Battle 2: The Designer Baby Tribunal</div>
+      <div class="when">8:00 to 9:05 AM &bull; classroom</div>
+      <div class="summary">IRA (sickle cell trace) &rarr; Phase 1 therapeutic edit &rarr; Phase 2 EPO enhancement &rarr; Complications + Genome-Bot error catch &rarr; Tribunal ruling. Battle Card via Google Form.</div>
+      <span class="cta">Open BB2 prep page &rarr;</span>
+      <div class="url">glagna.github.io/biol2-bb1/bb2/</div>
+    </a>
+    <a class="session-card afternoon" href="https://glagna.github.io/biol2-bb1/fl5/" target="_blank" rel="noopener">
+      <span class="kind">Afternoon &bull; Forge Lab</span>
+      <div class="title">FL5 &mdash; Spotlight + Cert 2 Team Oral + Level-Up</div>
+      <div class="when">A 10:30 &bull; B 11:55 &bull; C 2:15 &bull; D 3:40 &bull; RM 3307 SCDI</div>
+      <div class="summary">Spotlight Briefs (mirror your team's slide via Apple TV) &rarr; Certification 2 Team Oral (last 24 min) &rarr; Level-Up Celebration #2.</div>
+      <span class="cta">Open FL5 page &rarr;</span>
+      <div class="url">glagna.github.io/biol2-bb1/fl5/</div>
+    </a>
+  </div>
+
+  <h2>Live tools (open these in tabs and keep them open)</h2>
+
+  <div class="links">
+    <a class="link-card" href="https://gemini.google.com/gem/dcce93f757b6" target="_blank" rel="noopener">
+      <div class="kind">Gemini Gem &bull; BB2 only</div>
+      <div class="name">Genome-Bot (the AI advisor in BB2)</div>
+      <div class="desc">Live during Boss Battle 2. <strong>Calibrated to mislead you</strong> on the polygenic-vs-monogenic question. Catching its error is one of the Pass criteria.</div>
+      <div class="url">gemini.google.com/gem/dcce93f757b6</div>
+    </a>
+    <a class="link-card" href="https://gemini.google.com/gem/5ed3d72bb03f" target="_blank" rel="noopener">
+      <div class="kind">Gemini Gem &bull; Certification 2</div>
+      <div class="name">Certification Examiner: Level 2</div>
+      <div class="desc">Access code <code>CRUCIBLE-L2</code>. <strong>Switch Gemini to Pro mode</strong> before starting; Thinking mode generates invalid codes.</div>
+      <div class="url">gemini.google.com/gem/5ed3d72bb03f</div>
+    </a>
+    <a class="link-card" href="https://gemini.google.com/gem/df8372544cef" target="_blank" rel="noopener">
+      <div class="kind">Gemini Gem &bull; Tutor</div>
+      <div class="name">Tollbooth Level 2 (study buddy)</div>
+      <div class="desc">Open Socratic study Gem for Unit 2 review. Tell it what you're prepping for and it routes to the right material.</div>
+      <div class="url">gemini.google.com/gem/df8372544cef</div>
+    </a>
+    <a class="link-card" href="https://notebooklm.google.com/notebook/77f8673f-6b97-4097-9ef2-a90dc32d2dbb" target="_blank" rel="noopener">
+      <div class="kind">NotebookLM &bull; Study Notebook</div>
+      <div class="name">L2: The Blueprint and the Edit</div>
+      <div class="desc">All Unit 2 sources, plus audio overview, video overview, and study guide. Listen on your commute.</div>
+      <div class="url">notebooklm.google.com/notebook/77f8673f-6b97-4097-9ef2-a90dc32d2dbb</div>
+    </a>
+    <a class="link-card" href="https://forms.gle/oENAD5Q1iC9BrZDQ7" target="_blank" rel="noopener">
+      <div class="kind">Google Form &bull; BB2 submission</div>
+      <div class="name">BB2 Battle Card form</div>
+      <div class="desc">Submit your team's Battle Card here at 1:04 (end of BB2). One form per team. Captain submits.</div>
+      <div class="url">forms.gle/oENAD5Q1iC9BrZDQ7</div>
+    </a>
+    <a class="link-card" href="https://glagna.github.io/biol2-bb1/" target="_blank" rel="noopener">
+      <div class="kind">Wager Arena hub</div>
+      <div class="name">Roundup Duels &bull; RD13/RD14 archive</div>
+      <div class="desc">Past Wager Arena rounds. Use to review JB-style retrieval items.</div>
+      <div class="url">glagna.github.io/biol2-bb1/</div>
+    </a>
+    <a class="link-card" href="https://docs.google.com/document/d/1Xa3Xdo9mHzJXNYyXLuWprQN1yC1TxLQrWUi8RvhCZQM/copy" target="_blank" rel="noopener">
+      <div class="kind">Google Doc &bull; /copy &bull; Self-paced</div>
+      <div class="name">Cert 2 Study Pack (Genetics &amp; Disease)</div>
+      <div class="desc">Self-assessment guide aligned to the AI Examiner Q1 to Q4 plus three worked examples (pedigree, DTC numbers, 4-quadrant CRISPR table). Click to make your own copy.</div>
+      <div class="url">docs.google.com/document/d/1Xa3Xdo9mHzJXNYyXLuWprQN1yC1TxLQrWUi8RvhCZQM/copy</div>
+    </a>
+  </div>
+
+  <h2>Before class on Friday</h2>
+
+  <div class="card navy">
+    <p><strong>Morning (BB2):</strong> Practice the sickle cell molecular-to-organismal trace out loud. Review your S17 stakeholder map. Confirm team roles (Ethicist, Geneticist, Clinician, Recorder). Bring a pen and a laptop. IRA is on paper, Battle Card is on the Google Form.</p>
+    <p><strong>Afternoon (FL5):</strong> Open the FL5 Spotlight shared GSlides (link on the FL5 page). Find your team's slide. Read the FL5 Team Prep Guide. Bring a laptop. If your team is up for the Cert 2 Team Oral today, decide who answers which question.</p>
+  </div>
+
+  <h2>Quick FAQ</h2>
+
+  <div class="card gold">
+    <p><strong>Where do I submit my BB2 Battle Card?</strong> The Google Form linked above. URL: <code>forms.gle/oENAD5Q1iC9BrZDQ7</code>. One per team.</p>
+    <p><strong>Where do I submit the IRA?</strong> On paper, in class. We collect them physically at 1:05 (end of BB2).</p>
+    <p><strong>Cert 2 access code?</strong> <code>CRUCIBLE-L2</code>. Pro mode required.</p>
+    <p><strong>What if my team isn't on the schedule for Cert 2 oral today?</strong> Confirm with the instructor at the start of your Forge Lab section. The Cert 2 window stays open for makeups.</p>
+    <p><strong>Camino is back up &mdash; do I still use this page?</strong> Yes, until officially announced otherwise. The links here are the same URLs that were on Camino.</p>
+  </div>
+
+  <div class="footer">
+    <p>BIOL 2: The Crucible &bull; Spring 2026 &bull; Santa Clara University</p>
+    <p>Instructor: Giorgio Lagna, PhD &bull; <code>glagna@scu.edu</code></p>
+    <p>This page is a Camino-outage backup hosted on GitHub Pages. Same content, refreshed today.</p>
+  </div>
+
+</div>
+</body>
+</html>
