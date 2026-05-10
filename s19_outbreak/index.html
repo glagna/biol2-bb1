@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1a3a5c">
+<title>The Outbreak — BIOL 2 S19</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0e1d2e;
+    color: #e6eef7;
+    -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
+  }
+  .wrap { min-height: 100vh; display: flex; flex-direction: column; padding: 16px; max-width: 480px; margin: 0 auto; }
+  .top { text-align: center; padding: 8px 0 12px; }
+  .top .badge { display: inline-block; padding: 3px 10px; background: #2c5f8a; color: #cdd9e6; font-size: 0.75em; letter-spacing: 1.5px; text-transform: uppercase; border-radius: 4px; margin-bottom: 8px; }
+  .top h1 { font-size: 1.4em; font-weight: 800; }
+  .top .session { font-size: 0.85em; color: #9bb3c9; margin-top: 4px; }
+
+  .name-card {
+    background: #1a3a5c; border-radius: 12px; padding: 20px; text-align: center;
+    margin: 12px 0; box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  }
+  .name-card .you { font-size: 0.78em; color: #9bb3c9; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
+  .name-card .name { font-size: 1.6em; font-weight: 800; color: white; }
+  .name-card .id { font-size: 0.78em; color: #6b8aa3; margin-top: 6px; font-family: monospace; }
+
+  .qr-card {
+    background: white; border-radius: 12px; padding: 20px; text-align: center;
+    margin-bottom: 16px;
+  }
+  .qr-card .label { color: #555; font-size: 0.85em; margin-bottom: 8px; font-weight: 600; }
+  .qr-card #qr-canvas { width: 100%; max-width: 280px; height: auto; margin: 0 auto; display: block; }
+  .qr-card .hint { color: #666; font-size: 0.78em; margin-top: 10px; font-style: italic; }
+
+  .scan-btn {
+    background: linear-gradient(135deg, #d4a853 0%, #b8860b 100%);
+    color: white; border: none; padding: 18px; width: 100%;
+    border-radius: 12px; font-size: 1.1em; font-weight: 700;
+    cursor: pointer; box-shadow: 0 4px 12px rgba(212,168,83,0.3);
+    -webkit-appearance: none; transition: transform 0.05s ease;
+  }
+  .scan-btn:active { transform: scale(0.97); }
+  .scan-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .scan-btn .icon { font-size: 1.4em; margin-right: 8px; vertical-align: middle; }
+
+  .stat-row {
+    display: table; width: 100%; margin: 16px 0; background: #14283d; border-radius: 10px; overflow: hidden;
+  }
+  .stat-cell { display: table-cell; text-align: center; padding: 14px 8px; vertical-align: middle; }
+  .stat-cell + .stat-cell { border-left: 1px solid #1f3850; }
+  .stat-cell .num { font-size: 1.6em; font-weight: 800; color: #d4a853; }
+  .stat-cell .lbl { font-size: 0.7em; color: #9bb3c9; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+
+  .partners {
+    background: #14283d; border-radius: 10px; padding: 14px; min-height: 80px;
+  }
+  .partners h3 { font-size: 0.78em; color: #9bb3c9; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; }
+  .partners .empty { color: #6b8aa3; font-style: italic; font-size: 0.9em; text-align: center; padding: 8px 0; }
+  .partners .pill { display: inline-block; background: #2c5f8a; color: white; padding: 5px 12px; border-radius: 999px; margin: 3px; font-size: 0.85em; }
+
+  /* Phases */
+  .phase-pre, .phase-ended, .phase-revealed { text-align: center; padding: 30px 12px; }
+  .phase-pre h2, .phase-ended h2, .phase-revealed h2 { color: #d4a853; font-size: 1.3em; margin-bottom: 10px; }
+  .phase-pre p, .phase-ended p, .phase-revealed p { color: #9bb3c9; font-size: 0.95em; line-height: 1.6; margin-bottom: 8px; }
+  .countdown { font-size: 2.5em; font-weight: 800; color: #d4a853; margin: 14px 0; font-variant-numeric: tabular-nums; }
+
+  /* Reveal panel: shown only after instructor reveals */
+  .reveal-panel {
+    background: #1a3a5c; border: 2px solid #d4a853; border-radius: 12px; padding: 18px;
+    text-align: center; margin: 16px 0;
+  }
+  .reveal-panel .pz-label { font-size: 0.78em; color: #d4a853; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
+  .reveal-panel .your-state { font-size: 1.6em; font-weight: 800; margin: 10px 0; }
+  .reveal-panel .your-state.infected { color: #ef4444; }
+  .reveal-panel .your-state.susceptible { color: #22c55e; }
+  .reveal-panel .your-state.patient-zero { color: #d4a853; }
+  .reveal-panel .lineage { font-size: 0.9em; color: #cdd9e6; margin-top: 10px; line-height: 1.5; }
+
+  /* Camera modal */
+  .modal {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 1000;
+    display: none; flex-direction: column;
+  }
+  .modal.show { display: flex; }
+  .modal-header { padding: 16px; display: table; width: 100%; background: #0a1623; }
+  .modal-header > div { display: table-cell; vertical-align: middle; }
+  .modal-header .title { color: white; font-weight: 700; }
+  .modal-header .close { text-align: right; }
+  .modal-header .close button { background: transparent; border: 1px solid #d4a853; color: #d4a853; padding: 8px 14px; border-radius: 6px; font-weight: 700; cursor: pointer; }
+  #scanner-region { flex: 1; position: relative; overflow: hidden; }
+  #scanner-region video { width: 100%; height: 100%; object-fit: cover; }
+  .scan-feedback { padding: 14px; text-align: center; color: white; background: #0a1623; min-height: 50px; }
+  .scan-feedback.success { background: #22c55e; color: #0a1623; font-weight: 700; }
+  .scan-feedback.error { background: #ef4444; color: white; font-weight: 700; }
+
+  .footer {
+    text-align: center; color: #6b8aa3; font-size: 0.75em; margin-top: auto; padding-top: 16px;
+  }
+
+  /* Hide a section */
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <span class="badge">Level 3 &bull; S19</span>
+    <h1>The Outbreak</h1>
+    <div class="session">Mon May 11, 8 AM &bull; Live-Action</div>
+  </div>
+
+  <!-- ============ PHASE: WAITING / PRE-MIXER ============ -->
+  <div id="phase-pre" class="phase-pre hidden">
+    <h2>Waiting for the mixer to start</h2>
+    <p>The instructor will start the timer.</p>
+    <p>When you see "MIXER LIVE" at the top, find a partner and tap <strong>Scan</strong>.</p>
+    <p style="margin-top: 18px; color: #6b8aa3;">Goal: scan at least <strong>8 different people</strong> in 5:30.</p>
+    <p style="margin-top: 12px; color: #6b8aa3; font-size: 0.85em;">Only ONE of you needs to scan. The trade counts for both phones automatically.</p>
+  </div>
+
+  <!-- ============ PHASE: MIXER LIVE ============ -->
+  <div id="phase-running" class="hidden">
+    <div class="name-card">
+      <div class="you">You are</div>
+      <div class="name" id="my-name">&mdash;</div>
+      <div class="id" id="my-id">&mdash;</div>
+    </div>
+
+    <div class="qr-card">
+      <div class="label">Show this QR to your partner</div>
+      <canvas id="qr-canvas"></canvas>
+      <div class="hint">They scan you OR you scan them. Only one of you needs to scan; the trade counts for both.</div>
+    </div>
+
+    <button class="scan-btn" id="scan-btn">
+      <span class="icon">&#9889;</span>Scan a partner
+    </button>
+
+    <div class="stat-row">
+      <div class="stat-cell">
+        <div class="num" id="trade-count">0</div>
+        <div class="lbl">Trades made</div>
+      </div>
+      <div class="stat-cell">
+        <div class="num" id="time-left">5:00</div>
+        <div class="lbl">Time left</div>
+      </div>
+    </div>
+
+    <div class="partners">
+      <h3>People you've scanned</h3>
+      <div id="partner-list">
+        <div class="empty">No trades yet. Find someone.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PHASE: ENDED ============ -->
+  <div id="phase-ended" class="phase-ended hidden">
+    <h2>Mixer ended</h2>
+    <div class="countdown">&#10003;</div>
+    <p>Look at the front of the room.</p>
+    <p>The infection tree is on screen. Your team is reverse-engineering the contact graph to identify Patient Zero.</p>
+    <div class="stat-row" style="margin-top: 24px;">
+      <div class="stat-cell">
+        <div class="num" id="trade-count-final">0</div>
+        <div class="lbl">Your trade count</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PHASE: REVEALED ============ -->
+  <div id="phase-revealed" class="hidden">
+    <div class="reveal-panel" id="reveal-panel">
+      <div class="pz-label">After the reveal</div>
+      <div id="your-state" class="your-state">&mdash;</div>
+      <div id="your-lineage" class="lineage"></div>
+    </div>
+    <p style="text-align: center; color: #9bb3c9; margin: 16px 0;">Your team is computing R&#8320; from the contact graph. Look at the front of the room.</p>
+    <div class="stat-row">
+      <div class="stat-cell">
+        <div class="num" id="trade-count-revealed">0</div>
+        <div class="lbl">Your trades</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MISSING ID / ERROR ============ -->
+  <div id="phase-error" class="phase-pre hidden">
+    <h2 style="color: #ef4444;">Token not recognized</h2>
+    <p>This URL doesn't match a roster entry.</p>
+    <p>Check the link the instructor sent. Need help? Wave at the front of the room.</p>
+  </div>
+
+  <div class="footer">BIOL 2: The Crucible &bull; Spring 2026</div>
+
+</div>
+
+<!-- Camera scanner modal -->
+<div id="scanner-modal" class="modal">
+  <div class="modal-header">
+    <div class="title">Aim camera at partner's QR</div>
+    <div class="close"><button id="close-scan">Close</button></div>
+  </div>
+  <div id="scanner-region"></div>
+  <div id="scan-feedback" class="scan-feedback">Initializing camera...</div>
+</div>
+
+<!-- Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getDatabase, ref, onValue, get, set, update, push, runTransaction, serverTimestamp, query, orderByChild, limitToLast
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA0Xe_dnQ9-BpSWep5mRJr5WHvPQBRqo4E",
+  authDomain: "biol2-bb1.firebaseapp.com",
+  databaseURL: "https://biol2-bb1-default-rtdb.firebaseio.com",
+  projectId: "biol2-bb1",
+  storageBucket: "biol2-bb1.firebasestorage.app",
+  messagingSenderId: "987841003700",
+  appId: "1:987841003700:web:4637fc8b32e55b066957e1"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// =====================================================================
+// 1. Identify this student from the URL ?id=carlos_r
+// =====================================================================
+const params = new URLSearchParams(location.search);
+const myId = (params.get("id") || "").trim().toLowerCase();
+const baseURL = location.origin + location.pathname;
+let myName = null;
+let myData = null;
+let configCache = null;
+let allStudents = {};
+let lastScannedAt = {};   // partnerID -> timestamp (local dedup)
+const DEDUP_MS = 30000;
+
+function show(phase) {
+  for (const p of ["pre", "running", "ended", "revealed", "error"]) {
+    const el = document.getElementById(`phase-${p}`);
+    if (el) el.classList.toggle("hidden", p !== phase);
+  }
+}
+
+async function bootstrap() {
+  if (!myId) {
+    show("error");
+    return;
+  }
+
+  // Fetch roster to validate
+  const rosterResp = await fetch("roster.json").then(r => r.json()).catch(() => null);
+  if (!rosterResp) {
+    document.getElementById("phase-error").querySelector("p").textContent = "Roster file failed to load. Refresh.";
+    show("error");
+    return;
+  }
+  const me = rosterResp.students.find(s => s.id === myId);
+  if (!me) {
+    show("error");
+    return;
+  }
+  myName = me.name;
+  document.getElementById("my-name").textContent = myName;
+  document.getElementById("my-id").textContent = myId;
+
+  // Render QR with my token URL
+  const qrText = `${baseURL}?id=${myId}`;
+  await new Promise(resolve => {
+    QRCode.toCanvas(document.getElementById("qr-canvas"), qrText, { width: 280, margin: 1, color: { dark: "#1a3a5c", light: "#ffffff" } }, (err) => resolve());
+  });
+
+  // Ensure my student record exists in Firebase (idempotent)
+  const myRef = ref(db, `s19_outbreak/students/${myId}`);
+  const snap = await get(myRef);
+  if (!snap.exists()) {
+    await set(myRef, { name: myName, infected_at: null, infected_by: null, trade_count: 0 });
+  }
+
+  // Listen for live state
+  onValue(ref(db, `s19_outbreak/config`), (s) => {
+    configCache = s.val() || {};
+    updatePhase();
+  });
+
+  onValue(ref(db, `s19_outbreak/students/${myId}`), (s) => {
+    myData = s.val() || {};
+    document.getElementById("trade-count").textContent = myData.trade_count || 0;
+    document.getElementById("trade-count-final").textContent = myData.trade_count || 0;
+    document.getElementById("trade-count-revealed").textContent = myData.trade_count || 0;
+  });
+
+  // Listen for ALL students (needed for scanning + reveal lookups)
+  onValue(ref(db, `s19_outbreak/students`), (s) => {
+    allStudents = s.val() || {};
+    renderPartners();
+    if ((configCache?.state) === "revealed") renderReveal();
+  });
+
+  // Tick the timer every second
+  setInterval(updatePhase, 1000);
+}
+
+function updatePhase() {
+  if (!configCache) return;
+  const state = configCache.state || "pre";
+  const now = Date.now();
+
+  if (state === "pre") {
+    show("pre");
+    return;
+  }
+  if (state === "running") {
+    const startedAt = configCache.started_at || now;
+    const dur = (configCache.mixer_duration || 330) * 1000;
+    const remaining = Math.max(0, startedAt + dur - now);
+    if (remaining === 0) {
+      show("ended");
+    } else {
+      show("running");
+      const m = Math.floor(remaining / 60000);
+      const s = Math.floor((remaining % 60000) / 1000);
+      document.getElementById("time-left").textContent = `${m}:${String(s).padStart(2, "0")}`;
+    }
+    return;
+  }
+  if (state === "ended") {
+    show("ended");
+    return;
+  }
+  if (state === "partial_revealed") {
+    // Same student-facing view as 'ended'. The contact-tracing exercise is at the front of the room.
+    show("ended");
+    return;
+  }
+  if (state === "revealed") {
+    show("revealed");
+    renderReveal();
+    return;
+  }
+}
+
+function renderPartners() {
+  if (!myData) return;
+  const list = document.getElementById("partner-list");
+  // Get IDs of partners I've scanned (we'll fetch from contacts node)
+  // Simpler: maintain partner list from Firebase contacts
+  // For lightweight implementation, listen to contacts where a or b == myId
+  // (handled in registerPartnerListener below)
+}
+
+let knownPartnerIds = new Set();
+function registerPartnerListener() {
+  onValue(ref(db, `s19_outbreak/contacts`), (s) => {
+    const all = s.val() || {};
+    knownPartnerIds = new Set();
+    for (const k of Object.keys(all)) {
+      const c = all[k];
+      if (c.a === myId) knownPartnerIds.add(c.b);
+      else if (c.b === myId) knownPartnerIds.add(c.a);
+    }
+    const list = document.getElementById("partner-list");
+    if (knownPartnerIds.size === 0) {
+      list.innerHTML = `<div class="empty">No trades yet. Find someone.</div>`;
+    } else {
+      const pills = Array.from(knownPartnerIds)
+        .map(id => allStudents[id]?.name || id)
+        .map(name => `<span class="pill">${escapeHTML(name)}</span>`)
+        .join("");
+      list.innerHTML = pills;
+    }
+  });
+}
+
+function escapeHTML(s) { return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+function renderReveal() {
+  if (!myData || !configCache) return;
+  const stateEl = document.getElementById("your-state");
+  const lineageEl = document.getElementById("your-lineage");
+  const isPZ = configCache.patient_zero_id === myId;
+  if (isPZ) {
+    stateEl.className = "your-state patient-zero";
+    stateEl.textContent = "Patient Zero";
+    lineageEl.innerHTML = `You started the outbreak. ${countDescendants(myId)} people were infected (directly or downstream).`;
+    return;
+  }
+  if (myData.infected_at) {
+    stateEl.className = "your-state infected";
+    stateEl.textContent = "Infected";
+    const lineage = traceLineage(myId);
+    lineageEl.innerHTML = `Infected at ${formatT(myData.infected_at - configCache.started_at)} by <strong>${escapeHTML(allStudents[myData.infected_by]?.name || "?")}</strong>. <br>Generation ${lineage.length - 1}: ${lineage.map(id => escapeHTML(allStudents[id]?.name || id)).join(" &rarr; ")}`;
+  } else {
+    stateEl.className = "your-state susceptible";
+    stateEl.textContent = "Survived";
+    lineageEl.textContent = "You stayed susceptible. Lucky timing or good ventilation.";
+  }
+}
+
+function formatT(ms) {
+  const s = Math.max(0, Math.floor(ms / 1000));
+  return `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
+}
+
+function traceLineage(id) {
+  const path = [];
+  let cur = id;
+  let safety = 50;
+  while (cur && safety-- > 0) {
+    path.unshift(cur);
+    const data = allStudents[cur];
+    if (!data || !data.infected_by) break;
+    cur = data.infected_by;
+  }
+  return path;
+}
+
+function countDescendants(id) {
+  // For Patient Zero on the reveal screen: count all infected students minus Patient Zero itself.
+  // (Every infected student traces their lineage back to PZ.)
+  const totalInfected = Object.values(allStudents).filter(s => s.infected_at).length;
+  return Math.max(0, totalInfected - 1);
+}
+
+// =====================================================================
+// 2. QR scanning
+// =====================================================================
+let html5QrScanner = null;
+
+document.getElementById("scan-btn").addEventListener("click", () => openScanner());
+document.getElementById("close-scan").addEventListener("click", () => closeScanner());
+
+async function openScanner() {
+  // Block scanning if mixer not running
+  if ((configCache?.state) !== "running") {
+    flashFeedback("Mixer is not active right now.", "error");
+    return;
+  }
+
+  document.getElementById("scanner-modal").classList.add("show");
+  setFeedback("Initializing camera...", "");
+
+  // Clear any existing scanner
+  if (html5QrScanner) {
+    try { await html5QrScanner.stop(); } catch(_){}
+    html5QrScanner = null;
+  }
+
+  // Pick rear camera if available
+  try {
+    const cameras = await Html5Qrcode.getCameras();
+    let cameraId = cameras[0]?.id;
+    const rear = cameras.find(c => /back|rear|environment/i.test(c.label));
+    if (rear) cameraId = rear.id;
+    if (!cameraId) throw new Error("No camera found");
+
+    html5QrScanner = new Html5Qrcode("scanner-region");
+    await html5QrScanner.start(
+      cameraId,
+      { fps: 10, qrbox: { width: 250, height: 250 } },
+      onScanSuccess,
+      () => {} // ignore scan failure ticks
+    );
+    setFeedback("Aim at the partner's QR", "");
+  } catch (e) {
+    setFeedback("Camera failed: " + e.message, "error");
+  }
+}
+
+async function closeScanner() {
+  if (html5QrScanner) {
+    try { await html5QrScanner.stop(); } catch(_){}
+    html5QrScanner = null;
+  }
+  document.getElementById("scanner-modal").classList.remove("show");
+}
+
+function setFeedback(msg, type) {
+  const el = document.getElementById("scan-feedback");
+  el.textContent = msg;
+  el.className = "scan-feedback " + (type || "");
+}
+
+function flashFeedback(msg, type) {
+  setFeedback(msg, type);
+  setTimeout(() => setFeedback("Aim at the partner's QR", ""), 1800);
+}
+
+async function onScanSuccess(decodedText) {
+  // Parse the partner's id from the QR URL
+  let partnerId = null;
+  try {
+    const u = new URL(decodedText, location.href);
+    partnerId = (u.searchParams.get("id") || "").toLowerCase();
+  } catch (_) {}
+  if (!partnerId) {
+    flashFeedback("Not a valid token QR.", "error");
+    return;
+  }
+  if (partnerId === myId) {
+    flashFeedback("That's your own QR.", "error");
+    return;
+  }
+  if (!allStudents[partnerId]) {
+    flashFeedback("Unknown partner.", "error");
+    return;
+  }
+
+  // Local dedup
+  if (lastScannedAt[partnerId] && Date.now() - lastScannedAt[partnerId] < DEDUP_MS) {
+    flashFeedback("Already scanned " + (allStudents[partnerId]?.name || "them") + " just now.", "error");
+    return;
+  }
+
+  // Pause scanning while we record
+  if (html5QrScanner) {
+    try { await html5QrScanner.pause(true); } catch(_){}
+  }
+
+  setFeedback("Recording trade...", "");
+
+  try {
+    await recordTrade(partnerId);
+    lastScannedAt[partnerId] = Date.now();
+    flashFeedback("Traded with " + (allStudents[partnerId]?.name || partnerId), "success");
+    setTimeout(() => closeScanner(), 1200);
+  } catch (e) {
+    flashFeedback("Error: " + e.message, "error");
+    if (html5QrScanner) {
+      try { await html5QrScanner.resume(); } catch(_){}
+    }
+  }
+}
+
+// =====================================================================
+// 3. Record a trade in Firebase
+// =====================================================================
+async function recordTrade(partnerId) {
+  const a = myId;
+  const b = partnerId;
+  const now = Date.now();
+
+  // Re-check config
+  const cfgSnap = await get(ref(db, `s19_outbreak/config`));
+  const cfg = cfgSnap.val() || {};
+  if (cfg.state !== "running") throw new Error("Mixer not running");
+  const incubationMs = (cfg.incubation || 60) * 1000;
+
+  // Defense in depth: even if the host page is closed and the Firebase state is stale,
+  // do not record trades after the mixer time has expired.
+  const mixerDurMs = (cfg.mixer_duration || 330) * 1000;
+  if (cfg.started_at && now > cfg.started_at + mixerDurMs) {
+    throw new Error("Mixer time expired");
+  }
+
+  // Re-check both students
+  const aSnap = await get(ref(db, `s19_outbreak/students/${a}`));
+  const bSnap = await get(ref(db, `s19_outbreak/students/${b}`));
+  const aData = aSnap.val() || {};
+  const bData = bSnap.val() || {};
+
+  // Check 30-second dedup at server level
+  const recentSnap = await get(query(ref(db, `s19_outbreak/contacts`), orderByChild("timestamp"), limitToLast(50)));
+  const recent = recentSnap.val() || {};
+  for (const c of Object.values(recent)) {
+    if (((c.a === a && c.b === b) || (c.a === b && c.b === a)) && now - c.timestamp < DEDUP_MS) {
+      throw new Error("Already scanned this partner recently");
+    }
+  }
+
+  // Determine transmission: who is transmissible, who is susceptible
+  function isTransmissible(d) {
+    return d.infected_at && (now - d.infected_at >= incubationMs);
+  }
+  let transmitted = false;
+  let direction = null;
+  const aTrans = isTransmissible(aData);
+  const bTrans = isTransmissible(bData);
+  const aSus = !aData.infected_at;
+  const bSus = !bData.infected_at;
+
+  let updates = {};
+  // Record contact event
+  const contactKey = push(ref(db, "s19_outbreak/contacts")).key;
+  updates[`s19_outbreak/contacts/${contactKey}`] = {
+    a, b, timestamp: now
+  };
+
+  // a infects b
+  if (aTrans && bSus) {
+    updates[`s19_outbreak/students/${b}/infected_at`] = now;
+    updates[`s19_outbreak/students/${b}/infected_by`] = a;
+    transmitted = true;
+    direction = "a_to_b";
+  }
+  // b infects a (only if not already done above)
+  else if (bTrans && aSus) {
+    updates[`s19_outbreak/students/${a}/infected_at`] = now;
+    updates[`s19_outbreak/students/${a}/infected_by`] = b;
+    transmitted = true;
+    direction = "b_to_a";
+  }
+
+  updates[`s19_outbreak/contacts/${contactKey}/transmitted`] = transmitted;
+  if (direction) updates[`s19_outbreak/contacts/${contactKey}/direction`] = direction;
+
+  // Increment trade counts (just numeric +1; race conditions are fine for visual counter)
+  updates[`s19_outbreak/students/${a}/trade_count`] = (aData.trade_count || 0) + 1;
+  updates[`s19_outbreak/students/${b}/trade_count`] = (bData.trade_count || 0) + 1;
+
+  await update(ref(db), updates);
+}
+
+// =====================================================================
+// Boot
+// =====================================================================
+bootstrap();
+registerPartnerListener();
+
+</script>
+</body>
+</html>

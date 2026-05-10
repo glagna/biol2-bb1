@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outbreak Host — BIOL 2 S19</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0e1d2e; color: #e6eef7; overflow: hidden;
+  }
+  .layout { display: table; width: 100%; height: 100vh; table-layout: fixed; }
+  .left { display: table-cell; width: 280px; vertical-align: top; background: #14283d; padding: 18px; border-right: 2px solid #1f3850; }
+  .main { display: table-cell; vertical-align: top; padding: 18px; position: relative; }
+
+  .brand { padding-bottom: 14px; border-bottom: 1px solid #1f3850; margin-bottom: 16px; }
+  .brand .badge { font-size: 0.7em; color: #9bb3c9; letter-spacing: 1.5px; text-transform: uppercase; }
+  .brand h1 { font-size: 1.3em; margin-top: 4px; color: white; }
+  .brand .session { font-size: 0.78em; color: #6b8aa3; margin-top: 4px; }
+
+  .counters { margin-bottom: 18px; }
+  .counter-row { display: table; width: 100%; }
+  .counter-row + .counter-row { margin-top: 8px; }
+  .counter-row .lbl { display: table-cell; color: #9bb3c9; font-size: 0.78em; text-transform: uppercase; letter-spacing: 1px; vertical-align: middle; }
+  .counter-row .val { display: table-cell; text-align: right; font-size: 1.4em; font-weight: 800; color: #d4a853; vertical-align: middle; font-variant-numeric: tabular-nums; }
+  .counter-row .val.big { font-size: 1.8em; }
+
+  .controls { padding-top: 16px; border-top: 1px solid #1f3850; }
+  .controls h3 { font-size: 0.72em; color: #9bb3c9; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
+  .controls button {
+    width: 100%; padding: 12px; border-radius: 8px; border: none;
+    font-weight: 700; font-size: 0.95em; cursor: pointer; margin-bottom: 8px;
+  }
+  .btn-go { background: #22c55e; color: #0e1d2e; }
+  .btn-stop { background: #ef4444; color: white; }
+  .btn-reveal { background: #d4a853; color: #0e1d2e; }
+  .btn-reset { background: #1f3850; color: #cdd9e6; border: 1px solid #2c5f8a !important; }
+  .controls button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .legend { padding-top: 16px; border-top: 1px solid #1f3850; margin-top: 16px; }
+  .legend h3 { font-size: 0.72em; color: #9bb3c9; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
+  .legend-row { display: table; width: 100%; padding: 4px 0; font-size: 0.85em; }
+  .legend-row .dot { display: table-cell; width: 18px; vertical-align: middle; }
+  .legend-row .dot span { display: inline-block; width: 14px; height: 14px; border-radius: 50%; }
+  .legend-row .lbl { display: table-cell; color: #cdd9e6; padding-left: 8px; }
+
+  .header-strip {
+    display: table; width: 100%; padding: 0 0 14px 0; border-bottom: 1px solid #1f3850; margin-bottom: 14px;
+  }
+  .header-strip .title { display: table-cell; font-size: 1.4em; font-weight: 800; color: white; vertical-align: middle; }
+  .header-strip .phase {
+    display: table-cell; vertical-align: middle; text-align: right; font-size: 1em; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 2px;
+  }
+  .phase.pre { color: #9bb3c9; }
+  .phase.running { color: #22c55e; }
+  .phase.ended { color: #d4a853; }
+  .phase.revealed { color: #ef4444; }
+  .phase .pulse { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: currentColor; margin-right: 8px; vertical-align: middle; animation: pulse 1.2s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  #graph { width: 100%; height: calc(100vh - 110px); background: #0a1623; border-radius: 12px; }
+
+  .toast {
+    position: fixed; bottom: 24px; right: 24px; padding: 14px 22px;
+    background: #1a3a5c; color: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    font-weight: 600; transform: translateY(120%); transition: transform 0.3s ease;
+    z-index: 999;
+  }
+  .toast.show { transform: translateY(0); }
+
+  .pz-banner {
+    position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
+    background: rgba(212,168,83,0.95); color: #0e1d2e;
+    padding: 14px 28px; border-radius: 10px; font-size: 1.4em; font-weight: 800;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4); display: none; z-index: 10;
+  }
+  .pz-banner.show { display: block; }
+</style>
+</head>
+<body>
+<div class="layout">
+  <!-- LEFT PANEL -->
+  <div class="left">
+    <div class="brand">
+      <div class="badge">Level 3 &bull; S19 Host</div>
+      <h1>The Outbreak</h1>
+      <div class="session">Mon May 11, 8 AM</div>
+    </div>
+
+    <div class="counters">
+      <div class="counter-row"><div class="lbl">Time left</div><div class="val big" id="time-left">&mdash;</div></div>
+      <div class="counter-row"><div class="lbl">Total trades</div><div class="val" id="total-trades">0</div></div>
+      <div class="counter-row"><div class="lbl">Infected</div><div class="val" id="total-infected">0</div></div>
+      <div class="counter-row"><div class="lbl">Susceptible</div><div class="val" id="total-susceptible">0</div></div>
+      <div class="counter-row"><div class="lbl">Generations</div><div class="val" id="generations">0</div></div>
+      <div class="counter-row"><div class="lbl">Empirical R&#8320;</div><div class="val" id="r0">&mdash;</div></div>
+    </div>
+
+    <div class="controls">
+      <h3>Controls</h3>
+      <button class="btn-go" id="btn-start">Start mixer</button>
+      <button class="btn-stop" id="btn-stop">Stop now</button>
+      <button class="btn-reveal" id="btn-partial-reveal" style="background: #fb923c; color: #0e1d2e;">Partial Reveal (infection only)</button>
+      <button class="btn-reveal" id="btn-reveal">Full Reveal (Patient Zero)</button>
+      <button class="btn-reset" id="btn-reset">Reset (full wipe)</button>
+    </div>
+
+    <div class="legend">
+      <h3>Legend</h3>
+      <div class="legend-row"><div class="dot"><span style="background:#94a3b8;"></span></div><div class="lbl">Susceptible</div></div>
+      <div class="legend-row"><div class="dot"><span style="background:#fb923c;"></span></div><div class="lbl">Infected (incubating)</div></div>
+      <div class="legend-row"><div class="dot"><span style="background:#ef4444;"></span></div><div class="lbl">Transmissible</div></div>
+      <div class="legend-row"><div class="dot"><span style="background:#d4a853; box-shadow: 0 0 8px #d4a853;"></span></div><div class="lbl">Patient Zero</div></div>
+    </div>
+  </div>
+
+  <!-- MAIN GRAPH AREA -->
+  <div class="main">
+    <div class="header-strip">
+      <div class="title" id="title-line">Waiting for instructor to start mixer</div>
+      <div class="phase pre" id="phase-tag"><span class="pulse"></span><span id="phase-label">PRE-MIXER</span></div>
+    </div>
+    <div id="graph"></div>
+    <div id="pz-banner" class="pz-banner"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<!-- vis-network for the graph -->
+<script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, get, set, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA0Xe_dnQ9-BpSWep5mRJr5WHvPQBRqo4E",
+  authDomain: "biol2-bb1.firebaseapp.com",
+  databaseURL: "https://biol2-bb1-default-rtdb.firebaseio.com",
+  projectId: "biol2-bb1",
+  storageBucket: "biol2-bb1.firebasestorage.app",
+  messagingSenderId: "987841003700",
+  appId: "1:987841003700:web:4637fc8b32e55b066957e1"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+let configCache = null;
+let allStudents = {};
+let allContacts = {};
+let nodes = null;
+let edges = null;
+let network = null;
+let revealAnimating = false;
+let revealStep = 0;
+
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2500);
+}
+
+// Initialize graph
+function initGraph() {
+  nodes = new vis.DataSet();
+  edges = new vis.DataSet();
+  network = new vis.Network(document.getElementById("graph"), { nodes, edges }, {
+    physics: { enabled: true, barnesHut: { gravitationalConstant: -8000, springLength: 110, springConstant: 0.04, damping: 0.18 } },
+    nodes: { shape: "dot", size: 22, font: { color: "#e6eef7", size: 13, face: "-apple-system, BlinkMacSystemFont, sans-serif" }, borderWidth: 2 },
+    edges: { color: { color: "#3a5d80", highlight: "#d4a853" }, width: 1.5, smooth: false },
+    interaction: { hover: false, dragNodes: false, zoomView: true, dragView: true }
+  });
+}
+initGraph();
+
+function getRevealMode() {
+  // Determine how much to reveal in the graph.
+  // "none"    = mixer running or ended; show nothing about infection
+  // "partial" = infection states shown, but Patient Zero halo hidden (contact-tracing exercise)
+  // "full"    = infection states + Patient Zero halo
+  const s = configCache?.state;
+  if (s === "revealed") return "full";
+  if (s === "partial_revealed") return "partial";
+  return "none";
+}
+
+function colorFor(studentId, data) {
+  const mode = getRevealMode();
+  const isPZ = configCache?.patient_zero_id === studentId;
+
+  // Full reveal: PZ gets gold halo
+  if (isPZ && mode === "full") return { background: "#d4a853", border: "#fff" };
+
+  // Default susceptible if no data or not infected
+  if (!data || !data.infected_at) return { background: "#94a3b8", border: "#1f3850" };
+
+  // During mixer / ended: hide all infection state (preserves dramatic reveal)
+  if (mode === "none") return { background: "#94a3b8", border: "#1f3850" };
+
+  // Partial or full reveal: show infection state (PZ shown as just another red node in partial)
+  const incubationMs = (configCache?.incubation || 60) * 1000;
+  const now = Date.now();
+  if (now - data.infected_at >= incubationMs) return { background: "#ef4444", border: "#fff" };
+  return { background: "#fb923c", border: "#fff" };
+}
+
+function rebuildGraph() {
+  if (!allStudents) return;
+  const mode = getRevealMode();
+  const ids = Object.keys(allStudents);
+  // Add/update nodes
+  for (const id of ids) {
+    const s = allStudents[id];
+    const c = colorFor(id, s);
+    const isPZ = configCache?.patient_zero_id === id && mode === "full";
+    const update = {
+      id,
+      label: s.name || id,
+      color: c,
+      borderWidth: isPZ ? 4 : 2,
+      shadow: isPZ ? { enabled: true, color: "#d4a853", size: 30 } : false
+    };
+    if (nodes.get(id)) nodes.update(update); else nodes.add(update);
+  }
+  for (const n of nodes.get()) {
+    if (!ids.includes(n.id)) nodes.remove(n.id);
+  }
+
+  // Edges: show transmissions in red ONLY when revealing (partial or full); hide infection edges otherwise
+  const showInfectionEdges = (mode === "partial" || mode === "full");
+  // Show ALL contacts (gray) during running too, so students see graph filling in
+  const showAllEdges = (configCache?.state === "running" || mode === "partial" || mode === "full");
+  if (!showAllEdges) {
+    edges.clear();
+    return;
+  }
+  const desired = {};
+  for (const k of Object.keys(allContacts)) {
+    const c = allContacts[k];
+    if (!c.a || !c.b) continue;
+    const eid = [c.a, c.b].sort().join("--");
+    desired[eid] = { id: eid, from: c.a, to: c.b, transmitted: !!c.transmitted };
+  }
+  for (const eid of Object.keys(desired)) {
+    const d = desired[eid];
+    const color = (d.transmitted && showInfectionEdges)
+      ? { color: "#ef4444", highlight: "#fff" }
+      : { color: "#3a5d80", highlight: "#d4a853" };
+    const width = (d.transmitted && showInfectionEdges) ? 3 : 1.5;
+    const update = { id: eid, from: d.from, to: d.to, color, width };
+    if (edges.get(eid)) edges.update(update); else edges.add(update);
+  }
+  for (const e of edges.get()) {
+    if (!desired[e.id]) edges.remove(e.id);
+  }
+}
+
+function updateCounters() {
+  const sIds = Object.keys(allStudents);
+  const total = sIds.length;
+  const infected = sIds.filter(id => allStudents[id].infected_at).length;
+  const susceptible = total - infected;
+  const trades = Object.keys(allContacts).length;
+  document.getElementById("total-trades").textContent = trades;
+  // Hide infection / susceptible counts until at least partial reveal (preserves the dramatic moment)
+  const mode = getRevealMode();
+  if (mode === "none") {
+    document.getElementById("total-infected").textContent = "—";
+    document.getElementById("total-susceptible").textContent = "—";
+  } else {
+    document.getElementById("total-infected").textContent = infected;
+    document.getElementById("total-susceptible").textContent = susceptible;
+  }
+
+  // Generations + R0 only after FULL reveal (PZ revealed). Defer R0 teaching to S21.
+  if (configCache?.state === "revealed") {
+    const { gens, r0 } = computeGenerationsAndR0();
+    document.getElementById("generations").textContent = gens;
+    document.getElementById("r0").textContent = r0 != null ? r0.toFixed(2) : "—";
+  } else {
+    document.getElementById("generations").textContent = "—";
+    document.getElementById("r0").textContent = "—";
+  }
+}
+
+function computeGenerationsAndR0() {
+  // Build infection tree from infected_by edges
+  const pz = configCache?.patient_zero_id;
+  if (!pz) return { gens: 0, r0: null };
+  // Children of each id
+  const children = {};
+  for (const id of Object.keys(allStudents)) {
+    const s = allStudents[id];
+    if (s.infected_by) {
+      if (!children[s.infected_by]) children[s.infected_by] = [];
+      children[s.infected_by].push(id);
+    }
+  }
+  // BFS from PZ to compute depth
+  let maxDepth = 0;
+  const queue = [{ id: pz, d: 0 }];
+  while (queue.length) {
+    const { id, d } = queue.shift();
+    if (d > maxDepth) maxDepth = d;
+    for (const c of (children[id] || [])) queue.push({ id: c, d: d + 1 });
+  }
+  // R0 = average secondary infections in Generation 1 = number of direct PZ contacts
+  // (i.e., how many people PZ infected directly)
+  const directPZ = (children[pz] || []).length;
+  // Could refine: average across Gen 1 -> Gen 2 too. For LO3.5 simplicity: just direct PZ infections.
+  return { gens: maxDepth, r0: directPZ };
+}
+
+function updatePhase() {
+  if (!configCache) return;
+  const state = configCache.state || "pre";
+  const tag = document.getElementById("phase-tag");
+  const lbl = document.getElementById("phase-label");
+  const title = document.getElementById("title-line");
+  tag.classList.remove("pre", "running", "ended", "revealed");
+
+  if (state === "pre") {
+    tag.classList.add("pre");
+    lbl.textContent = "PRE-MIXER";
+    title.textContent = "Waiting for instructor to start mixer";
+  } else if (state === "running") {
+    tag.classList.add("running");
+    lbl.textContent = "MIXER LIVE";
+    const startedAt = configCache.started_at || Date.now();
+    const dur = (configCache.mixer_duration || 330) * 1000;
+    const remaining = Math.max(0, startedAt + dur - Date.now());
+    if (remaining === 0) {
+      // auto-transition to ended (also recomputed by tick)
+      title.textContent = "Mixer ending...";
+    } else {
+      const m = Math.floor(remaining / 60000);
+      const s = Math.floor((remaining % 60000) / 1000);
+      document.getElementById("time-left").textContent = `${m}:${String(s).padStart(2, "0")}`;
+      title.textContent = "MIXER LIVE — students are scanning";
+    }
+  } else if (state === "ended") {
+    tag.classList.add("ended");
+    lbl.textContent = "ENDED";
+    title.textContent = "Mixer ended. Click 'Partial Reveal' to start contact tracing.";
+    document.getElementById("time-left").textContent = "0:00";
+  } else if (state === "partial_revealed") {
+    tag.classList.add("ended");
+    lbl.textContent = "TRACING";
+    title.textContent = "Contact tracing: teams identify Patient Zero from the infection tree";
+    document.getElementById("time-left").textContent = "0:00";
+  } else if (state === "revealed") {
+    tag.classList.add("revealed");
+    lbl.textContent = "REVEALED";
+    title.textContent = "Patient Zero revealed";
+    document.getElementById("time-left").textContent = "0:00";
+  }
+}
+
+// Auto-end mixer when timer hits zero (host page is the source of truth for state transitions)
+async function tickAutoEnd() {
+  if (!configCache) return;
+  if (configCache.state === "running") {
+    const startedAt = configCache.started_at || Date.now();
+    const dur = (configCache.mixer_duration || 330) * 1000;
+    if (Date.now() >= startedAt + dur) {
+      // Transition to ended
+      await update(ref(db, "s19_outbreak/config"), { state: "ended", ended_at: Date.now() });
+      toast("Mixer auto-ended (timer hit zero)");
+    }
+  }
+}
+
+// ---- Listeners ----
+onValue(ref(db, "s19_outbreak/config"), (s) => {
+  configCache = s.val() || {};
+  updatePhase();
+  rebuildGraph();
+});
+onValue(ref(db, "s19_outbreak/students"), (s) => {
+  allStudents = s.val() || {};
+  rebuildGraph();
+  updateCounters();
+});
+onValue(ref(db, "s19_outbreak/contacts"), (s) => {
+  allContacts = s.val() || {};
+  rebuildGraph();
+  updateCounters();
+});
+
+// Periodic UI tick
+setInterval(() => {
+  updatePhase();
+  rebuildGraph();
+  tickAutoEnd();
+}, 1000);
+
+// ---- Controls ----
+document.getElementById("btn-start").addEventListener("click", async () => {
+  if (!configCache?.patient_zero_id) {
+    toast("Pick Patient Zero on admin.html first.");
+    return;
+  }
+  const incubationMs = (configCache?.incubation || 60) * 1000;
+  const now = Date.now();
+  // Pre-set Patient Zero as transmissible at t=0 (infected_at = now - incubation - 1)
+  const pz = configCache.patient_zero_id;
+  await update(ref(db, `s19_outbreak/students/${pz}`), {
+    infected_at: now - incubationMs - 1,
+    infected_by: null
+  });
+  await update(ref(db, "s19_outbreak/config"), {
+    state: "running",
+    started_at: now
+  });
+  toast("Mixer started. Patient Zero is " + (allStudents[pz]?.name || pz));
+});
+
+document.getElementById("btn-stop").addEventListener("click", async () => {
+  if (!confirm("Stop the mixer now?")) return;
+  await update(ref(db, "s19_outbreak/config"), { state: "ended", ended_at: Date.now() });
+});
+
+document.getElementById("btn-partial-reveal").addEventListener("click", async () => {
+  await update(ref(db, "s19_outbreak/config"), { state: "partial_revealed" });
+  rebuildGraph();
+  toast("Partial reveal: teams now identify Patient Zero from the infection tree.");
+  if (network) network.fit({ animation: { duration: 1200 } });
+});
+
+document.getElementById("btn-reveal").addEventListener("click", async () => {
+  await update(ref(db, "s19_outbreak/config"), { state: "revealed" });
+  rebuildGraph();
+  // Patient Zero banner
+  const pz = configCache?.patient_zero_id;
+  if (pz && allStudents[pz]) {
+    const banner = document.getElementById("pz-banner");
+    banner.textContent = "Patient Zero: " + allStudents[pz].name;
+    banner.classList.add("show");
+    setTimeout(() => banner.classList.remove("show"), 6000);
+  }
+  if (network) network.fit({ animation: { duration: 1200 } });
+});
+
+document.getElementById("btn-reset").addEventListener("click", async () => {
+  if (!confirm("WIPE ALL data (students, contacts, config) and return to admin.html to set up a fresh mixer?")) return;
+  await remove(ref(db, "s19_outbreak/contacts"));
+  await remove(ref(db, "s19_outbreak/students"));
+  await set(ref(db, "s19_outbreak/config"), { state: "pre" });
+  toast("Reset complete. Go to admin.html.");
+});
+</script>
+</body>
+</html>

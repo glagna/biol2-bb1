@@ -1,0 +1,90 @@
+{
+  "rules": {
+    "s19_outbreak": {
+      ".read": true,
+      ".write": true,
+      "config": {
+        ".validate": "newData.hasChildren() || !newData.exists()",
+        "state": { ".validate": "newData.isString() && (newData.val() == 'pre' || newData.val() == 'running' || newData.val() == 'ended' || newData.val() == 'partial_revealed' || newData.val() == 'revealed')" },
+        "started_at": { ".validate": "newData.isNumber() || !newData.exists()" },
+        "ended_at": { ".validate": "newData.isNumber() || !newData.exists()" },
+        "patient_zero_id": { ".validate": "newData.isString() || !newData.exists()" },
+        "mixer_duration": { ".validate": "newData.isNumber() && newData.val() >= 60 && newData.val() <= 900" },
+        "incubation": { ".validate": "newData.isNumber() && newData.val() >= 10 && newData.val() <= 600" }
+      },
+      "students": {
+        "$id": {
+          ".validate": "newData.hasChildren(['name'])",
+          "name": { ".validate": "newData.isString() && newData.val().length <= 60" },
+          "infected_at": { ".validate": "newData.isNumber() || !newData.exists()" },
+          "infected_by": { ".validate": "newData.isString() || !newData.exists()" },
+          "trade_count": { ".validate": "newData.isNumber() && newData.val() <= 100" }
+        }
+      },
+      "contacts": {
+        "$cid": {
+          ".validate": "newData.hasChildren(['a','b','timestamp'])",
+          "a": { ".validate": "newData.isString()" },
+          "b": { ".validate": "newData.isString()" },
+          "timestamp": { ".validate": "newData.isNumber()" },
+          "transmitted": { ".validate": "newData.isBoolean()" },
+          "direction": { ".validate": "newData.isString()" }
+        }
+      }
+    },
+    "rd13": {
+      ".read": true,
+      ".write": true
+    },
+    "rd14": {
+      ".read": true,
+      ".write": true
+    },
+    "rd15": {
+      ".read": true,
+      ".write": true
+    },
+    "rd16": {
+      ".read": true,
+      ".write": true
+    },
+    "rd17": {
+      ".read": true,
+      ".write": true
+    },
+    "rd18": {
+      ".read": true,
+      ".write": true
+    },
+    "rd19": {
+      ".read": true,
+      ".write": true
+    },
+    "rd20": {
+      ".read": true,
+      ".write": true
+    },
+    "rd21": {
+      ".read": true,
+      ".write": true
+    },
+    "bb1": {
+      ".read": true,
+      ".write": true
+    },
+    "bb2": {
+      ".read": true,
+      ".write": true
+    },
+    "bb3": {
+      ".read": true,
+      ".write": true
+    },
+    "hosts": {
+      ".read": true,
+      ".write": true
+    },
+    ".read": false,
+    ".write": false
+  }
+}

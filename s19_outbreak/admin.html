@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outbreak Admin — BIOL 2 S19</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0e1d2e; color: #e6eef7; line-height: 1.6; padding: 24px;
+  }
+  .wrap { max-width: 920px; margin: 0 auto; }
+  h1 { color: white; font-size: 1.6em; margin-bottom: 6px; }
+  .sub { color: #9bb3c9; font-size: 0.9em; margin-bottom: 24px; }
+  h2 { color: #d4a853; font-size: 1.15em; margin: 24px 0 10px; padding-bottom: 6px; border-bottom: 1px solid #1f3850; }
+  .card { background: #14283d; border-radius: 10px; padding: 20px; margin-bottom: 18px; }
+  label { display: block; color: #9bb3c9; font-size: 0.85em; margin: 12px 0 4px; text-transform: uppercase; letter-spacing: 1px; }
+  input, select, textarea {
+    width: 100%; padding: 10px 12px; background: #0e1d2e; border: 1px solid #2c5f8a; color: white;
+    border-radius: 6px; font-size: 0.95em; font-family: inherit;
+  }
+  textarea { font-family: monospace; font-size: 0.85em; min-height: 200px; }
+  button {
+    background: #d4a853; color: #0e1d2e; border: none; padding: 10px 20px; border-radius: 6px;
+    font-weight: 700; cursor: pointer; margin-top: 12px; font-size: 0.95em;
+  }
+  button.secondary { background: #2c5f8a; color: white; }
+  button.danger { background: #ef4444; color: white; }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .status { padding: 10px 14px; border-radius: 6px; margin: 12px 0; font-size: 0.9em; }
+  .status.ok { background: rgba(34,197,94,0.15); border: 1px solid #22c55e; color: #86efac; }
+  .status.warn { background: rgba(212,168,83,0.15); border: 1px solid #d4a853; color: #fde68a; }
+  .status.err { background: rgba(239,68,68,0.15); border: 1px solid #ef4444; color: #fca5a5; }
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #1f3850; font-size: 0.88em; }
+  th { color: #9bb3c9; text-transform: uppercase; letter-spacing: 1px; font-size: 0.75em; }
+  tr:hover { background: #1a3a5c; }
+  .url-cell { font-family: monospace; font-size: 0.8em; color: #cdd9e6; }
+  .row { display: table; width: 100%; margin-bottom: 8px; }
+  .row > div { display: table-cell; vertical-align: middle; }
+  .row .lbl { width: 200px; color: #9bb3c9; font-size: 0.85em; }
+  a { color: #d4a853; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>S19 Outbreak — Admin Console</h1>
+  <p class="sub">Pre-class setup for the Live-Action Outbreak. Mon May 11, 8 AM.</p>
+
+  <!-- ============ STATUS ============ -->
+  <div class="card">
+    <h2 style="margin-top: 0;">Current state</h2>
+    <div class="row"><div class="lbl">Phase</div><div id="state-now" style="color: white; font-weight: 700;">loading...</div></div>
+    <div class="row"><div class="lbl">Patient Zero</div><div id="pz-now" style="color: white;">—</div></div>
+    <div class="row"><div class="lbl">Mixer duration</div><div id="dur-now" style="color: white;">—</div></div>
+    <div class="row"><div class="lbl">Incubation</div><div id="inc-now" style="color: white;">—</div></div>
+    <div class="row"><div class="lbl">Students seeded</div><div id="seeded-now" style="color: white;">—</div></div>
+    <div class="row"><div class="lbl">Contacts logged</div><div id="contacts-now" style="color: white;">—</div></div>
+  </div>
+
+  <!-- ============ STEP 1: SEED ROSTER ============ -->
+  <div class="card">
+    <h2 style="margin-top: 0;">Step 1. Seed the roster</h2>
+    <p style="color: #9bb3c9; margin-bottom: 8px;">Loads the 47 students from <code>roster.json</code> into Firebase. Idempotent: re-running won't duplicate. Run once before class.</p>
+    <button id="btn-seed">Seed roster from roster.json</button>
+    <div id="seed-status"></div>
+  </div>
+
+  <!-- ============ STEP 2: SET PATIENT ZERO ============ -->
+  <div class="card">
+    <h2 style="margin-top: 0;">Step 2. Pick Patient Zero (secret)</h2>
+    <p style="color: #9bb3c9; margin-bottom: 8px;">Choose the student who will start infected. Pick someone who tends to mingle (not someone who'll sit in a corner). Don't tell anyone.</p>
+    <label>Patient Zero</label>
+    <select id="pz-select"><option>Loading...</option></select>
+    <button id="btn-set-pz">Lock in Patient Zero</button>
+    <div id="pz-status"></div>
+  </div>
+
+  <!-- ============ STEP 3: CONFIG ============ -->
+  <div class="card">
+    <h2 style="margin-top: 0;">Step 3. Set mixer duration & incubation</h2>
+    <label>Mixer duration (seconds, default 330 = 5:30)</label>
+    <input type="number" id="dur-input" value="330" min="60" max="900">
+    <label>Incubation period (seconds, default 60)</label>
+    <input type="number" id="inc-input" value="60" min="10" max="600">
+    <button id="btn-save-cfg">Save config</button>
+    <div id="cfg-status"></div>
+  </div>
+
+  <!-- ============ STEP 4: DISTRIBUTE URLS ============ -->
+  <div class="card">
+    <h2 style="margin-top: 0;">Step 4. Distribute student token URLs</h2>
+    <p style="color: #9bb3c9; margin-bottom: 8px;">Copy the table below into a Camino announcement, send Mon 7:55 AM. Each student finds their row and clicks their personal URL on their phone.</p>
+    <p style="color: #9bb3c9; margin-bottom: 8px;">Or copy as Markdown / plain text using the buttons below the table.</p>
+    <button id="btn-copy-md" class="secondary">Copy as Markdown</button>
+    <button id="btn-copy-html" class="secondary">Copy as HTML table</button>
+    <button id="btn-copy-csv" class="secondary">Copy as CSV</button>
+    <div id="copy-status"></div>
+
+    <table id="roster-table">
+      <thead><tr><th>Name</th><th>Token URL</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- ============ STEP 5: GO LIVE ============ -->
+  <div class="card">
+    <h2 style="margin-top: 0;">Step 5. Mon morning, 8:22 AM</h2>
+    <p style="color: #9bb3c9; margin-bottom: 12px;">Open the host page on the lecture-hall computer. Mirror it to the Apple TV. Then click <strong>Start mixer</strong> on the host page.</p>
+    <a href="host.html" target="_blank"><button>Open host page in new tab</button></a>
+  </div>
+
+  <!-- ============ DANGER ZONE ============ -->
+  <div class="card">
+    <h2 style="margin-top: 0; color: #ef4444;">Danger zone</h2>
+    <p style="color: #9bb3c9; margin-bottom: 8px;">Wipes <strong>all S19 outbreak data</strong> in Firebase: students, contacts, config. Use this between dry runs or if the data is dirty.</p>
+    <button class="danger" id="btn-wipe">Wipe everything</button>
+    <div id="wipe-status"></div>
+  </div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, get, set, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA0Xe_dnQ9-BpSWep5mRJr5WHvPQBRqo4E",
+  authDomain: "biol2-bb1.firebaseapp.com",
+  databaseURL: "https://biol2-bb1-default-rtdb.firebaseio.com",
+  projectId: "biol2-bb1",
+  storageBucket: "biol2-bb1.firebasestorage.app",
+  messagingSenderId: "987841003700",
+  appId: "1:987841003700:web:4637fc8b32e55b066957e1"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+let roster = null;
+let configCache = null;
+let studentsCache = {};
+let contactsCount = 0;
+
+function showStatus(elId, msg, type) {
+  const el = document.getElementById(elId);
+  el.innerHTML = `<div class="status ${type}">${msg}</div>`;
+}
+
+// Load roster.json
+async function loadRoster() {
+  const r = await fetch("roster.json").then(r => r.json());
+  roster = r;
+  // Fill PZ dropdown
+  const sel = document.getElementById("pz-select");
+  sel.innerHTML = roster.students.map(s => `<option value="${s.id}">${s.name} (${s.id})</option>`).join("");
+  // Render URL table
+  const baseURL = location.origin + location.pathname.replace(/admin\.html$/, "index.html");
+  const tbody = document.querySelector("#roster-table tbody");
+  tbody.innerHTML = roster.students.map(s => {
+    const url = `${baseURL}?id=${s.id}`;
+    return `<tr><td><strong>${s.name}</strong></td><td class="url-cell"><a href="${url}" target="_blank">${url}</a></td></tr>`;
+  }).join("");
+}
+
+// Listen for live state
+onValue(ref(db, "s19_outbreak/config"), (s) => {
+  configCache = s.val() || {};
+  document.getElementById("state-now").textContent = (configCache.state || "pre").toUpperCase();
+  document.getElementById("pz-now").textContent = configCache.patient_zero_id ? `${configCache.patient_zero_id} (${studentsCache[configCache.patient_zero_id]?.name || "?"})` : "(not set)";
+  document.getElementById("dur-now").textContent = configCache.mixer_duration ? `${configCache.mixer_duration}s = ${Math.floor(configCache.mixer_duration/60)}:${String(configCache.mixer_duration%60).padStart(2,"0")}` : "(default 5:30)";
+  document.getElementById("inc-now").textContent = configCache.incubation ? `${configCache.incubation}s` : "(default 60)";
+  if (configCache.mixer_duration) document.getElementById("dur-input").value = configCache.mixer_duration;
+  if (configCache.incubation) document.getElementById("inc-input").value = configCache.incubation;
+  if (configCache.patient_zero_id) document.getElementById("pz-select").value = configCache.patient_zero_id;
+});
+onValue(ref(db, "s19_outbreak/students"), (s) => {
+  studentsCache = s.val() || {};
+  document.getElementById("seeded-now").textContent = `${Object.keys(studentsCache).length} students`;
+});
+onValue(ref(db, "s19_outbreak/contacts"), (s) => {
+  contactsCount = Object.keys(s.val() || {}).length;
+  document.getElementById("contacts-now").textContent = `${contactsCount} contacts`;
+});
+
+// Step 1: Seed
+document.getElementById("btn-seed").addEventListener("click", async () => {
+  if (!roster) { showStatus("seed-status", "Roster not loaded yet, refresh.", "err"); return; }
+  showStatus("seed-status", "Seeding...", "warn");
+  const updates = {};
+  for (const s of roster.students) {
+    // Only seed if not already present (preserves existing infection state)
+    const existing = studentsCache[s.id];
+    if (!existing) {
+      updates[`s19_outbreak/students/${s.id}`] = { name: s.name, infected_at: null, infected_by: null, trade_count: 0 };
+    } else {
+      updates[`s19_outbreak/students/${s.id}/name`] = s.name;
+    }
+  }
+  await update(ref(db), updates);
+  showStatus("seed-status", `Seeded ${roster.students.length} students. Existing data preserved.`, "ok");
+});
+
+// Step 2: Set Patient Zero
+document.getElementById("btn-set-pz").addEventListener("click", async () => {
+  const pzId = document.getElementById("pz-select").value;
+  if (!pzId) return;
+  await update(ref(db, "s19_outbreak/config"), { patient_zero_id: pzId });
+  showStatus("pz-status", `Patient Zero set: ${roster.students.find(s => s.id === pzId)?.name || pzId}. Don't tell anyone.`, "ok");
+});
+
+// Step 3: Save config
+document.getElementById("btn-save-cfg").addEventListener("click", async () => {
+  const dur = parseInt(document.getElementById("dur-input").value, 10);
+  const inc = parseInt(document.getElementById("inc-input").value, 10);
+  if (!dur || dur < 60 || dur > 900) { showStatus("cfg-status", "Mixer duration must be 60-900 seconds.", "err"); return; }
+  if (!inc || inc < 10 || inc > 600) { showStatus("cfg-status", "Incubation must be 10-600 seconds.", "err"); return; }
+  await update(ref(db, "s19_outbreak/config"), { mixer_duration: dur, incubation: inc });
+  showStatus("cfg-status", `Config saved: mixer ${Math.floor(dur/60)}:${String(dur%60).padStart(2,"0")}, incubation ${inc}s.`, "ok");
+});
+
+// Step 4: Copy URL list
+function getURLList() {
+  const baseURL = location.origin + location.pathname.replace(/admin\.html$/, "index.html");
+  return roster.students.map(s => ({ name: s.name, url: `${baseURL}?id=${s.id}` }));
+}
+document.getElementById("btn-copy-md").addEventListener("click", async () => {
+  const list = getURLList();
+  const md = "## Your Outbreak token URL (S19, Mon May 11)\n\nFind your name, click your link, keep your phone open during the mixer.\n\n" +
+    list.map(s => `- **${s.name}**: ${s.url}`).join("\n");
+  await navigator.clipboard.writeText(md);
+  showStatus("copy-status", "Copied as Markdown to clipboard.", "ok");
+});
+document.getElementById("btn-copy-html").addEventListener("click", async () => {
+  const list = getURLList();
+  const h = "<h3>Your Outbreak token URL (S19, Mon May 11)</h3><p>Find your name, click your link, keep your phone open during the mixer.</p><table><thead><tr><th>Name</th><th>URL</th></tr></thead><tbody>" +
+    list.map(s => `<tr><td>${s.name}</td><td><a href="${s.url}">${s.url}</a></td></tr>`).join("") +
+    "</tbody></table>";
+  await navigator.clipboard.writeText(h);
+  showStatus("copy-status", "Copied as HTML to clipboard.", "ok");
+});
+document.getElementById("btn-copy-csv").addEventListener("click", async () => {
+  const list = getURLList();
+  const csv = "Name,URL\n" + list.map(s => `"${s.name.replace(/"/g, '""')}",${s.url}`).join("\n");
+  await navigator.clipboard.writeText(csv);
+  showStatus("copy-status", "Copied as CSV to clipboard.", "ok");
+});
+
+// Danger: wipe
+document.getElementById("btn-wipe").addEventListener("click", async () => {
+  if (!confirm("Wipe ALL S19 data (students, contacts, config)? This cannot be undone.")) return;
+  await remove(ref(db, "s19_outbreak"));
+  await set(ref(db, "s19_outbreak/config"), { state: "pre" });
+  showStatus("wipe-status", "Wiped. Re-seed with Step 1 to start fresh.", "warn");
+});
+
+// Boot
+loadRoster();
+</script>
+</body>
+</html>
