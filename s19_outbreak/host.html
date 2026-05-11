@@ -244,15 +244,27 @@ function rebuildGraph() {
     const c = allContacts[k];
     if (!c.a || !c.b) continue;
     const eid = [c.a, c.b].sort().join("--");
-    desired[eid] = { id: eid, from: c.a, to: c.b, transmitted: !!c.transmitted };
+    // Direction: for transmitted edges, point FROM infector TO infected so the
+    // arrow on the rendered graph shows the infection chain correctly.
+    // For non-transmitted edges, direction is arbitrary (no arrow rendered).
+    let from = c.a, to = c.b;
+    if (c.transmitted && c.direction === "b_to_a") {
+      from = c.b; to = c.a;
+    }
+    desired[eid] = { id: eid, from, to, transmitted: !!c.transmitted };
   }
   for (const eid of Object.keys(desired)) {
     const d = desired[eid];
-    const color = (d.transmitted && showInfectionEdges)
+    const showAsTransmission = d.transmitted && showInfectionEdges;
+    const color = showAsTransmission
       ? { color: "#ef4444", highlight: "#fff" }
       : { color: "#3a5d80", highlight: "#d4a853" };
-    const width = (d.transmitted && showInfectionEdges) ? 3 : 1.5;
-    const update = { id: eid, from: d.from, to: d.to, color, width };
+    const width = showAsTransmission ? 3.5 : 1.5;
+    // Arrows ONLY on transmission edges during reveal; contact-only edges stay undirected.
+    const arrows = showAsTransmission
+      ? { to: { enabled: true, scaleFactor: 1.4, type: "arrow" } }
+      : { to: { enabled: false } };
+    const update = { id: eid, from: d.from, to: d.to, color, width, arrows };
     if (edges.get(eid)) edges.update(update); else edges.add(update);
   }
   for (const e of edges.get()) {
