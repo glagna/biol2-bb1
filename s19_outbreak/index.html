@@ -591,12 +591,9 @@ async function recordTrade(partnerId) {
   const aSus = !aData.infected_at;
   const bSus = !bData.infected_at;
 
+  // Determine transmission first so we can build the full contact record in one shot.
+  // (Firebase rejects multi-path updates that include both an ancestor and its descendant.)
   let updates = {};
-  // Record contact event
-  const contactKey = push(ref(db, "s19_outbreak/contacts")).key;
-  updates[`s19_outbreak/contacts/${contactKey}`] = {
-    a, b, timestamp: now
-  };
 
   // a infects b
   if (aTrans && bSus) {
@@ -613,8 +610,11 @@ async function recordTrade(partnerId) {
     direction = "b_to_a";
   }
 
-  updates[`s19_outbreak/contacts/${contactKey}/transmitted`] = transmitted;
-  if (direction) updates[`s19_outbreak/contacts/${contactKey}/direction`] = direction;
+  // Build the contact event in one object (no descendant-path overwrites)
+  const contactKey = push(ref(db, "s19_outbreak/contacts")).key;
+  const contactObj = { a, b, timestamp: now, transmitted };
+  if (direction) contactObj.direction = direction;
+  updates[`s19_outbreak/contacts/${contactKey}`] = contactObj;
 
   // Increment trade counts (just numeric +1; race conditions are fine for visual counter)
   updates[`s19_outbreak/students/${a}/trade_count`] = (aData.trade_count || 0) + 1;
