@@ -1,0 +1,46 @@
+{
+  "rules": {
+    "rd13": {
+      "state": {
+        ".write": "root.child('hosts').child(auth.uid).exists()",
+        ".read": true,
+        "phase": { ".validate": "newData.isString()" },
+        "currentQ": { ".validate": "newData.isNumber()" },
+        "answerKey": {
+          "$q": { ".validate": "newData.isString() && newData.val().length === 1" }
+        }
+      },
+      "teams": {
+        "$teamId": {
+          ".read": true,
+          "name": {
+            ".write": "!data.exists() || root.child('hosts').child(auth.uid).exists()",
+            ".validate": "newData.isString()"
+          },
+          "bets": {
+            "$q": {
+              ".write": "!data.exists() && (root.child('hosts').child(auth.uid).exists() || auth.uid === $teamId)",
+              ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 3"
+            }
+          },
+          "answers": {
+            "$q": {
+              ".write": "!data.exists() && (root.child('hosts').child(auth.uid).exists() || auth.uid === $teamId)",
+              ".validate": "newData.isString() && newData.val().length === 1 && ['A','B','C','D'].indexOf(newData.val()) !== -1"
+            }
+          }
+        }
+      },
+      "hosts": {
+        ".read": "root.child('hosts').child(auth.uid).exists()",
+        ".write": false
+      }
+    },
+    "bb1": {
+      ".read": true,
+      ".write": "root.child('hosts').child(auth.uid).exists()"
+    },
+    ".read": false,
+    ".write": false
+  }
+}

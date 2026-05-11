@@ -1,0 +1,63 @@
+[
+  {
+    "q": 1,
+    "category": "Innate vs adaptive immunity",
+    "stem": "Your innate and adaptive immune systems work together. Which statement is TRUE about how they differ?",
+    "options": {
+      "A": "Innate is fast and the same response every time; adaptive is slower but specific and develops memory.",
+      "B": "Innate fights bacteria; adaptive fights viruses.",
+      "C": "Innate is for children; adaptive develops in adults.",
+      "D": "Innate uses antibodies; adaptive uses physical barriers."
+    },
+    "correct": "A"
+  },
+  {
+    "q": 2,
+    "category": "Adaptive immunity components",
+    "stem": "What is the main role of B cells in adaptive immunity?",
+    "options": {
+      "A": "Produce antibodies that bind to specific pathogens.",
+      "B": "Directly kill virus-infected body cells.",
+      "C": "Trigger inflammation and recruit phagocytes.",
+      "D": "Form the physical skin barrier."
+    },
+    "correct": "A"
+  },
+  {
+    "q": 3,
+    "category": "Vaccine memory",
+    "stem": "How does a vaccine protect you from a disease without making you sick?",
+    "options": {
+      "A": "It kills the pathogen in advance, so there's nothing left to infect you later.",
+      "B": "It introduces an antigen (not an active pathogen) that trains your B and T cells to recognize the real pathogen later.",
+      "C": "It boosts your innate immune system so you're permanently more resistant.",
+      "D": "It contains antibiotics that act as a long-lasting prophylactic."
+    },
+    "correct": "B"
+  },
+  {
+    "q": 4,
+    "category": "L2 callback — central dogma",
+    "stem": "The flu vaccine teaches your body to make antibodies. The genetic instructions for those antibodies travel which way?",
+    "options": {
+      "A": "Protein → RNA → DNA",
+      "B": "RNA → DNA → Protein",
+      "C": "DNA → RNA → Protein",
+      "D": "DNA → Protein directly, skipping RNA"
+    },
+    "correct": "C"
+  },
+  {
+    "q": 5,
+    "category": "L1 callback (2x payout)",
+    "stem": "Your immune cells multiply rapidly when fighting an infection. That rapid cell division requires a lot of energy. Where in the cell is most of the cell's ATP produced?",
+    "options": {
+      "A": "In the nucleus, alongside DNA replication",
+      "B": "On the inner mitochondrial membrane, by the electron transport chain",
+      "C": "In the cytoplasm, by glycolysis alone",
+      "D": "In the ribosomes during protein synthesis"
+    },
+    "correct": "B",
+    "doublePayout": true
+  }
+]
