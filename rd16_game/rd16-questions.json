@@ -1,0 +1,63 @@
+[
+  {
+    "q": 1,
+    "category": "Myth: the flu shot gives you the flu",
+    "stem": "It's commonly claimed that 'the flu shot can give you the flu.' Which is the best response based on how flu vaccines actually work?",
+    "options": {
+      "A": "False. Most flu vaccines contain killed virus or just antigens, so they cannot replicate or cause infection.",
+      "B": "True. The vaccine contains live flu virus that can replicate in your body.",
+      "C": "True, but only for the live attenuated nasal spray version, which is rarely used now.",
+      "D": "False, but only if you're under 65 years old."
+    },
+    "correct": "A"
+  },
+  {
+    "q": 2,
+    "category": "Myth: vaccines cause autism",
+    "stem": "Many large studies (over a million children combined) have examined whether routine childhood vaccines cause autism. What did they find?",
+    "options": {
+      "A": "A small but real increase in autism risk after the MMR vaccine.",
+      "B": "Risk only in genetically predisposed children.",
+      "C": "No causal link between routine childhood vaccines and autism.",
+      "D": "Risk only when multiple vaccines are given on the same day."
+    },
+    "correct": "C"
+  },
+  {
+    "q": 3,
+    "category": "Myth: natural immunity is always better",
+    "stem": "Compared to a flu vaccine, getting the actual flu produces immunity that is...",
+    "options": {
+      "A": "Identical, since both trigger the same B-cell and T-cell response.",
+      "B": "Often broader, but comes with the risks of the actual disease (severe symptoms, complications, sometimes death).",
+      "C": "Always stronger, longer-lasting, and safer than a vaccine.",
+      "D": "Weaker, because the body gives up on memory after fighting a real pathogen."
+    },
+    "correct": "B"
+  },
+  {
+    "q": 4,
+    "category": "Myth: mRNA vaccines change your DNA",
+    "stem": "Do mRNA vaccines (such as the COVID-19 vaccines) change your DNA?",
+    "options": {
+      "A": "Yes. mRNA gets reverse-transcribed back into DNA inside your cells.",
+      "B": "Only temporarily, until the body finishes making the protein.",
+      "C": "Only in muscle cells, where the vaccine is injected.",
+      "D": "No. mRNA stays in the cytoplasm, is broken down in days, and never enters the nucleus where DNA lives."
+    },
+    "correct": "D"
+  },
+  {
+    "q": 5,
+    "category": "Myth: half the population is enough (2x payout)",
+    "stem": "Some claim that 'herd immunity will protect everyone once half the population is immune.' For a highly contagious disease like measles, why is that misleading?",
+    "options": {
+      "A": "Because measles is not actually contagious enough to require herd immunity at all.",
+      "B": "Because half-vaccinated populations always reach a stable balance with the disease.",
+      "C": "Because the more contagious a disease, the higher the fraction of the population that must be immune to stop sustained transmission.",
+      "D": "Because herd immunity only works through vaccination, never through natural infection."
+    },
+    "correct": "C",
+    "doublePayout": true
+  }
+]
