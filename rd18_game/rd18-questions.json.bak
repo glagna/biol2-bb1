@@ -1,0 +1,63 @@
+[
+  {
+    "q": 1,
+    "category": "Herd immunity threshold",
+    "stem": "A community has 70% of its population immune to a disease. The disease still spreads, slowly. What is the most likely explanation?",
+    "options": {
+      "A": "The disease has mutated to a new variant the immune population can't handle.",
+      "B": "70% is below the herd immunity threshold for this disease, so transmission chains still happen between unimmune people.",
+      "C": "Herd immunity requires 100% coverage to work at all.",
+      "D": "Vaccines only work for two weeks after administration."
+    },
+    "correct": "B"
+  },
+  {
+    "q": 2,
+    "category": "HIT math at R0 = 3",
+    "stem": "The original COVID-19 strain had R0 about 3. Using the HIT formula, what fraction of the population needed to be immune to reach the threshold for that strain?",
+    "options": {
+      "A": "About 33%",
+      "B": "About 50%",
+      "C": "About 67%",
+      "D": "About 95%"
+    },
+    "correct": "C"
+  },
+  {
+    "q": 3,
+    "category": "Who is protected by herd immunity",
+    "stem": "A 4-month-old infant is too young for the MMR vaccine. The infant lives in a community with 95% measles vaccination. What is the BEST description of the infant's risk?",
+    "options": {
+      "A": "Zero risk, because 95% coverage exceeds the measles HIT of about 93%.",
+      "B": "Same risk as in any community, because the infant has no antibodies.",
+      "C": "Same risk as in a 50%-coverage community, because the infant isn't vaccinated.",
+      "D": "Higher risk than the average community member, because infants get sicker."
+    },
+    "correct": "A"
+  },
+  {
+    "q": 4,
+    "category": "Immunocompromised dependence (L2 callback)",
+    "stem": "A cancer patient on chemotherapy has a suppressed immune system and cannot respond to vaccines effectively. They are most safely protected from infectious diseases when:",
+    "options": {
+      "A": "They take prophylactic antibiotics every day.",
+      "B": "They live in a community where vaccination coverage is above the relevant HIT.",
+      "C": "They get vaccinated more frequently than healthy people.",
+      "D": "They isolate themselves indefinitely until their treatment ends."
+    },
+    "correct": "B"
+  },
+  {
+    "q": 5,
+    "category": "Deep Think Challenge: measles HIT (2x payout)",
+    "stem": "DEEP THINK CHALLENGE (double XP). Measles has R0 about 15, the highest of any common human pathogen. Using the HIT formula, what fraction of a population needs to be immune to measles for herd immunity to take hold?",
+    "options": {
+      "A": "About 75%",
+      "B": "About 87%",
+      "C": "About 93%",
+      "D": "100%. Measles is too contagious for herd immunity below total coverage."
+    },
+    "correct": "C",
+    "doublePayout": true
+  }
+]

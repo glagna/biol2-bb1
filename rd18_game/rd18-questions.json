@@ -1,0 +1,106 @@
+[
+  {
+    "q": 1,
+    "category": "Innate vs Adaptive Immunity",
+    "stem": "A student cuts her finger and the wound area becomes red and warm within 15 minutes. The cells doing the most work in those first 15 minutes are:",
+    "options": {
+      "A": "Memory B cells circulating from prior infections.",
+      "B": "Innate immune cells (phagocytes, neutrophils) responding to chemical signals from damaged tissue.",
+      "C": "Cytotoxic T cells recognizing specific antigens.",
+      "D": "Plasma cells producing antibodies on the spot."
+    },
+    "correct": "B",
+    "doublePayout": false
+  },
+  {
+    "q": 2,
+    "category": "Vaccine training",
+    "stem": "A vaccine works because it:",
+    "options": {
+      "A": "Gives you a small amount of the disease so your body learns to fight it off.",
+      "B": "Presents the immune system with antigens (or instructions to make antigens) without the pathogen causing disease, so the immune system forms memory cells for the next exposure.",
+      "C": "Permanently changes your DNA to block the pathogen.",
+      "D": "Boosts general immunity so you become resistant to everything."
+    },
+    "correct": "B",
+    "doublePayout": false
+  },
+  {
+    "q": 3,
+    "category": "Herd Immunity HIT math",
+    "stem": "A respiratory pathogen has R₀ ≈ 2 in a typical college dorm setting. The herd immunity threshold for this pathogen is approximately:",
+    "options": {
+      "A": "25%",
+      "B": "50%",
+      "C": "67%",
+      "D": "95%"
+    },
+    "correct": "B",
+    "doublePayout": false
+  },
+  {
+    "q": 4,
+    "category": "Epi curve phase reading",
+    "stem": "An outbreak begins with rising cases. By day 12, daily case counts have plateaued at about 25 per day. The plateau most likely means:",
+    "options": {
+      "A": "The outbreak is essentially over and cases will drop in the next 24 hours.",
+      "B": "Transmission has stopped because everyone who could be infected has already been infected.",
+      "C": "R has dropped to approximately 1, either because interventions are working OR because the susceptible pool is shrinking, but the outbreak is still spreading at a steady rate.",
+      "D": "The data collectors made an error in counting."
+    },
+    "correct": "C",
+    "doublePayout": false
+  },
+  {
+    "q": 5,
+    "category": "L2 callback — CRISPR mechanism",
+    "stem": "Recall from Boss Battle 2 (Designer Baby Tribunal): CRISPR-Cas9 works by:",
+    "options": {
+      "A": "Selecting embryos that already lack a disease-causing allele, without modifying any DNA.",
+      "B": "Inserting a virus into the patient's bone marrow that overwrites the disease gene.",
+      "C": "Using a guide RNA to direct the Cas9 enzyme to a specific DNA sequence, where Cas9 cuts both strands so the cell's repair machinery can introduce a change at that site.",
+      "D": "Spraying a chemical that mutates random DNA bases until the disease gene happens to break."
+    },
+    "correct": "C",
+    "doublePayout": false
+  },
+  {
+    "q": 6,
+    "category": "L2 callback — risk literacy",
+    "stem": "A 23andMe-style test reports: \"Your variant slightly increases your risk of Type 2 diabetes.\" Which interpretation is BEST supported by this kind of result?",
+    "options": {
+      "A": "You will develop Type 2 diabetes; start treatment immediately.",
+      "B": "You have a slightly higher baseline genetic predisposition than the population average, but lifestyle factors and other genes contribute much more to whether you will actually develop the disease.",
+      "C": "The test is wrong because Type 2 diabetes is purely lifestyle, not genetic.",
+      "D": "You should ignore the result because genetic risk is too uncertain to act on."
+    },
+    "correct": "B",
+    "doublePayout": false
+  },
+  {
+    "q": 7,
+    "category": "R₀ from data (S23 forward-anchor)",
+    "stem": "A campus outbreak begins. Day 1: 3 cases. Day 2: 7 cases. Day 3: 17 cases. Day 4: 38 cases. Roughly, what is your best first estimate of R₀?",
+    "options": {
+      "A": "About 0.5, the outbreak will fade.",
+      "B": "About 1.2, modest spread.",
+      "C": "About 2 to 2.5, the case count is roughly doubling each day, and with a roughly 1-day generation interval that gives R₀ in this range.",
+      "D": "About 8, every case produces 8 new cases."
+    },
+    "correct": "C",
+    "doublePayout": false
+  },
+  {
+    "q": 8,
+    "category": "Deep Think Challenge — cross-LO synthesis",
+    "stem": "A friend sends you this Instagram post: \"The 1955 polio vaccine was tested on only 1.8 million children before being licensed for everyone. By 1962, polio cases had dropped 95 percent. Modern vaccines are tested on millions more. Why would anyone refuse?\" Which sentence BEST captures both what the post gets RIGHT and what it gets WRONG?",
+    "options": {
+      "A": "The post gets the trial scale right but oversimplifies: a single before-and-after correlation does not prove the vaccine caused the case drop, even though in this case more rigorous evidence (controlled studies, age-stratified data, international replication) does support the causal claim.",
+      "B": "The post is fully correct, the 95 percent drop in cases is direct proof that the vaccine works, and anyone who refuses is acting irrationally.",
+      "C": "The post is fully wrong, vaccine trials cannot establish causation; only individual case reports can.",
+      "D": "The post overstates trial scale: 1.8 million is too small a sample to detect anything."
+    },
+    "correct": "A",
+    "doublePayout": true
+  }
+]
