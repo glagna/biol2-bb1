@@ -25,6 +25,7 @@
 - "Q5 PAYS DOUBLE" banner swapped to "Q8 PAYS DOUBLE"
 - doublePayout multiplier check `qNum === 5` swapped to `qNum === 8` (index.html line 793) and `q === 5 ? 2 : 1` swapped to `q === 8 ? 2 : 1` (leaderboard.html line 244)
 - End-of-round check `currentQ < 5` swapped to `currentQ < 8` (host.html line 423)
+- **Bug fix 2026-05-17 PM (Claude audit pass):** index.html line 818 inside `computeTeamScore()` still had stale `if (i === 5) pts *= 2;` from the rd13 era. The per-question reveal banner (line 793) and the leaderboard (line 244) were correct, but the in-app team header total was doubling Q5 instead of Q8. Patched to `if (i === 8) pts *= 2;`. Local file is fixed; re-run the deploy commands below to push to GitHub Pages.
 - New 8-question JSON for cumulative L3 plus L2 callbacks; answer key B/B/B/C/C/B/C/A
 - database.rules.json: added `rd18` entry (with rd17 retained for backwards-compat)
 
