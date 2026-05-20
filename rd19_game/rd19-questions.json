@@ -1,0 +1,106 @@
+[
+  {
+    "q": 1,
+    "category": "Epi curve: final size",
+    "stem": "An outbreak's epi curve rises for 8 days, then falls. To find the final size of the outbreak (the total number of cases it produced), you would:",
+    "options": {
+      "A": "add up the daily new case counts",
+      "B": "read the height of the peak day",
+      "C": "multiply the peak day count by eight",
+      "D": "check how steep the early rise was"
+    },
+    "correct": "A",
+    "doublePayout": false
+  },
+  {
+    "q": 2,
+    "category": "Epi curve: steepness and R0",
+    "stem": "Two outbreaks are shown on epi curves. Outbreak X rises gently; Outbreak Y rises steeply. Compared with Outbreak X, Outbreak Y most likely has:",
+    "options": {
+      "A": "a smaller total population",
+      "B": "a later first reported case",
+      "C": "a longer average recovery time",
+      "D": "a higher reproduction number"
+    },
+    "correct": "D",
+    "doublePayout": false
+  },
+  {
+    "q": 3,
+    "category": "Epi curve: plateau",
+    "stem": "On an epi curve, the daily new case count stops rising and holds roughly flat for several days before it declines. This flat stretch of the curve is the:",
+    "options": {
+      "A": "plateau",
+      "B": "incline",
+      "C": "summit",
+      "D": "decline"
+    },
+    "correct": "A",
+    "doublePayout": false
+  },
+  {
+    "q": 4,
+    "category": "Epi curve: post-peak decline",
+    "stem": "An epi curve peaks on day 10 and then declines. Even with no new intervention, one common reason an outbreak's cases fall after the peak is that:",
+    "options": {
+      "A": "the pathogen has become weaker",
+      "B": "the incubation period has grown longer",
+      "C": "the susceptible pool has shrunk",
+      "D": "the attack rate has reset to zero"
+    },
+    "correct": "C",
+    "doublePayout": false
+  },
+  {
+    "q": 5,
+    "category": "R0 estimation",
+    "stem": "Early in an outbreak, one infected person passes a virus to 4 other people before recovering. If this is typical of the early outbreak, the estimated R0 is about:",
+    "options": {
+      "A": "1",
+      "B": "4",
+      "C": "8",
+      "D": "16"
+    },
+    "correct": "B",
+    "doublePayout": false
+  },
+  {
+    "q": 6,
+    "category": "R0: generation growth",
+    "stem": "An outbreak has an estimated R0 of 2. Early on, 5 people are infected. If each of them infects 2 more, the next generation produces about how many new cases?",
+    "options": {
+      "A": "2",
+      "B": "5",
+      "C": "10",
+      "D": "25"
+    },
+    "correct": "C",
+    "doublePayout": false
+  },
+  {
+    "q": 7,
+    "category": "Attack rate: single group",
+    "stem": "At a conference dinner, 80 attendees ate the chicken and 20 of them became ill. The attack rate among attendees who ate the chicken is:",
+    "options": {
+      "A": "20 percent",
+      "B": "25 percent",
+      "C": "40 percent",
+      "D": "80 percent"
+    },
+    "correct": "B",
+    "doublePayout": false
+  },
+  {
+    "q": 8,
+    "category": "Wager Question: attack-rate comparison",
+    "stem": "At a picnic, 24 of the 30 people who ate the egg salad got sick (attack rate 80 percent). Among the 20 people who did not eat the egg salad, 4 got sick (attack rate 20 percent). Comparing these two attack rates suggests that:",
+    "options": {
+      "A": "the picnic had no real outbreak at all",
+      "B": "the non-eaters were the more exposed group",
+      "C": "egg salad eaters were simply unlucky that day",
+      "D": "the egg salad is a likely outbreak source"
+    },
+    "correct": "D",
+    "doublePayout": true
+  }
+]
