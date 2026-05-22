@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RD20 Leaderboard — The Wager Arena</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+            background: linear-gradient(135deg, #1a2332 0%, #0f1419 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 2rem;
+            overflow: hidden;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            border-bottom: 3px solid #d4af37;
+            padding-bottom: 1rem;
+        }
+        .header h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 3rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #d4af37, #f5e6d3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 0.15em;
+            margin-bottom: 0.5rem;
+        }
+        .header p {
+            font-size: 0.95rem;
+            color: #d4af37;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .leaderboard {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            overflow-y: auto;
+            padding-right: 1rem;
+        }
+        .leaderboard::-webkit-scrollbar {
+            width: 8px;
+        }
+        .leaderboard::-webkit-scrollbar-track {
+            background: rgba(212, 175, 55, 0.1);
+        }
+        .leaderboard::-webkit-scrollbar-thumb {
+            background: #d4af37;
+            border-radius: 4px;
+        }
+        .team-card {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(245, 230, 211, 0.05) 100%);
+            border: 2px solid #d4af37;
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .team-card.place-1 {
+            border: 3px solid #ffd700;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.25) 0%, rgba(212, 175, 55, 0.1) 100%);
+        }
+        .team-card.place-2 {
+            border: 3px solid #c0c0c0;
+            background: linear-gradient(135deg, rgba(192, 192, 192, 0.15) 0%, rgba(212, 175, 55, 0.05) 100%);
+        }
+        .team-card.place-3 {
+            border: 3px solid #cd7f32;
+            background: linear-gradient(135deg, rgba(205, 127, 50, 0.15) 0%, rgba(212, 175, 55, 0.05) 100%);
+        }
+        .place-badge {
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cinzel', serif;
+            font-weight: 900;
+            font-size: 1.5rem;
+            border: 3px solid;
+        }
+        .place-1 .place-badge {
+            background: #ffd700;
+            color: #1a2332;
+            border-color: #fff;
+        }
+        .place-2 .place-badge {
+            background: #c0c0c0;
+            color: #1a2332;
+            border-color: #fff;
+        }
+        .place-3 .place-badge {
+            background: #cd7f32;
+            color: #fff;
+            border-color: #fff;
+        }
+        .team-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-left: 60px;
+            margin-bottom: 0.5rem;
+            color: #d4af37;
+        }
+        .team-score {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #f5e6d3;
+            margin-left: 60px;
+            font-family: 'IBM Plex Sans', sans-serif;
+        }
+        .team-progress {
+            margin-left: 60px;
+            margin-top: 0.75rem;
+            font-size: 0.85rem;
+            color: #c0c0c0;
+        }
+        .ticker {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(212, 175, 55, 0.1);
+            border-left: 4px solid #d4af37;
+            border-radius: 4px;
+            min-height: 100px;
+            overflow-y: auto;
+            max-height: 200px;
+        }
+        .ticker h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            color: #d4af37;
+            margin-bottom: 0.75rem;
+            letter-spacing: 0.1em;
+        }
+        .ticker-item {
+            font-size: 0.85rem;
+            color: #c0c0c0;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        .ticker-item:last-child {
+            border-bottom: none;
+        }
+        .sync-status {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: #d4af37;
+        }
+        .sync-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        @media (max-width: 1400px) {
+            .leaderboard {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>RD20 Leaderboard</h1>
+            <p>The Wager Arena — Live Scores</p>
+        </div>
+
+        <div class="leaderboard" id="leaderboardContainer"></div>
+
+        <div class="ticker">
+            <h3>Last Actions</h3>
+            <div id="tickerFeed"></div>
+        </div>
+    </div>
+
+    <div class="sync-status">
+        <div class="sync-dot"></div>
+        <span>Live</span>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+        import { getDatabase, ref, onValue, get } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAOUaEtZxQqNr2UdDxIJQVfr8LjvU3QLwk",
+            authDomain: "biol2-bb1.firebaseapp.com",
+            projectId: "biol2-bb1",
+            storageBucket: "biol2-bb1.appspot.com",
+            messagingSenderId: "950852181425",
+            appId: "1:950852181425:web:2e4e8a5c42cfbe436cc1a1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let teams = {};
+        let currentQuestion = 0;
+        let answerKey = {};
+        let tickerMessages = [];
+
+        function calculateScore(team) {
+            let total = 0;
+            for (let q = 1; q <= 8; q++) {
+                const bet = team.bets ? team.bets[`q${q}`] : 0;
+                const answer = team.answers ? team.answers[`q${q}`] : null;
+                const correct = answerKey[`q${q}`];
+
+                if (bet && answer && correct) {
+                    const sign = answer === correct ? 1 : -1;
+                    const multiplier = q === 8 ? 2 : 1;
+                    const points = bet * sign * multiplier;
+                    total += points;
+                }
+            }
+            return total;
+        }
+
+        function updateLeaderboard() {
+            const container = document.getElementById('leaderboardContainer');
+            const scored = Object.entries(teams).map(([id, team]) => ({
+                id,
+                name: team.name || `Team ${id}`,
+                score: calculateScore(team)
+            })).sort((a, b) => b.score - a.score);
+
+            container.innerHTML = scored.map((team, idx) => {
+                const place = idx + 1;
+                const placeClass = place <= 3 ? `place-${place}` : '';
+                const badgeNum = place === 1 ? '1st' : place === 2 ? '2nd' : place === 3 ? '3rd' : place;
+                const questionsAnswered = Object.keys(teams[team.id].answers || {}).length;
+
+                return `
+                    <div class="team-card ${placeClass}">
+                        <div class="place-badge">${badgeNum}</div>
+                        <div class="team-name">${team.name}</div>
+                        <div class="team-score">${team.score} XP</div>
+                        <div class="team-progress">Answered: ${questionsAnswered}/8 questions</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function addTickerMessage(msg) {
+            tickerMessages.unshift(msg);
+            if (tickerMessages.length > 20) tickerMessages.pop();
+            const feed = document.getElementById('tickerFeed');
+            feed.innerHTML = tickerMessages.map(m => `<div class="ticker-item">${m}</div>`).join('');
+        }
+
+        // Listen to teams
+        onValue(ref(db, 'rd20/teams'), (snapshot) => {
+            if (snapshot.exists()) {
+                teams = snapshot.val();
+                updateLeaderboard();
+            }
+        });
+
+        // Listen to answer key
+        onValue(ref(db, 'rd20/state/answerKey'), (snapshot) => {
+            if (snapshot.exists()) {
+                answerKey = snapshot.val();
+                updateLeaderboard();
+                addTickerMessage(`Answer revealed for Q${currentQuestion}`);
+            }
+        });
+
+        // Listen to current question
+        onValue(ref(db, 'rd20/state/currentQ'), (snapshot) => {
+            if (snapshot.exists()) {
+                const newQ = snapshot.val();
+                if (newQ !== currentQuestion) {
+                    currentQuestion = newQ;
+                    addTickerMessage(`Question ${currentQuestion} now active`);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

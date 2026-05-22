@@ -1,0 +1,106 @@
+[
+  {
+    "q": 1,
+    "category": "Herd immunity threshold: R0 = 2",
+    "stem": "A disease has a basic reproduction number (R0) of 2. Using HIT = 1 - 1/R0, the herd immunity threshold is:",
+    "options": {
+      "A": "25 percent",
+      "B": "50 percent",
+      "C": "75 percent",
+      "D": "100 percent"
+    },
+    "correct": "B",
+    "doublePayout": false
+  },
+  {
+    "q": 2,
+    "category": "Herd immunity threshold: R0 = 5",
+    "stem": "A more transmissible disease has R0 = 5. Its herd immunity threshold is:",
+    "options": {
+      "A": "20 percent",
+      "B": "50 percent",
+      "C": "80 percent",
+      "D": "95 percent"
+    },
+    "correct": "C",
+    "doublePayout": false
+  },
+  {
+    "q": 3,
+    "category": "Herd immunity threshold: R0 = 10",
+    "stem": "Measles is extremely contagious, with R0 about 10 in an unprotected population. The herd immunity threshold for measles is therefore about:",
+    "options": {
+      "A": "10 percent",
+      "B": "50 percent",
+      "C": "75 percent",
+      "D": "90 percent"
+    },
+    "correct": "D",
+    "doublePayout": false
+  },
+  {
+    "q": 4,
+    "category": "Attack rate: single group",
+    "stem": "In a dormitory, 30 students were not vaccinated against the flu, and 18 of those 30 caught it. The attack rate among the unvaccinated students is:",
+    "options": {
+      "A": "18 percent",
+      "B": "36 percent",
+      "C": "60 percent",
+      "D": "90 percent"
+    },
+    "correct": "C",
+    "doublePayout": false
+  },
+  {
+    "q": 5,
+    "category": "Attack rate: vaccinated vs unvaccinated",
+    "stem": "In that same dorm, among the 20 vaccinated students only 2 caught the flu (attack rate 10 percent), while the unvaccinated attack rate was 60 percent. The comparison most directly shows that:",
+    "options": {
+      "A": "the vaccine sharply reduced the chance of illness",
+      "B": "the vaccine made no measurable difference",
+      "C": "the vaccinated students were simply less exposed by chance",
+      "D": "the flu did not really spread in the dorm"
+    },
+    "correct": "A",
+    "doublePayout": false
+  },
+  {
+    "q": 6,
+    "category": "Attack rate: before vs after an intervention",
+    "stem": "A summer camp ran two sessions of the same activity. Session 1, with no hand-washing rule, had a stomach-illness attack rate of 45 percent. Session 2, with a hand-washing rule added and nothing else changed, had an attack rate of 12 percent. The drop from 45 to 12 percent is best described as:",
+    "options": {
+      "A": "proof that the pathogen disappeared on its own",
+      "B": "the measured effect of adding the hand-washing rule",
+      "C": "evidence that Session 2 simply had more campers",
+      "D": "a sign that the attack rate is not a useful number"
+    },
+    "correct": "B",
+    "doublePayout": false
+  },
+  {
+    "q": 7,
+    "category": "Epi curve: before vs after vaccination",
+    "stem": "Two epidemic curves are drawn for the same disease in two towns. Town A's curve rises to a tall, sharp peak. Town B, where most residents were vaccinated beforehand, has a curve that stays low and flat. The flat curve in Town B is best explained by:",
+    "options": {
+      "A": "Town B having a much larger population than Town A",
+      "B": "the disease being a different pathogen in Town B",
+      "C": "Town B reporting its cases far less often than Town A",
+      "D": "most of Town B being immune, so each case found fewer people to infect"
+    },
+    "correct": "D",
+    "doublePayout": false
+  },
+  {
+    "q": 8,
+    "category": "Wager Question: intervention attribution",
+    "stem": "A city introduced a mask rule the same week its outbreak hit its peak. After that week, daily cases fell steadily. A news report credits the mask rule with ending the outbreak. The most scientifically careful response is to:",
+    "options": {
+      "A": "note that cases fall on their own after a peak, so the new rule's effect is unclear",
+      "B": "agree with the news report, since the city's cases fell right after the new rule",
+      "C": "agree with the news report, since mask rules reliably end almost every outbreak",
+      "D": "decide, from the timing alone, that the mask rule must have made things much worse"
+    },
+    "correct": "A",
+    "doublePayout": true
+  }
+]

@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RD20 Instructor Console</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Cormorant+Garamond:ital@0;1&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --navy-deep: #0f2440;
+      --navy-2: #1a3a5c;
+      --gold: #d4af37;
+      --gold-dark: #b8860b;
+      --cream: #fdf6ec;
+      --cream-2: #f5ebd6;
+      --green: #5fa67e;
+      --red: #c0392b;
+      --white: #ffffff;
+      --muted: #8b9db0;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--navy-deep) 0%, var(--navy-2) 100%);
+      color: var(--cream);
+      font-family: 'IBM Plex Sans', sans-serif;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: var(--navy-2);
+      border-top: 3px solid var(--gold);
+      border-bottom: 1px solid var(--navy-2);
+      padding: 20px 28px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .brand {
+      font-family: 'Cinzel', serif;
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .subtitle {
+      font-family: 'IBM Plex Mono', monospace;
+      color: var(--cream-2);
+      font-size: 12px;
+    }
+
+    .panel {
+      background: var(--navy-2);
+      border: 1px solid var(--navy-2);
+      padding: 22px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+
+    .panel-title {
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      color: var(--gold);
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--gold-dark);
+    }
+
+    .question-display {
+      background: rgba(10, 22, 40, 0.8);
+      padding: 20px;
+      border-left: 4px solid var(--gold);
+      margin-bottom: 16px;
+      border-radius: 4px;
+    }
+
+    .question-category {
+      display: inline-block;
+      background: var(--gold-dark);
+      color: var(--navy-deep);
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-radius: 3px;
+      margin-bottom: 8px;
+    }
+
+    .question-stem {
+      font-size: 18px;
+      color: var(--cream);
+      margin-bottom: 12px;
+      line-height: 1.6;
+    }
+
+    .options-list {
+      font-size: 14px;
+      color: var(--cream-2);
+      line-height: 1.8;
+    }
+
+    .option-row {
+      padding: 6px 0;
+    }
+
+    .option-letter {
+      font-family: 'Cinzel', serif;
+      font-weight: 900;
+      color: var(--gold);
+      margin-right: 8px;
+    }
+
+    .correct-answer {
+      background: rgba(95, 166, 126, 0.2);
+      border-left: 3px solid var(--green);
+      padding: 12px;
+      margin-top: 12px;
+      border-radius: 3px;
+      font-weight: 600;
+      color: var(--green);
+    }
+
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .big-btn {
+      padding: 16px 14px;
+      background: var(--navy-deep);
+      border: 2px solid var(--gold-dark);
+      color: var(--cream);
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.3s;
+    }
+
+    .big-btn:hover {
+      background: var(--gold-dark);
+      color: var(--navy-deep);
+      border-color: var(--gold);
+      transform: scale(1.02);
+    }
+
+    .big-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .big-btn.danger {
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    .big-btn.danger:hover {
+      background: var(--red);
+      color: var(--white);
+    }
+
+    .state-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .state-cell {
+      background: rgba(10, 22, 40, 0.8);
+      border: 1px solid var(--navy-2);
+      padding: 12px;
+      border-radius: 3px;
+    }
+
+    .state-label {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .state-value {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 18px;
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .team-cell {
+      background: rgba(10, 22, 40, 0.8);
+      border: 1px solid var(--navy-2);
+      padding: 12px;
+      border-radius: 3px;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .team-cell .team-name {
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+
+    .team-cell .team-status {
+      font-size: 11px;
+      color: var(--cream-2);
+    }
+
+    .leaderboard-preview {
+      margin-top: 12px;
+      font-size: 13px;
+    }
+
+    .leaderboard-row {
+      display: grid;
+      grid-template-columns: 30px 1fr 60px;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--navy-2);
+      align-items: center;
+    }
+
+    .leaderboard-row .rank {
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      color: var(--gold);
+      text-align: center;
+    }
+
+    .leaderboard-row .name {
+      color: var(--cream);
+    }
+
+    .leaderboard-row .score {
+      font-family: 'IBM Plex Mono', monospace;
+      text-align: right;
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    @media (max-width: 900px) {
+      .button-grid { grid-template-columns: 1fr; }
+      .team-grid { grid-template-columns: repeat(2, 1fr); }
+      .state-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <div class="brand">RD20 - THE WAGER ARENA</div>
+        <div class="subtitle">Instructor Console</div>
+      </div>
+    </header>
+
+    <div class="panel">
+      <div class="panel-title">Current Question</div>
+      <div class="question-display" id="qDisplay">
+        <div class="question-category" id="qCategory">DNA STRUCTURE</div>
+        <div class="question-stem" id="qStem">What two molecules form the backbone of a DNA strand?</div>
+        <div class="options-list" id="qOptions">
+          <div class="option-row"><span class="option-letter">A</span> Sugar (deoxyribose) and phosphate</div>
+        </div>
+        <div class="correct-answer">Correct: <span id="correctDisplay">A</span></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Game State</div>
+      <div class="state-grid">
+        <div class="state-cell">
+          <div class="state-label">Phase</div>
+          <div class="state-value" id="phaseDisplay">LOBBY</div>
+        </div>
+        <div class="state-cell">
+          <div class="state-label">Question</div>
+          <div class="state-value" id="questionDisplay">1/8</div>
+        </div>
+        <div class="state-cell">
+          <div class="state-label">Synced</div>
+          <div class="state-value" id="syncStatus">OK</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Controls</div>
+      <div class="button-grid">
+        <button class="big-btn" id="btnWager">Open Wager</button>
+        <button class="big-btn" id="btnAnswer">Open Answer</button>
+        <button class="big-btn" id="btnReveal">Reveal Answer</button>
+        <button class="big-btn" id="btnNext">Next Question</button>
+        <button class="big-btn" id="btnLeaderboard">Show Leaderboard</button>
+        <button class="big-btn danger" id="btnReset">Reset Round</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Team Status (16/16)</div>
+      <div class="team-grid" id="teamGrid"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Leaderboard Preview</div>
+      <div class="leaderboard-preview" id="leaderboardPreview"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getDatabase, ref, set, onValue, get } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA0Xe_dnQ9-BpSWep5mRJr5WHvPQBRqo4E",
+      authDomain: "biol2-bb1.firebaseapp.com",
+      databaseURL: "https://biol2-bb1-default-rtdb.firebaseio.com",
+      projectId: "biol2-bb1",
+      storageBucket: "biol2-bb1.firebasestorage.app",
+      messagingSenderId: "987841003700",
+      appId: "1:987841003700:web:4637fc8b32e55b066957e1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let questions = [];
+    let currentPhase = 'lobby';
+    let currentQ = 1;
+    let answerKey = {};
+    const teams = ['A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'B3', 'B4', 'C1', 'C2', 'C3', 'C4', 'D1', 'D2', 'D3', 'D4'];
+
+    async function loadQuestions() {
+      try {
+        const resp = await fetch('rd20-questions.json');
+        questions = await resp.json();
+      } catch (e) {
+        console.error('Load error:', e);
+      }
+    }
+
+    function updateQuestionDisplay() {
+      const q = questions.find(x => x.q === currentQ);
+      if (!q) return;
+
+      document.getElementById('qCategory').textContent = q.category.toUpperCase();
+      document.getElementById('qStem').textContent = q.stem;
+
+      const optDiv = document.getElementById('qOptions');
+      optDiv.innerHTML = '';
+      ['A', 'B', 'C', 'D'].forEach(letter => {
+        const row = document.createElement('div');
+        row.className = 'option-row';
+        row.innerHTML = `<span class="option-letter">${letter}</span> ${q.options[letter]}`;
+        optDiv.appendChild(row);
+      });
+
+      document.getElementById('correctDisplay').textContent = q.correct;
+    }
+
+    async function updateStateDisplay() {
+      const stateSnap = await get(ref(db, 'rd20/state'));
+      const state = stateSnap.val() || {};
+      currentPhase = state.phase || 'lobby';
+      currentQ = state.currentQ || 1;
+      answerKey = state.answerKey || {};
+
+      document.getElementById('phaseDisplay').textContent = (currentPhase || 'LOBBY').toUpperCase();
+      document.getElementById('questionDisplay').textContent = `${currentQ}/8`;
+      updateQuestionDisplay();
+    }
+
+    document.getElementById('btnWager').onclick = () => {
+      set(ref(db, 'rd20/state'), { phase: 'wager', currentQ, answerKey });
+    };
+
+    document.getElementById('btnAnswer').onclick = () => {
+      set(ref(db, 'rd20/state'), { phase: 'answer', currentQ, answerKey });
+    };
+
+    document.getElementById('btnReveal').onclick = () => {
+      const q = questions.find(x => x.q === currentQ);
+      if (!q) return;
+      const newKey = { ...answerKey };
+      newKey[`q${currentQ}`] = q.correct;
+      set(ref(db, 'rd20/state'), { phase: 'reveal', currentQ, answerKey: newKey });
+    };
+
+    document.getElementById('btnNext').onclick = () => {
+      if (currentQ < 8) {
+        const newQ = currentQ + 1;
+        set(ref(db, 'rd20/state'), { phase: 'wager', currentQ: newQ, answerKey });
+      }
+    };
+
+    document.getElementById('btnLeaderboard').onclick = () => {
+      set(ref(db, 'rd20/state'), { phase: 'leaderboard', currentQ, answerKey });
+    };
+
+    document.getElementById('btnReset').onclick = () => {
+      if (confirm('RESET ROUND? This cannot be undone.')) {
+        set(ref(db, 'rd20/state'), { phase: 'lobby', currentQ: 1, answerKey: {} });
+        teams.forEach(t => set(ref(db, `rd20/teams/${t}`), { bets: {}, answers: {} }));
+      }
+    };
+
+    function initTeamGrid() {
+      const grid = document.getElementById('teamGrid');
+      grid.innerHTML = '';
+      teams.forEach(team => {
+        const cell = document.createElement('div');
+        cell.className = 'team-cell';
+        cell.innerHTML = `<div class="team-name">${team}</div><div class="team-status" id="status_${team}">-</div>`;
+        grid.appendChild(cell);
+      });
+    }
+
+    function updateTeamStatus() {
+      teams.forEach(team => {
+        get(ref(db, `rd20/teams/${team}`)).then(snap => {
+          const data = snap.val() || { bets: {}, answers: {} };
+          const bets = Object.keys(data.bets || {}).length;
+          const answers = Object.keys(data.answers || {}).length;
+          document.getElementById(`status_${team}`).textContent = `B${bets}/A${answers}`;
+        });
+      });
+    }
+
+    async function updateLeaderboard() {
+      const scores = {};
+      for (const team of teams) {
+        const snap = await get(ref(db, `rd20/teams/${team}`));
+        const data = snap.val() || { bets: {}, answers: {} };
+        const bets = data.bets || {};
+        const answers = data.answers || {};
+        let total = 0;
+        for (let i = 1; i <= 8; i++) {
+          const bet = bets[`q${i}`] || 0;
+          const ans = answers[`q${i}`];
+          const correct = answerKey[`q${i}`];
+          if (ans && correct) {
+            const isCorrect = ans === correct;
+            let pts = isCorrect ? bet : -bet;
+            if (i === 5) pts *= 2;
+            total += pts;
+          }
+        }
+        scores[team] = total;
+      }
+
+      const sorted = teams.sort((a, b) => (scores[b] || 0) - (scores[a] || 0));
+      const lb = document.getElementById('leaderboardPreview');
+      lb.innerHTML = '';
+      sorted.slice(0, 5).forEach((team, idx) => {
+        const row = document.createElement('div');
+        row.className = 'leaderboard-row';
+        row.innerHTML = `<div class="rank">${idx + 1}</div><div class="name">${team}</div><div class="score">${scores[team] || 0}</div>`;
+        lb.appendChild(row);
+      });
+    }
+
+    function startListening() {
+      onValue(ref(db, 'rd20/state'), () => {
+        updateStateDisplay();
+      });
+
+      setInterval(() => {
+        updateTeamStatus();
+        updateLeaderboard();
+      }, 1000);
+    }
+
+    loadQuestions().then(() => {
+      initTeamGrid();
+      updateQuestionDisplay();
+      updateStateDisplay();
+      startListening();
+    });
+  </script>
+</body>
+</html>
