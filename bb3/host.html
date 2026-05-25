@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BB3 Outbreak Console — Host</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet">
+<!--
+  BIOL 2 BB3 — Outbreak Console · HOST PAGE  (spec component C)
+  Deploy as:  bb3/host.html  in the glagna/biol2-bb1 repo
+  Live URL:   https://glagna.github.io/biol2-bb1/bb3/host.html
+  INSTRUCTOR ONLY. Writes bb3/state = { idx } to the biol2-bb1 Firebase RTDB.
+  Every team device (bb3/index.html) follows this page live.
+-->
+<style>
+  :root{
+    --navy:#0e1626; --panel:#172238; --panel2:#1f2d49; --ink:#e8ecf4;
+    --muted:#9aa7be; --gold:#c9a44a;
+    --green:#3fae6b; --yellow:#d6a838; --red:#c8483c;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--navy);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;padding:18px;}
+  .wrap{max-width:760px;margin:0 auto;}
+  h1{font-family:'Cinzel',serif;font-size:20px;color:var(--gold);margin:0;}
+  .hdr{display:flex;justify-content:space-between;align-items:center;
+    border-bottom:2px solid var(--gold);padding-bottom:10px;margin-bottom:16px;}
+  .badge{background:var(--red);color:#fff;font-size:11px;font-weight:700;
+    letter-spacing:1px;text-transform:uppercase;padding:5px 11px;border-radius:4px;}
+  .panel{background:var(--panel);border:1px solid #2b3a59;border-radius:10px;
+    padding:16px;margin-bottom:14px;}
+  .ptitle{font-family:'Cinzel',serif;font-size:13px;color:var(--gold);
+    letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;}
+  .now{font-size:13px;color:var(--muted);}
+  .now b{color:var(--ink);font-size:18px;}
+  .cue{color:var(--gold);font-size:13.5px;margin-top:5px;}
+  .sync{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;
+    color:var(--muted);margin-top:8px;}
+
+  button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;
+    font-weight:700;}
+  .row{display:flex;gap:10px;margin-bottom:6px;}
+  .btn-adv{flex:1;background:var(--gold);color:#1a1407;font-size:16px;
+    padding:18px 16px;text-align:left;line-height:1.35;}
+  .btn-adv .k{font-size:11px;letter-spacing:1px;text-transform:uppercase;
+    display:block;margin-bottom:3px;}
+  .btn-adv.twist{background:var(--red);color:#fff;}
+  .btn-adv:disabled{opacity:.4;cursor:not-allowed;}
+  .btn-back{background:#2b3a59;color:var(--ink);font-size:14px;padding:18px 18px;}
+  .btn-back:disabled{opacity:.4;cursor:not-allowed;}
+  .btn-reset{width:100%;background:#3a1c14;color:#f0a59c;border:1px solid var(--red);
+    font-size:12.5px;letter-spacing:1px;text-transform:uppercase;padding:11px;
+    margin-top:4px;}
+
+  .steps{list-style:none;margin:0;padding:0;}
+  .steps li{display:flex;gap:10px;align-items:flex-start;padding:7px 9px;
+    border-radius:6px;font-size:13px;border:1px solid transparent;}
+  .steps li .n{font-family:ui-monospace,monospace;color:var(--muted);
+    min-width:20px;}
+  .steps li.done{color:var(--muted);}
+  .steps li.cur{background:var(--panel2);border-color:var(--gold);}
+  .steps li.cur .n{color:var(--gold);}
+  .steps li .tw{color:var(--red);font-weight:700;font-size:11px;}
+
+  .log{background:#0c1320;border:1px solid #2b3a59;border-radius:8px;padding:10px;
+    max-height:150px;overflow-y:auto;font-family:ui-monospace,Menlo,monospace;
+    font-size:11.5px;}
+  .log div{padding:2px 0;}
+  .log .ts{color:var(--muted);margin-right:8px;}
+  .log .ok{color:var(--green);}
+  .log .er{color:var(--red);}
+  .foot{color:var(--muted);font-size:11px;text-align:center;margin-top:14px;}
+  .foot code{color:var(--gold);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hdr">
+    <h1>BB3 Outbreak Console — Host</h1>
+    <span class="badge">Instructor only</span>
+  </div>
+
+  <div class="panel">
+    <div class="ptitle">Live state</div>
+    <div class="now">Step <b id="now-n">0</b> / 12 &nbsp;·&nbsp; <b id="now-lbl">—</b></div>
+    <div class="cue" id="now-cue">—</div>
+    <div class="sync" id="sync">Connecting to Firebase…</div>
+  </div>
+
+  <div class="panel">
+    <div class="ptitle">Drive the battle</div>
+    <div class="row">
+      <button class="btn-adv" id="adv" onclick="advance()">
+        <span class="k">Advance ▸</span><span id="adv-txt">—</span>
+      </button>
+      <button class="btn-back" id="back" onclick="goBack()">◂ Back</button>
+    </div>
+    <button class="btn-reset" onclick="resetBattle()">Reset to start (step 0)</button>
+  </div>
+
+  <div class="panel">
+    <div class="ptitle">Run of show</div>
+    <ul class="steps" id="steps"></ul>
+  </div>
+
+  <div class="panel">
+    <div class="ptitle">Action log</div>
+    <div class="log" id="log"><div>Awaiting first push…</div></div>
+  </div>
+
+  <div class="foot">
+    BB3 Outbreak Console host · pushes <code>bb3/state</code> on Firebase ·
+    keys: <code>Space</code>/<code>→</code> advance, <code>←</code> back.
+    If sync drops, hard-reload and continue.
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyA0Xe_dnQ9-BpSWep5mRJr5WHvPQBRqo4E",
+    authDomain: "biol2-bb1.firebaseapp.com",
+    databaseURL: "https://biol2-bb1-default-rtdb.firebaseio.com",
+    projectId: "biol2-bb1",
+    storageBucket: "biol2-bb1.firebasestorage.app",
+    messagingSenderId: "987841003700",
+    appId: "1:987841003700:web:4637fc8b32e55b066957e1"
+  };
+  const db = getDatabase(initializeApp(firebaseConfig));
+  const stateRef = ref(db, 'bb3/state');
+
+  // idx -> {label, cue, twist}
+  const STEPS = [
+    {l:"Start screen",            c:"Teams pick their team and read the roles.",                    t:false},
+    {l:"Cold open + IRA",         c:"0:00–0:08. Deliver the framing; hand out paper IRA; collect it.",t:false},
+    {l:"Loop 1 GREEN — Q1.1",     c:"~0:08. Day 1 SITREP. Teams profile the outbreak in the Sheet.", t:false},
+    {l:"Loop 1 — Epi-Bot online", c:"~0:16. Teams lock Q1.1, then unlock the Gem and work Q1.2.",    t:false},
+    {l:"Loop 1 — the recount",    c:"~0:24. PUSH: Day 1 was 14, surge to 32, 8 kits left. Q1.3/Q1.4.",t:true},
+    {l:"Loop 2 YELLOW — Q2.1",    c:"~0:26. The surge. Teams rank, then compute leverage.",          t:false},
+    {l:"Loop 2 — Epi-Bot",        c:"~0:33. Teams lock both rankings, consult Epi-Bot, work Q2.2.",   t:false},
+    {l:"Loop 2 — the lab result", c:"~0:37. PUSH: standard PCR panel negative. Q2.3.",               t:true},
+    {l:"Loop 3 RED — Naomi",      c:"~0:39. Naomi's message. Q3.1, Q3.2, initial ruling Q3.3.",      t:false},
+    {l:"Loop 3 — Epi-Bot",        c:"~0:45. Teams lock the initial ruling, consult Epi-Bot.",        t:false},
+    {l:"Loop 3 — Naomi worsens",  c:"~0:47. PUSH: O2 97→94, plus the President card. Q3.4.",          t:true},
+    {l:"Final Recommendation",    c:"0:52–0:58. Every team writes and submits the Battle Card.",      t:false},
+    {l:"Debrief",                 c:"0:58. Reveal the 14-day curve on the separate Debrief page.",    t:false}
+  ];
+
+  let idx = 0;
+
+  // build the step list
+  const stepsEl = document.getElementById('steps');
+  STEPS.forEach(function(s,i){
+    const li = document.createElement('li');
+    li.id = 'step-'+i;
+    li.innerHTML = '<span class="n">'+i+'</span><span>'+s.l+
+      (s.t?' <span class="tw">● PUSH</span>':'')+'</span>';
+    stepsEl.appendChild(li);
+  });
+
+  function stamp(){
+    const d=new Date();
+    return String(d.getHours()).padStart(2,'0')+':'+
+           String(d.getMinutes()).padStart(2,'0')+':'+
+           String(d.getSeconds()).padStart(2,'0');
+  }
+  function log(msg,cls){
+    const el=document.getElementById('log');
+    const d=document.createElement('div');
+    d.innerHTML='<span class="ts">'+stamp()+'</span><span class="'+(cls||'')+'">'+msg+'</span>';
+    el.prepend(d);
+  }
+
+  function render(){
+    document.getElementById('now-n').textContent = idx;
+    document.getElementById('now-lbl').textContent = STEPS[idx].l;
+    document.getElementById('now-cue').textContent = STEPS[idx].c;
+    // step list
+    STEPS.forEach(function(s,i){
+      const li=document.getElementById('step-'+i);
+      li.className = i<idx ? 'done' : (i===idx ? 'cur' : '');
+    });
+    // advance button
+    const adv=document.getElementById('adv'), advTxt=document.getElementById('adv-txt');
+    if(idx>=STEPS.length-1){
+      adv.disabled=true; advTxt.textContent='Battle complete';
+      adv.classList.remove('twist');
+    } else {
+      adv.disabled=false;
+      const nxt=STEPS[idx+1];
+      advTxt.textContent=nxt.l+(nxt.t?'  — this is a twist push':'');
+      adv.classList.toggle('twist', nxt.t);
+    }
+    document.getElementById('back').disabled = (idx<=0);
+  }
+
+  async function push(newIdx,label){
+    try{
+      await set(stateRef,{idx:newIdx});
+      log('PUSH → '+label,'ok');
+    }catch(e){
+      log('PUSH FAILED: '+e.message,'er');
+      alert('Write failed: '+e.message+'\n\nCheck wifi and try again.');
+    }
+  }
+  function advance(){
+    if(idx>=STEPS.length-1) return;
+    push(idx+1,'step '+(idx+1)+' · '+STEPS[idx+1].l);
+  }
+  function goBack(){
+    if(idx<=0) return;
+    if(!confirm('Step back to '+(idx-1)+' ('+STEPS[idx-1].l+')? Every team device will move back.')) return;
+    push(idx-1,'step '+(idx-1)+' · '+STEPS[idx-1].l+' (back)');
+  }
+  function resetBattle(){
+    if(!confirm('Reset the battle to step 0 on every team device? Use this only between run-throughs.')) return;
+    push(0,'step 0 · RESET');
+  }
+  window.advance=advance; window.goBack=goBack; window.resetBattle=resetBattle;
+
+  // mirror cloud state
+  const sync=document.getElementById('sync');
+  onValue(stateRef,function(snap){
+    const v=snap.val();
+    idx=(v&&typeof v.idx==='number')?v.idx:0;
+    render();
+    sync.textContent='Live · last sync '+stamp();
+    sync.style.color='var(--green)';
+  },function(err){
+    sync.textContent='Connection error — check wifi and reload.';
+    sync.style.color='var(--red)';
+    log('Firebase listen failed: '+err.message,'er');
+  });
+
+  document.addEventListener('keydown',function(e){
+    if(e.key===' '||e.key==='ArrowRight'){e.preventDefault();advance();}
+    else if(e.key==='ArrowLeft'){e.preventDefault();goBack();}
+  });
+
+  render();
+</script>
+</body>
+</html>

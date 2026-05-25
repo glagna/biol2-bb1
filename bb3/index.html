@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BB3 — Outbreak Console</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
+<!--
+  BIOL 2 BB3 — Outbreak Console · TEAM PAGE  (spec component C)
+  Deploy as:  bb3/index.html  in the glagna/biol2-bb1 repo
+  Live URL:   https://glagna.github.io/biol2-bb1/bb3/
+  One device per team. Reads bb3/state from the biol2-bb1 Firebase RTDB.
+  The instructor host page (host.html) drives every reveal; teams cannot
+  advance the battle from their own device. Epi-Bot is the live Gem — this
+  page reveals the Gem link + access phrase, it does not show Epi-Bot text.
+-->
+<style>
+  :root{
+    --navy:#0e1626; --panel:#172238; --panel2:#1f2d49; --ink:#e8ecf4;
+    --muted:#9aa7be; --gold:#c9a44a;
+    --green:#3fae6b; --yellow:#d6a838; --red:#c8483c; --bot:#5fb8c4;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--navy);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.55;}
+  .wrap{max-width:780px;margin:0 auto;padding:0 18px 70px;}
+  img{max-width:100%;border-radius:8px;display:block;}
+  h1{font-family:'Cinzel',serif;font-weight:700;font-size:24px;color:var(--gold);
+    text-align:center;margin:10px 0 2px;letter-spacing:.5px;}
+  .sub{text-align:center;color:var(--muted);font-size:13px;margin-bottom:8px;}
+
+  /* team bar */
+  .teambar{display:flex;gap:8px;align-items:center;justify-content:center;
+    flex-wrap:wrap;margin:8px 0 4px;}
+  .teambar label{font-size:12.5px;color:var(--muted);}
+  select{background:#0c1320;border:1px solid #2b3a59;color:var(--ink);
+    border-radius:6px;padding:7px 10px;font-size:14px;font-family:inherit;}
+  .sync{text-align:center;font-size:11.5px;color:var(--muted);margin:2px 0 6px;
+    font-family:ui-monospace,Menlo,Consolas,monospace;}
+
+  /* loop band */
+  .band{position:sticky;top:0;z-index:10;margin:0 -18px 16px;padding:8px 18px;
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:'Cinzel',serif;font-weight:700;font-size:13.5px;}
+  .band.b-gold{background:#8a7531;color:#fff;}
+  .band.b-green{background:var(--green);color:#06210f;}
+  .band.b-yellow{background:var(--yellow);color:#2a1e00;}
+  .band.b-red{background:var(--red);color:#fff;}
+  .band .step{font-family:-apple-system,sans-serif;font-weight:600;font-size:11px;
+    background:rgba(0,0,0,.22);padding:3px 9px;border-radius:20px;}
+
+  .screen{display:none;}
+  .screen.active{display:block;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;}to{opacity:1;}}
+  .block{display:none;}
+  .block.shown{display:block;animation:fade .3s ease;}
+
+  .card{background:var(--panel);border:1px solid #2b3a59;border-radius:10px;
+    padding:15px 17px;margin:13px 0;}
+  .tag{font-size:10.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+    color:var(--muted);margin-bottom:7px;}
+  .sitrep{border-left:4px solid var(--gold);}
+  .sitrep .tag{color:var(--gold);}
+  .sitrep .hd{font-family:'Cinzel',serif;font-weight:700;font-size:15px;margin-bottom:6px;}
+  .spoken{border:1px dashed #41527a;background:transparent;font-style:italic;color:#cdd6e8;}
+  .q{margin:9px 0;}
+  .q b{color:var(--gold);}
+  .subq{margin:6px 0 6px 14px;font-size:14.5px;}
+  ul.t{margin:6px 0;padding-left:22px;}
+  ul.t li{margin:3px 0;}
+  .note{font-size:12.5px;color:var(--muted);margin-top:8px;padding-top:8px;
+    border-top:1px solid #2b3a59;}
+  .hero{margin:4px 0 8px;}
+
+  /* twist */
+  .twist{border-radius:10px;padding:14px 16px;margin:14px 0;
+    background:linear-gradient(0deg,#2a1410,#3a1c14);border:1px solid var(--red);}
+  .twist.amber{background:linear-gradient(0deg,#2c2207,#3a2d09);border-color:var(--yellow);}
+  .twist .tag{color:#f0a59c;}
+  .twist.amber .tag{color:#f0d79c;}
+  .twist .hd{font-family:'Cinzel',serif;font-weight:700;font-size:14.5px;color:#ffd9d3;}
+  .twist.amber .hd{color:#ffe9b8;}
+
+  /* gate + epi-bot */
+  .gate-lbl{text-align:center;color:var(--gold);font-size:12.5px;font-weight:600;
+    margin:14px 0 4px;}
+  button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;
+    font-size:14px;font-weight:600;padding:11px 18px;}
+  .btn-lock{background:#2a3f57;color:var(--bot);border:1px solid var(--bot);
+    width:100%;padding:13px;font-size:14.5px;}
+  button:disabled{opacity:.45;cursor:not-allowed;}
+  .locked{display:none;}
+  .locked.open{display:block;animation:fade .3s ease;}
+  .bot{border:1px solid var(--bot);border-radius:10px;margin:13px 0;overflow:hidden;}
+  .bot-hd{background:#173036;padding:9px 13px;display:flex;align-items:center;gap:10px;}
+  .bot-hd img{width:34px;height:34px;border-radius:7px;}
+  .bot-hd .nm{font-weight:700;color:var(--bot);font-size:14px;}
+  .bot-body{padding:13px 15px;background:#0f1d22;font-size:14px;}
+  .phrase{font-family:'Cinzel',serif;font-weight:700;letter-spacing:2px;
+    font-size:20px;color:#ffe9b8;background:#0c1320;border:1px dashed var(--bot);
+    border-radius:8px;text-align:center;padding:10px;margin:10px 0;}
+  .linkbtn{display:block;text-align:center;text-decoration:none;border-radius:8px;
+    font-weight:700;padding:13px;margin:10px 0;font-size:14.5px;}
+  .lb-bot{background:var(--bot);color:#06222a;}
+  .lb-sheet{background:#2b3a59;color:var(--ink);border:1px solid var(--gold);}
+  .lb-card{background:var(--gold);color:#1a1407;}
+  .lb-dim{background:#1c2740;color:var(--muted);border:1px solid #2b3a59;
+    cursor:not-allowed;}
+  .center{text-align:center;}
+  .foot{text-align:center;color:var(--muted);font-size:11px;margin-top:26px;
+    border-top:1px solid #2b3a59;padding-top:13px;}
+  .waiting{text-align:center;color:var(--muted);font-style:italic;
+    padding:30px 10px;font-size:14px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Containment: The Swig Hall Outbreak</h1>
+  <div class="sub">Boss Battle 3 &nbsp;·&nbsp; SCU Public Health Response Team</div>
+  <div class="teambar">
+    <label for="team">Your team:</label>
+    <select id="team" onchange="pickTeam()">
+      <option value="">-- select --</option>
+      <option>A1</option><option>A2</option><option>A3</option><option>A4</option>
+      <option>B1</option><option>B2</option><option>B3</option><option>B4</option>
+      <option>C1</option><option>C2</option><option>C3</option><option>C4</option>
+      <option>D1</option><option>D2</option><option>D3</option><option>D4</option>
+    </select>
+  </div>
+  <div class="sync" id="sync">Connecting to the Console…</div>
+
+  <div class="band b-gold" id="band">
+    <span id="band-label">Boss Battle 3</span><span class="step" id="band-step">The Crucible</span>
+  </div>
+
+  <!-- ============ s0 START ============ -->
+  <section class="screen active" id="s0">
+    <div class="card">
+      <img class="hero" src="bb3_images/bb3_swig_hall_night.png" alt="Swig Hall at night">
+      <div class="q">Pick your team above. Your instructor will begin the battle.</div>
+      <div class="q">Three roles. Sign the section you lead on the Battle Card.</div>
+      <ul class="t">
+        <li><b>Epidemiologist</b> — the Outbreak Sheet: incubation, R0, leverage.</li>
+        <li><b>Logistics &amp; Records</b> — testing, isolation, the Battle Card.</li>
+        <li><b>Communications</b> — the final recommendation; logs the Epi-Bot verdict each loop.</li>
+      </ul>
+      <div class="note">A team of two doubles Logistics + Communications; the Epidemiologist stays solo.</div>
+    </div>
+    <div class="waiting">Waiting for your instructor to open the battle…</div>
+  </section>
+
+  <!-- ============ s1 COLD OPEN ============ -->
+  <section class="screen" id="s1">
+    <div class="card spoken">
+      <div class="tag">Your instructor, out loud</div>
+      "It is Sunday night. Over the weekend, eight students in Swig Hall came to the Cowell
+      Center with the same illness — a fever, a cough, and something stranger: a faint silver
+      sheen creeping across the whites of their eyes. The dorm is already calling it 'the
+      shimmer.' Nobody can say what it is. The county has opened a file. You are the SCU Public
+      Health Response Team, and you have just been handed the seventy-two hours that decide
+      whether this stays a cluster or becomes an outbreak."
+    </div>
+    <div class="card">
+      <div class="tag">Individual Readiness Assessment — paper, silent, 5 minutes</div>
+      <div class="q">Do the IRA on the paper sheet you were handed. On your own, no team, no
+      notes. It is collected before the team work begins.</div>
+    </div>
+    <div class="waiting">Waiting for the instructor to open Loop 1…</div>
+  </section>
+
+  <!-- ============ s2 LOOP 1 ============ -->
+  <section class="screen" id="s2">
+    <div class="block" id="l1-sitrep">
+      <div class="card sitrep">
+        <div class="tag">Console — Situation Report</div>
+        <div class="hd">DAY 1 · SWIG HALL · 11:40 PM</div>
+        <img class="hero" src="bb3_images/bb3_shimmer_eye.png" alt="the shimmer">
+        8 confirmed cases of the shimmer, symptom onset over the weekend. Roughly 400 students
+        live in this 11-story building. You hold 100 rapid-test kits. Nobody has identified the
+        pathogen, measured how fast it moves, or measured how long it incubates. The Cowell
+        Center has logged every early case into your team Outbreak Sheet. Epi-Bot is still
+        being brought online — for now, the analysis is yours.
+      </div>
+    </div>
+    <div class="block" id="l1-q11">
+      <div class="card">
+        <div class="tag">Outbreak Sheet — profile the outbreak yourselves</div>
+        <div class="q"><b>Q1.1a</b> Case Line List tab — determine the incubation period (mean
+        exposure-to-onset). Lock it.</div>
+        <div class="q"><b>Q1.1b</b> Daily Case Count tab — using your incubation period as the
+        serial interval, estimate R0 by the ratio method, then compute the herd immunity
+        threshold. Lock both.</div>
+        <a class="linkbtn lb-sheet" id="sheet-1" href="#" target="_blank" rel="noopener">Open your team Outbreak Sheet ▸</a>
+      </div>
+    </div>
+    <div class="block" id="l1-epibot">
+      <div class="gate-lbl">🔒 Epi-Bot stays sealed until your team locks Q1.1</div>
+      <button class="btn-lock" onclick="unlock('l1gem',this)">We have locked our Q1.1 numbers — bring Epi-Bot online</button>
+      <div class="locked" id="l1gem">
+        <div class="bot">
+          <div class="bot-hd"><img src="bb3_images/bb3_epibot_avatar.png" alt="Epi-Bot"><span class="nm">Epi-Bot is online</span></div>
+          <div class="bot-body">
+            Epi-Bot is a live assistant. Open it, send the access phrase as your first message,
+            then ask it for its read on the WRV-23 cluster.
+            <div class="phrase">BB3CHALLENGE</div>
+            <a class="linkbtn lb-bot" id="gem-1" href="#" target="_blank" rel="noopener">Open Epi-Bot ▸</a>
+            Epi-Bot is a tool, not an oracle. Weigh its output against your own analysis.
+          </div>
+        </div>
+        <div class="card">
+          <div class="tag">Battle Card — weigh Epi-Bot against your own analysis</div>
+          <div class="q"><b>Q1.2</b> For each point, decide where your team lands and back it with evidence.</div>
+          <div class="subq"><b>a</b> — Incubation. Does your value match Epi-Bot's? If not, what evidence supports yours, and what shortcut produced the gap?</div>
+          <div class="subq"><b>b</b> — Growth / R0. Agree or differ, on what evidence? Is this self-limiting?</div>
+          <div class="subq"><b>c</b> — The 92 percent. Can your team confirm or reject that yet? What would you need to know about WRV-23 first?</div>
+          <a class="linkbtn lb-card" id="card-1" href="#" target="_blank" rel="noopener">Open the Battle Card ▸</a>
+        </div>
+      </div>
+    </div>
+    <div class="block" id="l1-recount">
+      <div class="twist amber">
+        <div class="tag">Console push — while you are still on Q1.2</div>
+        <div class="hd">DAY 2 · 8:00 AM — THE COUNT WAS WRONG</div>
+        24 new cases overnight; the count stands at 32. A review of Day 1 intake found 6
+        students sent home Saturday with "tired eyes and finals stress" who in fact meet the
+        case definition. <b>The Day 1 count was not 8. It was 14.</b> A run on the Cowell Center
+        burned through the kits — of 100, <b>8 remain.</b> 150 students now report symptoms.
+      </div>
+      <div class="card">
+        <div class="tag">Battle Card</div>
+        <div class="q"><b>Q1.3</b> In the Outbreak Sheet, change the Day-1 count to 14 and
+        compare old R0 with revised R0. Complete the revision line: <b>Before this card we
+        thought ___. Now we know ___. Therefore we change ___.</b> How does your revised
+        reading compare to Epi-Bot's "around 1.3, self-limiting"?</div>
+        <div class="q"><b>Q1.4</b> Name 3 actions you would take immediately. Tie each to your own analysis.</div>
+        <a class="linkbtn lb-card" id="card-1b" href="#" target="_blank" rel="noopener">Open the Battle Card ▸</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ s3 LOOP 2 ============ -->
+  <section class="screen" id="s3">
+    <div class="block" id="l2-sitrep">
+      <div class="card sitrep" style="border-left-color:var(--yellow);">
+        <div class="tag" style="color:var(--yellow);">The surge</div>
+        <img class="hero" src="bb3_images/bb3_sunglasses_corridor.png" alt="a corridor of students in sunglasses">
+        Day 2. 32 cases and climbing, 150 symptomatic, 8 rapid tests left. You cannot test everyone.
+      </div>
+    </div>
+    <div class="block" id="l2-q21">
+      <div class="card">
+        <div class="tag">Battle Card — a reasoned ranking</div>
+        <div class="q"><b>Q2.1a</b> Using what you know about how respiratory infections spread,
+        rank these 5 groups by testing priority, 1 highest. Give the reasoning for your top and
+        bottom choice. Lock it.</div>
+        <ul class="t">
+          <li>Students who work shifts in Benson dining service</li>
+          <li>Asymptomatic close contacts of confirmed cases</li>
+          <li>Students who attend large lecture classes</li>
+          <li>Students living with roommates inside Swig</li>
+          <li>Students living in off-campus apartments</li>
+        </ul>
+        <div class="q"><b>Q2.1b</b> Outbreak Sheet, Group Contact Data tab — estimate each
+        group's transmission leverage. Re-rank by leverage. Say what moved.</div>
+        <a class="linkbtn lb-sheet" id="sheet-2" href="#" target="_blank" rel="noopener">Open your team Outbreak Sheet ▸</a>
+      </div>
+    </div>
+    <div class="block" id="l2-epibot">
+      <div class="gate-lbl">🔒 Epi-Bot unlocks once both rankings are locked</div>
+      <button class="btn-lock" onclick="unlock('l2gem',this)">Both rankings locked — consult Epi-Bot</button>
+      <div class="locked" id="l2gem">
+        <div class="bot">
+          <div class="bot-hd"><img src="bb3_images/bb3_epibot_avatar.png" alt="Epi-Bot"><span class="nm">Epi-Bot</span></div>
+          <div class="bot-body">
+            Back in the same Epi-Bot chat, ask it for its recommendation on the Day 2 testing
+            decision. If you have closed the tab, reopen it and send the access phrase again.
+            <div class="phrase">BB3CHALLENGE</div>
+            <a class="linkbtn lb-bot" id="gem-2" href="#" target="_blank" rel="noopener">Open Epi-Bot ▸</a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="tag">Battle Card</div>
+          <div class="q"><b>Q2.2</b> Put your leverage ranking next to Epi-Bot's recommendation.
+          Where do they agree, where differ, and what do your computed leverage numbers say
+          about each difference?</div>
+          <a class="linkbtn lb-card" id="card-2" href="#" target="_blank" rel="noopener">Open the Battle Card ▸</a>
+        </div>
+      </div>
+    </div>
+    <div class="block" id="l2-lab">
+      <div class="twist">
+        <div class="tag">Console push — the lab result is in</div>
+        <div class="hd">LAB RESULT · DAY 2 · 4:15 PM</div>
+        <img class="hero" src="bb3_images/bb3_county_lab.png" alt="the county lab">
+        The county lab ran the standard respiratory PCR panel: negative across the board — no
+        influenza A or B, no RSV, none of the common-cold coronaviruses, no match to any target.
+        <b>The standard panel has not identified WRV-23.</b> The county is now handling it as a
+        pathogen of unknown identity.
+      </div>
+      <div class="card">
+        <div class="tag">Battle Card</div>
+        <div class="q"><b>Q2.3</b> Back in Loop 1, Epi-Bot leaned on the 92 percent figure as
+        "a point in your favor." The lab result changes what you can responsibly assume.
+        Complete the revision line: <b>Before this card we thought ___. Now we know ___.
+        Therefore we change ___.</b> Does the 92 percent give specific protection against
+        WRV-23? Explain with immune memory.</div>
+        <a class="linkbtn lb-card" id="card-2b" href="#" target="_blank" rel="noopener">Open the Battle Card ▸</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ s4 LOOP 3 ============ -->
+  <section class="screen" id="s4">
+    <div class="block" id="l3-sitrep">
+      <div class="card sitrep" style="border-left-color:var(--red);">
+        <div class="tag" style="color:#f0a59c;">A message from Naomi Carter</div>
+        <div class="hd" style="color:#ffd9d3;">DAY 3 · A MESSAGE FROM NAOMI CARTER, SWIG HALL</div>
+        <img class="hero" src="bb3_images/bb3_hotel_room.png" alt="the overflow hotel room">
+        "My name is Naomi Carter. I'm a first-year in Swig. I have sickle cell disease. I tested
+        positive yesterday and they moved me to the overflow hotel — there's no medical staff
+        here overnight and it's a 20-minute drive from campus. I'm scared. My cough is getting
+        worse and I'm exhausted. I heard there's one isolation room left at the Cowell Center.
+        I don't know if I should ask for it. Please tell me what to do."
+      </div>
+    </div>
+    <div class="block" id="l3-q3">
+      <div class="card">
+        <div class="tag">Battle Card — read Naomi's risk</div>
+        <div class="q"><b>Q3.1</b> From the Level 2 Boss Battle: why does sickle cell disease
+        make a serious respiratory infection more dangerous for Naomi than for a typical student?</div>
+        <div class="q"><b>Q3.2</b> WRV-23 is still unidentified. What does that mean for whether
+        Naomi — or anyone — has existing immune protection? And, because she is
+        immunocompromised, what does that mean for how fast and how strongly she builds a
+        defense from scratch?</div>
+        <div class="q"><b>Q3.3</b> Commit an <b>initial ruling</b> before you consult Epi-Bot:
+        stay in the hotel, or move to the one staffed Cowell room? Ground it in Q3.1–3.2. You
+        finalize it after two more pieces of information.</div>
+        <a class="linkbtn lb-card" id="card-3" href="#" target="_blank" rel="noopener">Open the Battle Card ▸</a>
+      </div>
+    </div>
+    <div class="block" id="l3-epibot">
+      <div class="gate-lbl">🔒 Epi-Bot unlocks once your initial ruling is locked</div>
+      <button class="btn-lock" onclick="unlock('l3gem',this)">Initial ruling locked — consult Epi-Bot</button>
+      <div class="locked" id="l3gem">
+        <div class="bot">
+          <div class="bot-hd"><img src="bb3_images/bb3_epibot_avatar.png" alt="Epi-Bot"><span class="nm">Epi-Bot</span></div>
+          <div class="bot-body">
+            In the same Epi-Bot chat, ask it for its recommendation on the housing question for
+            Naomi Carter. If you closed the tab, reopen it and send the access phrase again.
+            <div class="phrase">BB3CHALLENGE</div>
+            <a class="linkbtn lb-bot" id="gem-3" href="#" target="_blank" rel="noopener">Open Epi-Bot ▸</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="block" id="l3-naomi">
+      <div class="twist">
+        <div class="tag">Console push — arrives before you finalize</div>
+        <div class="hd">UPDATE · DAY 3 · NAOMI CARTER</div>
+        Naomi has messaged again. Her oxygen reading has fallen from 97 to 94 percent over the
+        last hour. She is asking for your team's answer now.
+      </div>
+      <div class="card">
+        <div class="tag">Battle Card — finalize the ruling</div>
+        <div class="q"><b>Q3.4</b> You now have three things: your own reasoning, Epi-Bot's
+        recommendation, and Naomi's changed condition. Complete the revision line: <b>Before
+        this card we thought ___. Now we know ___. Therefore we change ___.</b> Then finalize
+        your ruling in four fields: <b>move or stay; biological reason; resource tradeoff;
+        monitoring plan.</b></div>
+        <a class="linkbtn lb-card" id="card-3b" href="#" target="_blank" rel="noopener">Open the Battle Card ▸</a>
+      </div>
+      <div class="twist">
+        <div class="tag">Console push</div>
+        <div class="hd">THE PRESIDENT NEEDS AN ANSWER TONIGHT</div>
+        Two options on the table: send Swig Hall home for the rest of the term, or lock the
+        building down through finals. The President's office needs your recommendation within the hour.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ s5 FINAL ============ -->
+  <section class="screen" id="s5">
+    <div class="card">
+      <div class="tag">Battle Card — every team submits</div>
+      <div class="q">Write a one-page recommendation to the President. It must:</div>
+      <ul class="t">
+        <li>choose one option — send Swig home, or lock it down — and justify it from your team's analysis across the three days;</li>
+        <li>give your evaluation of Epi-Bot across the whole battle — the three loop verdicts you logged, with the evidence behind each;</li>
+        <li>state your confidence level (low / medium / high) and the one missing data point most likely to change your recommendation.</li>
+      </ul>
+      <div class="note">Every Battle Card section is signed by the team member who led it.</div>
+      <a class="linkbtn lb-card" id="card-final" href="#" target="_blank" rel="noopener">Open the Battle Card ▸</a>
+    </div>
+  </section>
+
+  <!-- ============ s6 DEBRIEF ============ -->
+  <section class="screen" id="s6">
+    <div class="card">
+      <div class="tag">The outbreak resolves on screen</div>
+      Your instructor reveals the actual 14-day WRV-23 curve, and what it would have looked like
+      under "send home" and under "lock down." Compare it to the Day-1 read you committed,
+      alone, in the IRA.
+    </div>
+    <div class="card">
+      <div class="tag">Individual exit receipt — 60 seconds, on your own</div>
+      <div class="q">Name one Epi-Bot claim you personally weighed, and the evidence you used to
+      accept or reject it.</div>
+      <a class="linkbtn lb-card" id="exit-link" href="#" target="_blank" rel="noopener">Open the Exit Receipt ▸</a>
+    </div>
+    <div class="card spoken">
+      <div class="tag">Close</div>
+      "Friday's capstone takes everything from all three Levels into one last scenario,
+      together. The loop does not close here."
+    </div>
+  </section>
+
+  <div class="foot">
+    BB3 Outbreak Console · team page · v2.2 · one device per team ·
+    reveals are driven by your instructor.
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyA0Xe_dnQ9-BpSWep5mRJr5WHvPQBRqo4E",
+    authDomain: "biol2-bb1.firebaseapp.com",
+    databaseURL: "https://biol2-bb1-default-rtdb.firebaseio.com",
+    projectId: "biol2-bb1",
+    storageBucket: "biol2-bb1.firebasestorage.app",
+    messagingSenderId: "987841003700",
+    appId: "1:987841003700:web:4637fc8b32e55b066957e1"
+  };
+  const fbApp = initializeApp(firebaseConfig);
+  const db = getDatabase(fbApp);
+  const stateRef = ref(db, 'bb3/state');
+
+  // ----- fixed URLs -----
+  const GEM_URL  = "https://gemini.google.com/gem/532d29d9229e";
+  const CARD_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfYetYZbag_IJGO-1t0gZrjD89R27AhnFkQkINapoDtGU4QWQ/viewform";
+  const EXIT_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfn8kHRTcxTZ042w6hdN7KLq2ZuhnCgfBdYOScM1tdhRlcMtQ/viewform";
+
+  // ----- per-team Outbreak Sheet URLs -----
+  const TEAM_SHEETS = {
+    A1:"https://docs.google.com/spreadsheets/d/13gxDksIUgHX8ne0P9QaR81WobMm_BLccIVgdEPlG6mc/edit",
+    A2:"https://docs.google.com/spreadsheets/d/1ZFVEQ5KTVgNKvJzaB457QAnyEi2DP7eT-jT2KjVVwfU/edit",
+    A3:"https://docs.google.com/spreadsheets/d/1QPnjCHyun_8OVq31BvMK8KvyV4xxeYn708xBOs1BP3I/edit",
+    A4:"https://docs.google.com/spreadsheets/d/1HoSWz-PLG3xpuGK7CPmVDX6_7RePn5Dukzzza_YWtXs/edit",
+    B1:"https://docs.google.com/spreadsheets/d/1eQvirffen5HZl5UQ3mH56YbSgAKX9etpgX2M-YCg7-M/edit",
+    B2:"https://docs.google.com/spreadsheets/d/1ZFr-kgybttTKTSEKp6VdBkoeQz0q_sVN0ykfl_LMsgU/edit",
+    B3:"https://docs.google.com/spreadsheets/d/1AUenPnmYOxeCbtZYjUF0RV5rY7eED-3vya3Jr1FrKBU/edit",
+    B4:"https://docs.google.com/spreadsheets/d/1I9oAAYCG1ThZy-5AYNhOXWkGL7LgKOyCleMIwHzMSEs/edit",
+    C1:"https://docs.google.com/spreadsheets/d/1yumDTIHwbY0GT0TIVsfK83vg77SObb3OBgKRLeIm4fU/edit",
+    C2:"https://docs.google.com/spreadsheets/d/1Y619paGtlRxF2FeJ3u4pUf3gXrPy7MXWGg3hiGfceGI/edit",
+    C3:"https://docs.google.com/spreadsheets/d/1JeOb2WCox7gxO4WqCpOx5pckVWdu7S218fBQdEaHgOA/edit",
+    C4:"https://docs.google.com/spreadsheets/d/1gVhZEfsWVBi8aGoIA9VyeYEMyhUG-uL0aXWwG7k9EEE/edit",
+    D1:"https://docs.google.com/spreadsheets/d/1bj-8VxZ4TsT3R0IcDO-lfS_9wPEji_G_xWXIt60qQt0/edit",
+    D2:"https://docs.google.com/spreadsheets/d/1BxfAF5rtiK-kItiyl-XxjeM-sSTe8V1ZaVfZZts_94Q/edit",
+    D3:"https://docs.google.com/spreadsheets/d/1W09PqWYTiBcw_r9mjo18UzDkKnfiH5V5p-u_NKRK1QE/edit",
+    D4:"https://docs.google.com/spreadsheets/d/1svfg5ghU9Loq9cMk1L12j9yawAlCbVIOn3ncJ03zgQE/edit"
+  };
+
+  // ----- step map: idx -> screen + visible blocks + band -----
+  const STEPS = [
+    {sc:"s0", bl:[],                                   band:"b-gold",  lbl:"Boss Battle 3",      st:"The Crucible"},
+    {sc:"s1", bl:[],                                   band:"b-gold",  lbl:"Cold Open",          st:"0:00 – 0:08"},
+    {sc:"s2", bl:["l1-sitrep","l1-q11"],               band:"b-green", lbl:"Loop 1 — GREEN",     st:"0:08 – 0:26"},
+    {sc:"s2", bl:["l1-sitrep","l1-q11","l1-epibot"],   band:"b-green", lbl:"Loop 1 — GREEN",     st:"Epi-Bot online"},
+    {sc:"s2", bl:["l1-sitrep","l1-q11","l1-epibot","l1-recount"], band:"b-green", lbl:"Loop 1 — GREEN", st:"the recount"},
+    {sc:"s3", bl:["l2-sitrep","l2-q21"],               band:"b-yellow",lbl:"Loop 2 — YELLOW",    st:"0:26 – 0:39"},
+    {sc:"s3", bl:["l2-sitrep","l2-q21","l2-epibot"],   band:"b-yellow",lbl:"Loop 2 — YELLOW",    st:"Epi-Bot"},
+    {sc:"s3", bl:["l2-sitrep","l2-q21","l2-epibot","l2-lab"], band:"b-yellow",lbl:"Loop 2 — YELLOW", st:"the lab result"},
+    {sc:"s4", bl:["l3-sitrep","l3-q3"],                band:"b-red",   lbl:"Loop 3 — RED",       st:"0:39 – 0:52"},
+    {sc:"s4", bl:["l3-sitrep","l3-q3","l3-epibot"],    band:"b-red",   lbl:"Loop 3 — RED",       st:"Epi-Bot"},
+    {sc:"s4", bl:["l3-sitrep","l3-q3","l3-epibot","l3-naomi"], band:"b-red", lbl:"Loop 3 — RED", st:"Naomi worsens"},
+    {sc:"s5", bl:[],                                   band:"b-gold",  lbl:"Final Recommendation",st:"0:52 – 0:58"},
+    {sc:"s6", bl:[],                                   band:"b-gold",  lbl:"Debrief",            st:"0:58 – 1:05"}
+  ];
+
+  // ----- wire the fixed-URL links -----
+  document.getElementById('gem-1').href  = GEM_URL;
+  document.getElementById('gem-2').href  = GEM_URL;
+  document.getElementById('gem-3').href  = GEM_URL;
+  ["card-1","card-1b","card-2","card-2b","card-3","card-3b","card-final"]
+    .forEach(function(id){ document.getElementById(id).href = CARD_URL; });
+  document.getElementById('exit-link').href = EXIT_URL;
+
+  // ----- team selection -----
+  function refreshSheetLinks(){
+    var team = document.getElementById('team').value;
+    var url = TEAM_SHEETS[team];
+    ["sheet-1","sheet-2"].forEach(function(id){
+      var a = document.getElementById(id);
+      if(url){ a.href = url; a.classList.remove('lb-dim'); a.classList.add('lb-sheet');
+               a.textContent = "Open your team Outbreak Sheet ▸"; }
+      else   { a.href = "#";  a.classList.add('lb-dim');   a.classList.remove('lb-sheet');
+               a.textContent = "Pick your team above first"; }
+    });
+  }
+  function pickTeam(){
+    var team = document.getElementById('team').value;
+    if(team) localStorage.setItem('bb3_team', team);
+    refreshSheetLinks();
+    primeAudio();
+  }
+  window.pickTeam = pickTeam;
+  var saved = localStorage.getItem('bb3_team');
+  if(saved) document.getElementById('team').value = saved;
+  refreshSheetLinks();
+
+  // ----- local per-loop lock -----
+  function unlock(id, btn){
+    document.getElementById(id).classList.add('open');
+    if(btn){ btn.disabled = true; btn.textContent = '✓ ' + btn.textContent; }
+    document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  window.unlock = unlock;
+  function relockAll(){
+    ['l1gem','l2gem','l3gem'].forEach(function(id){
+      document.getElementById(id).classList.remove('open');
+    });
+    document.querySelectorAll('.btn-lock').forEach(function(b){
+      b.disabled = false;
+      b.textContent = b.textContent.replace(/^✓ /,'');
+    });
+  }
+
+  // ----- render a step -----
+  var lastIdx = -1;
+  function applyState(idx){
+    if(typeof idx !== 'number' || idx < 0 || idx >= STEPS.length) idx = 0;
+    var step = STEPS[idx];
+    if(idx === 0) relockAll();
+    // screens
+    document.querySelectorAll('.screen').forEach(function(s){
+      s.classList.toggle('active', s.id === step.sc);
+    });
+    // blocks
+    document.querySelectorAll('.block').forEach(function(b){
+      b.classList.toggle('shown', step.bl.indexOf(b.id) !== -1);
+    });
+    // band
+    var band = document.getElementById('band');
+    band.className = 'band ' + step.band;
+    document.getElementById('band-label').textContent = step.lbl;
+    document.getElementById('band-step').textContent = step.st;
+    // scroll + sound on a real change
+    if(idx !== lastIdx){
+      if(idx > lastIdx && lastIdx !== -1){
+        var twist = (idx===4||idx===7||idx===10);
+        beep(twist);
+        var blocks = step.bl;
+        if(blocks.length){
+          var el = document.getElementById(blocks[blocks.length-1]);
+          if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+        } else { window.scrollTo({top:0,behavior:'smooth'}); }
+      } else {
+        window.scrollTo(0,0);
+      }
+      lastIdx = idx;
+    }
+  }
+
+  // ----- audio (primed on team pick) -----
+  var actx = null, audioOn = false;
+  function primeAudio(){
+    try{
+      if(!actx) actx = new (window.AudioContext||window.webkitAudioContext)();
+      if(actx.state === 'suspended') actx.resume();
+      audioOn = true;
+    }catch(e){}
+  }
+  function tone(f,t0,dur){
+    var o=actx.createOscillator(), g=actx.createGain(), n=actx.currentTime+t0;
+    o.type='sine'; o.frequency.value=f;
+    g.gain.setValueAtTime(0,n);
+    g.gain.linearRampToValueAtTime(0.16,n+0.01);
+    g.gain.linearRampToValueAtTime(0.0001,n+dur);
+    o.connect(g).connect(actx.destination); o.start(n); o.stop(n+dur+0.02);
+  }
+  function beep(twist){
+    if(!audioOn || !actx) return;
+    if(twist){ tone(740,0,.16); tone(620,.17,.16); tone(880,.34,.26); }
+    else { tone(880,0,.14); }
+  }
+
+  // ----- Firebase listener -----
+  var sync = document.getElementById('sync');
+  onValue(stateRef, function(snap){
+    var v = snap.val();
+    var idx = (v && typeof v.idx === 'number') ? v.idx : 0;
+    applyState(idx);
+    var d = new Date();
+    sync.textContent = 'Live · synced ' +
+      String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+
+      ':'+String(d.getSeconds()).padStart(2,'0');
+    sync.style.color = 'var(--green)';
+  }, function(err){
+    sync.textContent = 'Connection lost — check wifi, then reload. ('+err.message+')';
+    sync.style.color = 'var(--red)';
+  });
+
+  applyState(0);
+</script>
+</body>
+</html>
