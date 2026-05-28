@@ -1,0 +1,106 @@
+[
+  {
+    "q": 1,
+    "category": "Level 1 — Cellular energy",
+    "stem": "A cell's main short-term energy currency molecule is:",
+    "options": {
+      "A": "DNA",
+      "B": "ATP",
+      "C": "Glucose only",
+      "D": "Oxygen"
+    },
+    "correct": "B",
+    "doublePayout": false
+  },
+  {
+    "q": 2,
+    "category": "Level 1 — Health-claim skill",
+    "stem": "When you meet a new health claim, the first thing to ask is:",
+    "options": {
+      "A": "What is the evidence behind it",
+      "B": "Whether it sounds impressive",
+      "C": "Whether it is popular online",
+      "D": "Whether a celebrity endorses it"
+    },
+    "correct": "A",
+    "doublePayout": false
+  },
+  {
+    "q": 3,
+    "category": "Level 2 — CRISPR-Cas9",
+    "stem": "The job of CRISPR-Cas9 inside a cell is to:",
+    "options": {
+      "A": "Build new proteins",
+      "B": "Copy the whole genome",
+      "C": "Cut DNA at a targeted sequence",
+      "D": "Destroy all of the cell's RNA"
+    },
+    "correct": "C",
+    "doublePayout": false
+  },
+  {
+    "q": 4,
+    "category": "Level 2 — Carriers vs affected",
+    "stem": "A person with sickle cell trait carries:",
+    "options": {
+      "A": "Two sickle cell alleles",
+      "B": "No sickle cell alleles",
+      "C": "A new mutation in every body cell",
+      "D": "One sickle allele and one normal allele"
+    },
+    "correct": "D",
+    "doublePayout": false
+  },
+  {
+    "q": 5,
+    "category": "Level 3 — Adaptive immunity",
+    "stem": "Adaptive immunity differs from innate immunity mainly because adaptive immunity:",
+    "options": {
+      "A": "Acts within the first few seconds",
+      "B": "Is specific and builds lasting memory",
+      "C": "Relies only on the skin as a barrier",
+      "D": "Never uses any white blood cells"
+    },
+    "correct": "B",
+    "doublePayout": false
+  },
+  {
+    "q": 6,
+    "category": "Level 3 — Herd immunity threshold",
+    "stem": "The herd immunity threshold is higher for a disease that is:",
+    "options": {
+      "A": "More contagious",
+      "B": "Less contagious",
+      "C": "Already eradicated",
+      "D": "Spread only by animals"
+    },
+    "correct": "A",
+    "doublePayout": false
+  },
+  {
+    "q": 7,
+    "category": "AI-literacy throughline",
+    "stem": "Across Medi-Bot, Genome-Bot, and Epi-Bot, the skill the course practiced was:",
+    "options": {
+      "A": "Trusting the AI's confidence",
+      "B": "Avoiding AI tools completely",
+      "C": "Catching an AI that is confidently wrong",
+      "D": "Copying the AI's answer onto the worksheet"
+    },
+    "correct": "C",
+    "doublePayout": false
+  },
+  {
+    "q": 8,
+    "category": "WAGER — Cross-Level single-cause skepticism",
+    "stem": "A runner collapses, and an AI says \"it was only the supplement.\" The best reason to doubt a single-cause answer like that is:",
+    "options": {
+      "A": "Supplements are always completely safe",
+      "B": "Real cases are often multi-factorial, so one cause rarely explains it all",
+      "C": "An AI is unable to read a supplement label",
+      "D": "A collapse never has any medical cause"
+    },
+    "correct": "B",
+    "doublePayout": true
+  }
+]
